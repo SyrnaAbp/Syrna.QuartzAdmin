@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<Import Project="..\..\..\..\common.props" />
+	<Import Project="..\..\..\..\configureawait.props" />
+
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<RootNamespace>Syrna.QuartzAdmin.MainDemo.PostgreSql</RootNamespace>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Syrna.QuartzAdmin.MainDemo.Domain\Syrna.QuartzAdmin.MainDemo.Domain.csproj" />
+		<ProjectReference Include="..\Syrna.QuartzAdmin.MainDemo.EntityFrameworkCore\Syrna.QuartzAdmin.MainDemo.EntityFrameworkCore.csproj" />
+
+		<PackageReference Include="Volo.Abp.EntityFrameworkCore.PostgreSql" />
+		
+		<PackageReference Include="Volo.Abp.SettingManagement.EntityFrameworkCore" />
+		<PackageReference Include="Volo.Abp.AuditLogging.EntityFrameworkCore" />
+		<PackageReference Include="Volo.Abp.TenantManagement.EntityFrameworkCore" />
+		<PackageReference Include="Volo.Abp.FeatureManagement.EntityFrameworkCore" />
+		<PackageReference Include="Volo.Abp.PermissionManagement.EntityFrameworkCore" />
+		<PackageReference Include="Volo.Abp.Identity.EntityFrameworkCore" />
+		<PackageReference Include="Volo.Abp.OpenIddict.EntityFrameworkCore" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+</Project>
