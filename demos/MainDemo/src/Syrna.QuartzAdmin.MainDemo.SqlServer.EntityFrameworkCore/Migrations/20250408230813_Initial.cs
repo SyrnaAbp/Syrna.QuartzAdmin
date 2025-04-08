@@ -57,6 +57,7 @@ namespace Syrna.QuartzAdmin.MainDemo.SqlServer.Migrations
                     RegexDescription = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true),
                     Description = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     ValueType = table.Column<int>(type: "int", nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ExtraProperties = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ConcurrencyStamp = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false)
                 },
@@ -222,6 +223,7 @@ namespace Syrna.QuartzAdmin.MainDemo.SqlServer.Migrations
                     IsStatic = table.Column<bool>(type: "bit", nullable: false),
                     IsPublic = table.Column<bool>(type: "bit", nullable: false),
                     EntityVersion = table.Column<int>(type: "int", nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ExtraProperties = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ConcurrencyStamp = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false)
                 },
@@ -452,49 +454,6 @@ namespace Syrna.QuartzAdmin.MainDemo.SqlServer.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_OpenIddictScopes", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "PmPrivateMessageNotifications",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    PrivateMessageId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TitlePreview = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ExtraProperties = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PmPrivateMessageNotifications", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "PmPrivateMessages",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    FromUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    ToUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ReadTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ExtraProperties = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
-                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
-                    DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PmPrivateMessages", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -1053,26 +1012,6 @@ namespace Syrna.QuartzAdmin.MainDemo.SqlServer.Migrations
                 name: "IX_OpenIddictTokens_ReferenceId",
                 table: "OpenIddictTokens",
                 column: "ReferenceId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PmPrivateMessageNotifications_PrivateMessageId",
-                table: "PmPrivateMessageNotifications",
-                column: "PrivateMessageId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PmPrivateMessageNotifications_UserId",
-                table: "PmPrivateMessageNotifications",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PmPrivateMessages_FromUserId",
-                table: "PmPrivateMessages",
-                column: "FromUserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PmPrivateMessages_ToUserId",
-                table: "PmPrivateMessages",
-                column: "ToUserId");
         }
 
         /// <inheritdoc />
@@ -1152,12 +1091,6 @@ namespace Syrna.QuartzAdmin.MainDemo.SqlServer.Migrations
 
             migrationBuilder.DropTable(
                 name: "OpenIddictTokens");
-
-            migrationBuilder.DropTable(
-                name: "PmPrivateMessageNotifications");
-
-            migrationBuilder.DropTable(
-                name: "PmPrivateMessages");
 
             migrationBuilder.DropTable(
                 name: "AbpEntityChanges");
