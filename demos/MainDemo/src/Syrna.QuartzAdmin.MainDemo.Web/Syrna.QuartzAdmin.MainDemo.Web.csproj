@@ -1,0 +1,60 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<Import Project="..\..\..\..\common.props" />
+	<Import Project="..\..\..\..\configureawait.props" />
+
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<AssetTargetFallback>$(AssetTargetFallback);portable-net45+win8+wp8+wpa81;</AssetTargetFallback>
+		<IsPackable>true</IsPackable>
+		<OutputType>Library</OutputType>
+		<RootNamespace>Syrna.QuartzAdmin.MainDemo.Web</RootNamespace>
+		<GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Volo.Abp.AutoMapper" />
+		<PackageReference Include="Volo.Abp.AspNetCore.Mvc.UI.Theme.Shared" />
+		<PackageReference Include="Volo.Abp.Identity.Web" />
+		<PackageReference Include="Volo.Abp.Account.Web" />
+		<PackageReference Include="Volo.Abp.Account.Web.OpenIddict" />
+		<PackageReference Include="Volo.Abp.SettingManagement.Web" />
+		<PackageReference Include="Volo.Abp.FeatureManagement.Web" />
+		<PackageReference Include="Volo.Abp.TenantManagement.Web" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\..\modules\src\Syrna.QuartzAdmin.Web\Syrna.QuartzAdmin.Web.csproj" />
+		<ProjectReference Include="..\Syrna.QuartzAdmin.MainDemo.Application.Contracts\Syrna.QuartzAdmin.MainDemo.Application.Contracts.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="Components\**\*.js" />
+		<EmbeddedResource Include="Components\**\*.css" />
+		<EmbeddedResource Include="wwwroot\**\*.*" />
+		<Compile Remove="Menus\**" />
+		<Compile Remove="Pages\**" />
+		<Content Remove="Components\**\*.js" />
+		<Content Remove="Components\**\*.css" />
+		<Content Remove="Menus\**" />
+		<Content Remove="Pages\**" />
+		<Content Remove="wwwroot\**\*.*" />
+		<EmbeddedResource Remove="Menus\**" />
+		<EmbeddedResource Remove="Pages\**" />
+		<None Remove="Menus\**" />
+		<None Remove="Pages\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Remove="DemoWebAutoMapperProfile.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="wwwroot\" />
+	</ItemGroup>
+
+</Project>

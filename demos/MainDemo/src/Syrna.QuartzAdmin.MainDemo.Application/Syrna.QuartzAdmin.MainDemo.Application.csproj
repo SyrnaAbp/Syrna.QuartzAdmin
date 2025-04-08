@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<Import Project="..\..\..\..\common.props" />
+	<Import Project="..\..\..\..\configureawait.props" />
+
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<RootNamespace>Syrna.QuartzAdmin.MainDemo</RootNamespace>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<NoWarn>$(NoWarn);1591</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\..\modules\src\Syrna.QuartzAdmin.Application\Syrna.QuartzAdmin.Application.csproj" />
+		<ProjectReference Include="..\Syrna.QuartzAdmin.MainDemo.Domain\Syrna.QuartzAdmin.MainDemo.Domain.csproj" />
+		<ProjectReference Include="..\Syrna.QuartzAdmin.MainDemo.Application.Contracts\Syrna.QuartzAdmin.MainDemo.Application.Contracts.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Volo.Abp.AspNetCore.Mvc" />
+		<PackageReference Include="Volo.Abp.AspNetCore.Mvc.Contracts" />
+		<PackageReference Include="Volo.Abp.Account.Application" />
+		<PackageReference Include="Volo.Abp.TenantManagement.Application" />
+		<PackageReference Include="Volo.Abp.FeatureManagement.Application" />
+		<PackageReference Include="Volo.Abp.SettingManagement.Application" />
+
+		<PackageReference Include="Volo.Abp.Identity.Application" />
+		<PackageReference Include="Volo.Abp.PermissionManagement.Application" />
+	</ItemGroup>
+
+</Project>

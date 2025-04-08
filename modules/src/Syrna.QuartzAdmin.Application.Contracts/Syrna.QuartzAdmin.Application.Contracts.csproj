@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<Import Project="..\..\..\common.props" />
+	<Import Project="..\..\..\configureawait.props" />
+	<Import Project="..\..\..\packing.props" />
+
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<RootNamespace />
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Volo.Abp.Ddd.Application.Contracts" />
+		<PackageReference Include="Volo.Abp.Authorization" />
+		<ProjectReference Include="..\Syrna.QuartzAdmin.Domain.Shared\Syrna.QuartzAdmin.Domain.Shared.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Syrna\QuartzAdmin\Users\Dtos\" />
+	</ItemGroup>
+
+</Project>

@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <RootNamespace>Syrna.QuartzAdmin</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="EphemeralMongo.Core" />
+    <PackageReference Include="EphemeralMongo6.runtime.linux-x64" Condition="$([MSBuild]::IsOSPlatform('Linux'))" />
+    <PackageReference Include="EphemeralMongo6.runtime.osx-x64" Condition="$([MSBuild]::IsOSPlatform('OSX'))" />
+    <PackageReference Include="EphemeralMongo6.runtime.win-x64" Condition="$([MSBuild]::IsOSPlatform('Windows'))" />
+    <ProjectReference Include="..\..\src\Syrna.QuartzAdmin.MongoDB\Syrna.QuartzAdmin.MongoDB.csproj" />
+    <ProjectReference Include="..\Syrna.QuartzAdmin.TestBase\Syrna.QuartzAdmin.TestBase.csproj" />
+  </ItemGroup>
+
+</Project>

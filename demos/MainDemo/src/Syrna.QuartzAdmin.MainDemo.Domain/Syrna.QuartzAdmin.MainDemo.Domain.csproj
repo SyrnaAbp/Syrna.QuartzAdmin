@@ -1,0 +1,50 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<Import Project="..\..\..\..\common.props" />
+	<Import Project="..\..\..\..\configureawait.props" />
+
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<RootNamespace>Syrna.QuartzAdmin.MainDemo</RootNamespace>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<NoWarn>$(NoWarn);1591</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\..\modules\src\Syrna.QuartzAdmin.Domain\Syrna.QuartzAdmin.Domain.csproj" />
+		<ProjectReference Include="..\Syrna.QuartzAdmin.MainDemo.Domain.Shared\Syrna.QuartzAdmin.MainDemo.Domain.Shared.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Volo.Abp.Emailing" />
+
+		<PackageReference Include="Volo.Abp.AuditLogging.Domain" />
+		<PackageReference Include="Volo.Abp.TenantManagement.Domain" />
+		<PackageReference Include="Volo.Abp.FeatureManagement.Domain" />
+		<PackageReference Include="Volo.Abp.SettingManagement.Domain" />
+
+		<PackageReference Include="Volo.Abp.OpenIddict.Domain" />
+		<PackageReference Include="Volo.Abp.Identity.Domain" />
+		<PackageReference Include="Volo.Abp.PermissionManagement.Domain" />
+		<PackageReference Include="Volo.Abp.PermissionManagement.Domain.Identity" />
+		<PackageReference Include="Volo.Abp.PermissionManagement.Domain.OpenIddict" />
+
+		<PackageReference Include="Volo.Abp.Ddd.Domain" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.ApiDescription.Client">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="NSwag.ApiDescription.Client">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+</Project>

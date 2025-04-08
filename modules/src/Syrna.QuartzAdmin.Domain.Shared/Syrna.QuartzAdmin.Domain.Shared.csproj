@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<Import Project="..\..\..\common.props" />
+	<Import Project="..\..\..\configureawait.props" />
+	<Import Project="..\..\..\packing.props" />
+
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<RootNamespace />
+		<GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Volo.Abp.Ddd.Domain.Shared" />
+		<PackageReference Include="Volo.Abp.Validation" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="Syrna\QuartzAdmin\Localization\*.json" />
+		<Content Remove="Syrna\QuartzAdmin\Localization\*.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="..\..\..\docs\images\FreeCommanderXE_Renamer.png" Link="FreeCommanderXE_Renamer.png" />
+	  <Content Include="..\..\..\docs\images\ReplaceInFiles.png" Link="ReplaceInFiles.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" />
+	</ItemGroup>
+
+</Project>

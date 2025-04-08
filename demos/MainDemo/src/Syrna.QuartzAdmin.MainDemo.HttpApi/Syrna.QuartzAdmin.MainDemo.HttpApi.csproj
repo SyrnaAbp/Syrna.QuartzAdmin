@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<Import Project="..\..\..\..\common.props" />
+	<Import Project="..\..\..\..\configureawait.props" />
+
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<RootNamespace>Syrna.QuartzAdmin.MainDemo</RootNamespace>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\..\modules\src\Syrna.QuartzAdmin.HttpApi\Syrna.QuartzAdmin.HttpApi.csproj" />
+		<ProjectReference Include="..\Syrna.QuartzAdmin.MainDemo.Application.Contracts\Syrna.QuartzAdmin.MainDemo.Application.Contracts.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Volo.Abp.Account.HttpApi" />
+		<PackageReference Include="Volo.Abp.TenantManagement.HttpApi" />
+		<PackageReference Include="Volo.Abp.FeatureManagement.HttpApi" />
+		<PackageReference Include="Volo.Abp.SettingManagement.HttpApi" />
+		<PackageReference Include="Volo.Abp.Identity.HttpApi" />
+		<PackageReference Include="Volo.Abp.PermissionManagement.HttpApi" />
+	</ItemGroup>
+
+</Project>

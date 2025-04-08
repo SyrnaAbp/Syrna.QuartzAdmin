@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+	<Import Project="..\..\..\common.props" />
+	<Import Project="..\..\..\configureawait.props" />
+	<Import Project="..\..\..\packing.props" />
+
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Volo.Abp.AutoMapper" />
+		<PackageReference Include="Volo.Abp.AspNetCore.Components.Web.Theming" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Syrna.QuartzAdmin.Application.Contracts\Syrna.QuartzAdmin.Application.Contracts.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Components\" />
+	  <Folder Include="Pages\QuartzAdmin\InfoModels\" />
+	</ItemGroup>
+
+</Project>

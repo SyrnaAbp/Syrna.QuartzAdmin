@@ -1,0 +1,39 @@
+<Project>
+	<PropertyGroup>
+		<LangVersion>latest</LangVersion>
+		<NoWarn>$(NoWarn);CS1591;CS0436</NoWarn>
+		<AbpProjectType>module</AbpProjectType>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<Authors>Syrna Team</Authors>
+		<Description>An abp application module that allows users to send private messages to each other.</Description>
+		<PackageReadmeFile>.\README.md</PackageReadmeFile>
+		<PackageIcon>.\logo.png</PackageIcon>
+		<PackageProjectUrl>https://github.com/SyrnaAbp/Syrna.QuartzAdmin</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/SyrnaAbp/Syrna.QuartzAdmin</RepositoryUrl>
+		<PackageTags>An abp application module that allows users to send private messages to each other syrna alpha</PackageTags>
+		<Company>Syrna</Company>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\..\..\README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="..\..\..\logo.png">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Remove="*.abppkg" />
+		<Content Include="*.abppkg">
+			<Pack>true</Pack>
+			<PackagePath>content\</PackagePath>
+		</Content>
+	</ItemGroup>
+
+</Project>

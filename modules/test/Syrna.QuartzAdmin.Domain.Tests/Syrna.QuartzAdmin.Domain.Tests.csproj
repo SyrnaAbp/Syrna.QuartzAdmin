@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <RootNamespace>Syrna.QuartzAdmin</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <ProjectReference Include="..\Syrna.QuartzAdmin.EntityFrameworkCore.Tests\Syrna.QuartzAdmin.EntityFrameworkCore.Tests.csproj" />
+  </ItemGroup>
+
+</Project>

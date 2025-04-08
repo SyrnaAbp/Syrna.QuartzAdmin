@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+	<Import Project="..\..\..\..\common.props" />
+	<Import Project="..\..\..\..\configureawait.props" />
+
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Syrna.QuartzAdmin.MainDemo.Blazor\Syrna.QuartzAdmin.MainDemo.Blazor.csproj" />
+	</ItemGroup>
+
+</Project>
