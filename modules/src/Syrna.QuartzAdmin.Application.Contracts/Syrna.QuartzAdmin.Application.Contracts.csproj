@@ -10,8 +10,12 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Quartz" />
 		<PackageReference Include="Volo.Abp.Ddd.Application.Contracts" />
 		<PackageReference Include="Volo.Abp.Authorization" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<ProjectReference Include="..\Syrna.QuartzAdmin.Domain.Shared\Syrna.QuartzAdmin.Domain.Shared.csproj" />
 	</ItemGroup>
 

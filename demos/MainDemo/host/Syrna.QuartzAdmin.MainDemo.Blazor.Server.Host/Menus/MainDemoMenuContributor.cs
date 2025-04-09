@@ -1,10 +1,10 @@
 using System.Threading.Tasks;
-using Syrna.QuartzAdmin.Localization;
 using Volo.Abp.Identity.Blazor;
 using Volo.Abp.SettingManagement.Blazor.Menus;
 using Volo.Abp.TenantManagement.Blazor.Navigation;
 using Volo.Abp.UI.Navigation;
 using Syrna.QuartzAdmin.MainDemo.MultiTenancy;
+using Syrna.QuartzAdmin.Localization;
 
 namespace Syrna.QuartzAdmin.MainDemo.Blazor.Server.Host.Menus
 {

@@ -1,5 +1,5 @@
-﻿using Syrna.QuartzAdmin.Localization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Syrna.QuartzAdmin.Localization;
 using Volo.Abp.AspNetCore.Mvc;
 
 namespace Syrna.QuartzAdmin

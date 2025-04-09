@@ -16,8 +16,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<EmbeddedResource Include="Syrna\QuartzAdmin\Localization\*.json" />
-		<Content Remove="Syrna\QuartzAdmin\Localization\*.json" />
+		<EmbeddedResource Include="Syrna\QuartzAdmin\Localization\QuartzAdmin\*.json" />
+		<Content Remove="Syrna\QuartzAdmin\Localization\QuartzAdmin\*.json" />
 	</ItemGroup>
 
 	<ItemGroup>

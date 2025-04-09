@@ -317,6 +317,7 @@ public class MainDemoHttpApiHostModule : AbpModule
         Configure<AbpAspNetCoreMvcOptions>(options =>
         {
             options.ConventionalControllers.Create(typeof(MainDemoApplicationModule).Assembly);
+            options.ConventionalControllers.Create(typeof(QuartzAdminApplicationModule).Assembly);
         });
     }
 

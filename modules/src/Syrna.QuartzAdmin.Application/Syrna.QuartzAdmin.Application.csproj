@@ -10,9 +10,15 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Volo.Abp.AspNetCore.Mvc" />
+		<PackageReference Include="Volo.Abp.AspNetCore.Mvc.Contracts" />
 		<PackageReference Include="Volo.Abp.AutoMapper" />
 		<PackageReference Include="Volo.Abp.Ddd.Application" />
 		<PackageReference Include="Volo.Abp.Identity.Application.Contracts" />
+		<PackageReference Include="Quartz" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<ProjectReference Include="..\Syrna.QuartzAdmin.Application.Contracts\Syrna.QuartzAdmin.Application.Contracts.csproj" />
 		<ProjectReference Include="..\Syrna.QuartzAdmin.Domain\Syrna.QuartzAdmin.Domain.csproj" />
 	</ItemGroup>
