@@ -36,5 +36,6 @@ public class MainDemoMigrationsDbContext(DbContextOptions<MainDemoMigrationsDbCo
         /* Configure your own tables/entities inside the ConfigureLayout method */
 
         builder.ConfigureQuartzAdmin();
+        builder.ConfigureQuartz();
     }
 }

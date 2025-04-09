@@ -1,4 +1,4 @@
-﻿namespace Syrna.QuartzAdmin.MainDemo;
+﻿namespace Syrna.QuartzAdmin.MainDemo.SqlServer;
 
 public static class QuartzDbProperties
 {
