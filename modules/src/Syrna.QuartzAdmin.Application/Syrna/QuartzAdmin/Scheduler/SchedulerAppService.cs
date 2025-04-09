@@ -30,7 +30,7 @@ namespace Syrna.QuartzAdmin.Scheduler
             catch (Exception ex)
             {
                 Logger.LogError(ex, ex.Message);
-                throw new UserFriendlyException("Can not get scheduler metadata", "CantGetSchedulerMetaData",innerException:ex);
+                throw new UserFriendlyException("Can not get scheduler metadata", "CantGetSchedulerMetaData", innerException: ex);
             }
         }
 
@@ -57,7 +57,7 @@ namespace Syrna.QuartzAdmin.Scheduler
             catch (Exception ex)
             {
                 Logger.LogError(ex, ex.Message);
-                throw new UserFriendlyException("Can not started scheduler","CantStartScheduler",innerException:ex);
+                throw new UserFriendlyException("Can not started scheduler", "CantStartScheduler", innerException: ex);
             }
         }
 
@@ -76,7 +76,7 @@ namespace Syrna.QuartzAdmin.Scheduler
             catch (Exception ex)
             {
                 Logger.LogError(ex, ex.Message);
-                throw new UserFriendlyException("Can not paused scheduler","CantPauseScheduler",innerException:ex);
+                throw new UserFriendlyException("Can not paused scheduler", "CantPauseScheduler", innerException: ex);
             }
         }
 
