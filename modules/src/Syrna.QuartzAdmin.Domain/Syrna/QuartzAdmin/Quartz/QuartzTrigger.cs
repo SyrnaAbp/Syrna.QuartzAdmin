@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Syrna.QuartzAdmin.Quartz
 {
-    public class QuartzTrigger
+  public class QuartzTrigger
   {
     public string SchedulerName { get; set; } = null!;
     public string TriggerName { get; set; } = null!;
