@@ -1,0 +1,17 @@
+﻿{
+  "ISmsServiceManager": {
+    "ApplicationName": "Syrna.Alpha",
+    "Url": "https://notification-gateway-api.smssender.com/",
+    "TokenUrl": "https://notification-auth-api.smssender.com/",
+    "UserName": "syrna-alpha-user",
+    "Password": "****",
+    "ServiceEnable": true
+  },
+  "IMailServiceManager": {
+    "MailAddress": "noreply@test.com",
+    "Password": "1q2w3E*z",
+    "MailHost": "mail.test.com",
+    "Port": 25,
+    "ServiceEnable": true
+  }
+}
