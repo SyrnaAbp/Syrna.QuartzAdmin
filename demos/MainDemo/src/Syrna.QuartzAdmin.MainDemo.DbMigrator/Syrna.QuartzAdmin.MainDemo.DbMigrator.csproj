@@ -40,6 +40,7 @@
 		<PackageReference Include="Volo.Abp.Autofac" />
 		<ProjectReference Include="..\Syrna.QuartzAdmin.MainDemo.Application.Contracts\Syrna.QuartzAdmin.MainDemo.Application.Contracts.csproj" />
 		<ProjectReference Include="..\Syrna.QuartzAdmin.MainDemo.SqlServer.EntityFrameworkCore\Syrna.QuartzAdmin.MainDemo.SqlServer.EntityFrameworkCore.csproj" />
+		<ProjectReference Include="..\Syrna.QuartzAdmin.MainDemo.PostgreSql.EntityFrameworkCore\Syrna.QuartzAdmin.MainDemo.PostgreSql.EntityFrameworkCore.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

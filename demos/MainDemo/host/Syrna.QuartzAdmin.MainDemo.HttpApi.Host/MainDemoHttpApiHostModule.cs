@@ -10,8 +10,12 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using OpenIddict.Abstractions;
 using OpenIddict.Validation.AspNetCore;
+using Quartz;
+using Quartz.AspNetCore;
+using Quartz.Impl.AdoJobStore;
 using Serilog;
 using StackExchange.Redis;
+using Syrna.Alpha.SilkierQuartz.PostgreSql.EntityFrameworkCore;
 using Syrna.QuartzAdmin.MainDemo.EntityFrameworkCore;
 using Syrna.QuartzAdmin.MainDemo.MultiTenancy;
 using System.Security.Cryptography.X509Certificates;
@@ -36,6 +40,7 @@ using Volo.Abp.Identity.AspNetCore;
 using Volo.Abp.Localization;
 using Volo.Abp.Modularity;
 using Volo.Abp.OpenIddict;
+using Volo.Abp.Quartz;
 using Volo.Abp.Security.Claims;
 using Volo.Abp.Swashbuckle;
 using Volo.Abp.UI.Navigation.Urls;
@@ -58,7 +63,8 @@ namespace Syrna.QuartzAdmin.MainDemo;
 
 [DependsOn(typeof(MainDemoHttpApiModule))]
 [DependsOn(typeof(MainDemoApplicationModule))]
-[DependsOn(typeof(MainDemoEntityFrameworkCoreModule))]
+[DependsOn(typeof(MainDemoEntityFrameworkCorePostgreSqlModule))]
+[DependsOn(typeof(AbpQuartzModule))]
 
 public class MainDemoHttpApiHostModule : AbpModule
 {
@@ -105,6 +111,39 @@ public class MainDemoHttpApiHostModule : AbpModule
                 x.AllowAuthorizationCodeFlow().AllowRefreshTokenFlow();
             });
         }
+
+        PreConfigure<AbpQuartzOptions>(options =>
+        {
+            options.Configurator = configure =>
+            {
+                //configure.SetProperty("quartz.plugin.recentHistory.type", typeof(AbpExecutionHistoryPlugin).AssemblyQualifiedNameWithoutVersion());
+                //configure.SetProperty("quartz.plugin.recentHistory.storeType", typeof(AbpExecutionHistoryStore).AssemblyQualifiedNameWithoutVersion());
+                configure.UsePersistentStore(storeOptions =>
+                {
+                    storeOptions.UseProperties = true;
+                    storeOptions.PerformSchemaValidation = false;
+                    storeOptions.UseNewtonsoftJsonSerializer();
+                    storeOptions.UsePostgres(configurer =>
+                    {
+                        configurer.UseDriverDelegate<PostgreSQLDelegate>(); ;
+                        configurer.TablePrefix = "quartz.qrtz_";
+                        configurer.ConnectionStringName = "Default";
+                    });
+                    storeOptions.UseClustering(c =>
+                    {
+                        c.CheckinMisfireThreshold = TimeSpan.FromSeconds(20);
+                        c.CheckinInterval = TimeSpan.FromSeconds(10);
+                    });
+                });
+                configure.AddSchedulerListener<SampleSchedulerListener>();
+            };
+        });
+        //// ASP.NET Core hosting
+        //context.Services.AddQuartzServer(options =>
+        //{
+        //    // when shutting down we want jobs to complete gracefully
+        //    options.WaitForJobsToComplete = true;
+        //});
     }
 
     private static void AutoLocalizationResourceContributors(IServiceCollection services)

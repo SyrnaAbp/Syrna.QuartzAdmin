@@ -34,10 +34,10 @@ public static class SerilogExtension
         }
 
         var appName = configuration["Serilog:Properties:Application"];
-        appName ??= "alpha";
+        appName ??= "QuartzAdmin";
 
         var elasticUri = configuration["ElasticConfiguration:Uri"];
-        elasticUri ??= "https://172.18.216.33:9200/";
+        elasticUri ??= "https://127.0.0.1:9200/";
 
         Log.Logger = new LoggerConfiguration()
             .ReadFrom.Configuration(configuration)

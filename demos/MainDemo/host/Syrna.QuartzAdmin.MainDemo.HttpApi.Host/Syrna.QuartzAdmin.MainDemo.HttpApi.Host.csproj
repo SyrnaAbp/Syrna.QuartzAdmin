@@ -58,10 +58,21 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Quartz" />
+		<PackageReference Include="Quartz.AspNetCore" />
+		<PackageReference Include="Quartz.Serialization.Json" />
+
+		<PackageReference Include="Volo.Abp.Quartz" />
+		<!--<PackageReference Include="Volo.Abp.BackgroundJobs.Quartz" />-->
+		<!--<PackageReference Include="Volo.Abp.BackgroundWorkers.Quartz" />-->
+	</ItemGroup>
+	
+	<ItemGroup>
 		<ProjectReference Include="..\..\src\Syrna.QuartzAdmin.MainDemo.Application\Syrna.QuartzAdmin.MainDemo.Application.csproj" />
 		<ProjectReference Include="..\..\src\Syrna.QuartzAdmin.MainDemo.Domain\Syrna.QuartzAdmin.MainDemo.Domain.csproj" />
 		<ProjectReference Include="..\..\src\Syrna.QuartzAdmin.MainDemo.HttpApi\Syrna.QuartzAdmin.MainDemo.HttpApi.csproj" />
-		<ProjectReference Include="..\..\src\Syrna.QuartzAdmin.MainDemo.EntityFrameworkCore\Syrna.QuartzAdmin.MainDemo.EntityFrameworkCore.csproj" />
+		<!--<ProjectReference Include="..\..\src\Syrna.QuartzAdmin.MainDemo.EntityFrameworkCore\Syrna.QuartzAdmin.MainDemo.EntityFrameworkCore.csproj" />-->
+		<ProjectReference Include="..\..\src\Syrna.QuartzAdmin.MainDemo.PostgreSql.EntityFrameworkCore\Syrna.QuartzAdmin.MainDemo.PostgreSql.EntityFrameworkCore.csproj" />
 	</ItemGroup>
 
 </Project>

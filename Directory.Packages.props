@@ -536,5 +536,7 @@
 		<PackageVersion Include="Blazored.LocalStorage" Version="4.5.0" />
 		<PackageVersion Include="System.Net.Http.Json" Version="9.0.0" />
 		
+		<PackageVersion Include="Quartz.AspNetCore" Version="3.13.0" />
+
 	</ItemGroup>
 </Project>

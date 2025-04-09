@@ -3,6 +3,8 @@ using Syrna.QuartzAdmin.MainDemo;
 
 try
 {
+    AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+    AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
     var builder = WebApplication.CreateBuilder(args);
     builder.Host.AddSerilog();
     Log.Information("Starting Syrna.QuartzAdmin.MainDemo.HttpApi.Host.");
