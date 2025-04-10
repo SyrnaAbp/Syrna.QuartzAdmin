@@ -1,0 +1,54 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<Import Project="..\..\..\..\common.props" />
+	<Import Project="..\..\..\..\configureawait.props" />
+
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<RootNamespace>Syrna.QuartzAdmin.MainDemo</RootNamespace>
+		<PreserveCompilationReferences>true</PreserveCompilationReferences>
+		<UserSecretsId>Syrna.QuartzAdmin.MainDemo-82fca703-ad8c-41de-a023-6316fe2e2a89</UserSecretsId>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Serilog.AspNetCore" />
+		<PackageReference Include="Serilog.Sinks.Async" />
+		<PackageReference Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" />
+		<PackageReference Include="OpenIddict.Validation.SystemNetHttp" />
+
+		<PackageReference Include="Volo.Abp.AspNetCore.Mvc" />
+		<PackageReference Include="Volo.Abp.AspNetCore.Mvc.UI.MultiTenancy" />
+		<PackageReference Include="Volo.Abp.Autofac" />
+		<PackageReference Include="Volo.Abp.Caching.StackExchangeRedis" />
+		<PackageReference Include="Volo.Abp.EntityFrameworkCore.SqlServer" />
+		<PackageReference Include="Volo.Abp.AspNetCore.Serilog" />
+		<PackageReference Include="Volo.Abp.Swashbuckle" />
+
+		<PackageReference Include="Volo.Abp.Account.Application" />
+		<PackageReference Include="Volo.Abp.Account.Web.OpenIddict" />
+		<PackageReference Include="Volo.Abp.AspNetCore.Mvc.UI.Theme.Basic" />
+		<PackageReference Include="Volo.Abp.Account.Web" />
+
+		<ProjectReference Include="..\..\src\Syrna.QuartzAdmin.MainDemo.Application\Syrna.QuartzAdmin.MainDemo.Application.csproj" />
+		<!--<ProjectReference Include="..\..\src\Syrna.QuartzAdmin.MainDemo.EntityFrameworkCore\Syrna.QuartzAdmin.MainDemo.EntityFrameworkCore.csproj" />-->
+		<ProjectReference Include="..\..\src\Syrna.QuartzAdmin.MainDemo.PostgreSql.EntityFrameworkCore\Syrna.QuartzAdmin.MainDemo.PostgreSql.EntityFrameworkCore.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Remove="Logs\**" />
+		<Content Remove="Logs\**" />
+		<EmbeddedResource Remove="Logs\**" />
+		<None Remove="Logs\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="Pages\**\*.js">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Pages\**\*.css">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+</Project>

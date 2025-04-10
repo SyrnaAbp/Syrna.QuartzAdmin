@@ -107,6 +107,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Syrna.QuartzAdmin.MainDemo.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Syrna.QuartzAdmin.MainDemo.HttpApi.Host", "demos\MainDemo\host\Syrna.QuartzAdmin.MainDemo.HttpApi.Host\Syrna.QuartzAdmin.MainDemo.HttpApi.Host.csproj", "{B32435A4-2CBF-9165-7E5D-A0E4AFA108AA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Syrna.QuartzAdmin.MainDemo.Blazor.WebAssembly.Host", "demos\MainDemo\host\Syrna.QuartzAdmin.MainDemo.Blazor.WebAssembly.Host\Syrna.QuartzAdmin.MainDemo.Blazor.WebAssembly.Host.csproj", "{164267D4-E8CA-7A34-D950-82681739DF6A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Syrna.QuartzAdmin.MainDemo.AuthServer", "demos\MainDemo\host\Syrna.QuartzAdmin.MainDemo.AuthServer\Syrna.QuartzAdmin.MainDemo.AuthServer.csproj", "{E091D351-CC9C-4EC2-C3EB-285E01049161}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -253,6 +257,14 @@ Global
 		{B32435A4-2CBF-9165-7E5D-A0E4AFA108AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B32435A4-2CBF-9165-7E5D-A0E4AFA108AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B32435A4-2CBF-9165-7E5D-A0E4AFA108AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{164267D4-E8CA-7A34-D950-82681739DF6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{164267D4-E8CA-7A34-D950-82681739DF6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{164267D4-E8CA-7A34-D950-82681739DF6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{164267D4-E8CA-7A34-D950-82681739DF6A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E091D351-CC9C-4EC2-C3EB-285E01049161}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E091D351-CC9C-4EC2-C3EB-285E01049161}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E091D351-CC9C-4EC2-C3EB-285E01049161}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E091D351-CC9C-4EC2-C3EB-285E01049161}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -298,6 +310,8 @@ Global
 		{3DD4DB43-0C8B-41EB-B5E1-09F8DF4E8835} = {E400416D-2895-4512-9D17-90681EEC7E0A}
 		{9A9D0D39-6DE0-6E80-22D0-10A434D35F70} = {F4EB94DD-4501-47C9-8BCF-2CE1A16C65BD}
 		{B32435A4-2CBF-9165-7E5D-A0E4AFA108AA} = {E400416D-2895-4512-9D17-90681EEC7E0A}
+		{164267D4-E8CA-7A34-D950-82681739DF6A} = {E400416D-2895-4512-9D17-90681EEC7E0A}
+		{E091D351-CC9C-4EC2-C3EB-285E01049161} = {E400416D-2895-4512-9D17-90681EEC7E0A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4324B3B4-B60B-4E3C-91D8-59576B4E26DD}

@@ -71,7 +71,6 @@ namespace Syrna.QuartzAdmin.MainDemo.Blazor.Server.Host
             {
                 builder.AddValidation(options =>
                 {
-                    //options.SetIssuer("https://syrnaids.syrna.net/");
                     options.SetIssuer(configuration["AuthServer:Authority"]);
                     options.AddAudiences("QuartzAdmin");
                     //options.UseLocalServer();
