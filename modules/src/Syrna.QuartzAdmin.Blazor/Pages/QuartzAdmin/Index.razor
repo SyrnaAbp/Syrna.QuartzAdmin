@@ -1,9 +1,35 @@
-@page "/Abp/QuartzAdmin"
+@page "/QuartzAdmin"
+@using Blazorise
 @using Microsoft.Extensions.Localization
 @using Syrna.QuartzAdmin
 @using Syrna.QuartzAdmin.Localization
+@using Syrna.QuartzAdmin.Scheduler
 @inject IStringLocalizer<QuartzAdminResource> L
+@inject ISchedulerAppService SchedulerAppService
 @{
 }
 <h1>QuartzAdmin</h1>
 <p>@L["SamplePageMessage"]</p>
+<Button Clicked="Shutdown">Shutdown</Button>
+<Button Clicked="Start">Start</Button>
+<Button Clicked="GetMetaData">GetMetaData</Button>
+<div>
+    <span>@schedulerDetails?.Name</span>
+    <span>@schedulerDetails?.RunningSince</span>
+</div>
+@code
+{
+    SchedulerDetails schedulerDetails { get; set; }
+    async Task Shutdown()
+    {
+        await SchedulerAppService.ShutDownScheduler();
+    }
+    async Task Start()
+    {
+        await SchedulerAppService.StartScheduler();
+    }
+    async Task GetMetaData()
+    {
+        schedulerDetails = await SchedulerAppService.GetSchedulerMetaData();
+    }
+}   

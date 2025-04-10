@@ -11,14 +11,16 @@ namespace Syrna.QuartzAdmin.Scheduler
         /// Default Constructor.
         /// </summary>
         /// <param name="metaData">Metadata from a scheduler.</param>
-        public SchedulerStatisticsDetails(SchedulerMetaData metaData)
+        public static SchedulerStatisticsDetails Create(SchedulerMetaData metaData)
         {
-            NumberOfJobsExecuted = metaData.NumberOfJobsExecuted;
+            var result = new SchedulerStatisticsDetails();
+            result.NumberOfJobsExecuted = metaData.NumberOfJobsExecuted;
+            return result;
         }
 
         /// <summary>
         /// The number of jobs a scheduler has executed.
         /// </summary>
-        public int NumberOfJobsExecuted { get; }
+        public int NumberOfJobsExecuted { get; set; }
     }
 }

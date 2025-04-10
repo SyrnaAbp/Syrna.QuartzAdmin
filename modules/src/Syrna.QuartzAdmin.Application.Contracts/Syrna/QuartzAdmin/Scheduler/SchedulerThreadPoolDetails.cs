@@ -8,16 +8,18 @@ namespace Syrna.QuartzAdmin.Scheduler
     /// Model for the <see cref="IScheduler"/> Thread pool settings.
     /// </summary>
     [Serializable]
-    public sealed class SchedulerThreadPoolDetails
+    public class SchedulerThreadPoolDetails
     {
         /// <summary>
         /// Default Constructor.
         /// </summary>
         /// <param name="metaData">The <see cref="IScheduler"/> meta data.</param>
-        public SchedulerThreadPoolDetails(SchedulerMetaData metaData)
+        public static SchedulerThreadPoolDetails Create(SchedulerMetaData metaData)
         {
-            Type = metaData.ThreadPoolType.AssemblyQualifiedNameWithoutVersion();
-            Size = metaData.ThreadPoolSize;
+            var result = new SchedulerThreadPoolDetails();
+            result.Type = metaData.ThreadPoolType.AssemblyQualifiedNameWithoutVersion();
+            result.Size = metaData.ThreadPoolSize;
+            return result;
         }
 
         /// <summary>

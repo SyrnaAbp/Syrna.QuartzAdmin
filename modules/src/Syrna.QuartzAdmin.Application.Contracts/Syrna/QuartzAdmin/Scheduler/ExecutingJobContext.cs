@@ -60,18 +60,20 @@ namespace Syrna.QuartzAdmin.Scheduler
         /// Default Constructor.
         /// </summary>
         /// <param name="context">The <see cref="IJobExecutionContext"/> a job is running within.</param>
-        public ExecutingJobContext(IJobExecutionContext context)
+        public static ExecutingJobContext Create(IJobExecutionContext context)
         {
-            FireInstanceId = context.FireInstanceId;
-            FireTimeUtc = context.FireTimeUtc;
-            ScheduledFireTimeUtc = context.ScheduledFireTimeUtc;
-            NextFireTimeUtc = context.NextFireTimeUtc;
-            PreviousFireTimeUtc = context.PreviousFireTimeUtc;
-            Recovering = context.Recovering;
-            JobRunTime = context.JobRunTime;
+            var result = new ExecutingJobContext();
+            result.FireInstanceId = context.FireInstanceId;
+            result.FireTimeUtc = context.FireTimeUtc;
+            result.ScheduledFireTimeUtc = context.ScheduledFireTimeUtc;
+            result.NextFireTimeUtc = context.NextFireTimeUtc;
+            result.PreviousFireTimeUtc = context.PreviousFireTimeUtc;
+            result.Recovering = context.Recovering;
+            result.JobRunTime = context.JobRunTime;
 
-            JobDetails = new ExecutingJobDetails(context);
-            TriggerDetails = new ExecutingJobTriggerDetails(context);
+            result.JobDetails = ExecutingJobDetails.Create(context);
+            result.TriggerDetails = ExecutingJobTriggerDetails.Create(context);
+            return result;
         }
     }
 }

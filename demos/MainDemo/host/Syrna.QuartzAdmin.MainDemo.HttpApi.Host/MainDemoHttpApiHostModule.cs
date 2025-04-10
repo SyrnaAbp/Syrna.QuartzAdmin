@@ -20,6 +20,7 @@ using Syrna.QuartzAdmin.MainDemo.EntityFrameworkCore;
 using Syrna.QuartzAdmin.MainDemo.MultiTenancy;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Text.Json.Serialization;
 using Volo.Abp;
 using Volo.Abp.Account;
 using Volo.Abp.Account.Web;
@@ -220,6 +221,7 @@ public class MainDemoHttpApiHostModule : AbpModule
         ConfigureConventionalControllers();
         ConfigureVirtualFileSystem(context);
         ConfigureCors(context, configuration);
+        ConfigureJson(context.Services);
         ConfigureSwaggerServices(context, configuration);
         ConfigureBackgrounds(context);
         ConfigureExternalProviders(context);
@@ -415,6 +417,16 @@ public class MainDemoHttpApiHostModule : AbpModule
         //TODO
         //app.UseMainDemoSerilogEnrichers();
         app.UseConfiguredEndpoints();
+    }
+
+    private void ConfigureJson(IServiceCollection services)
+    {
+        //services.AddControllersWithViews().AddJsonOptions(options =>
+        //    options.JsonSerializerOptions.PropertyNamingPolicy = null
+        //);
+        // serialization settings must be similar to the blazor project so both ends can understand each other
+        // see more at https://docs.telerik.com/aspnet-core/compatibility/json-serialization#json-serialization
+        // on sample JSON serialization settings for ASP.NET Core that aim at case-insensitive serialization
     }
 
     private void ConfigureBackgrounds(ServiceConfigurationContext context)

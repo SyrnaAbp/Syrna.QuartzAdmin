@@ -25,7 +25,7 @@ namespace Syrna.QuartzAdmin.Scheduler
             try
             {
                 var metaData = await Scheduler.GetMetaData().ConfigureAwait(false);
-                return new SchedulerDetails(Scheduler, metaData);
+                return SchedulerDetails.Create(Scheduler, metaData);
             }
             catch (Exception ex)
             {
@@ -135,7 +135,7 @@ namespace Syrna.QuartzAdmin.Scheduler
                 await Scheduler.Clear().ConfigureAwait(false);
                 var metaData = await Scheduler.GetCurrentlyExecutingJobs();
                 var model = metaData
-                    .Select(context => new ExecutingJobContext(context))
+                    .Select(context => ExecutingJobContext.Create(context))
                     .ToList();
 
                 return model;

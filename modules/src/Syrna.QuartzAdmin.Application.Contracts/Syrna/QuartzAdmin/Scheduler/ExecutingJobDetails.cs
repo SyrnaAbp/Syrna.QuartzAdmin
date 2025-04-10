@@ -52,16 +52,18 @@ namespace Syrna.QuartzAdmin.Scheduler
         /// Default constructor.
         /// </summary>
         /// <param name="context">The <see cref="IJobExecutionContext"/> a job is running within.</param>
-        public ExecutingJobDetails(IJobExecutionContext context)
+        public static ExecutingJobDetails Create(IJobExecutionContext context)
         {
-            ConcurrentExecutionDissallowed = context.JobDetail.ConcurrentExecutionDisallowed;
-            Durable = context.JobDetail.Durable;
-            PersistJobDataAfterExecution = context.JobDetail.PersistJobDataAfterExecution;
-            RequestRecovery = context.JobDetail.RequestsRecovery;
-            Name = context.JobDetail.Key.Name;
-            Group = context.JobDetail.Key.Group;
-            Description = context.JobDetail.Description;
-            JobType = context.JobDetail.JobType.FullName;
+            var result = new ExecutingJobDetails();
+            result.ConcurrentExecutionDissallowed = context.JobDetail.ConcurrentExecutionDisallowed;
+            result.Durable = context.JobDetail.Durable;
+            result.PersistJobDataAfterExecution = context.JobDetail.PersistJobDataAfterExecution;
+            result.RequestRecovery = context.JobDetail.RequestsRecovery;
+            result.Name = context.JobDetail.Key.Name;
+            result.Group = context.JobDetail.Key.Group;
+            result.Description = context.JobDetail.Description;
+            result.JobType = context.JobDetail.JobType.FullName;
+            return result;
         }
     }
 }

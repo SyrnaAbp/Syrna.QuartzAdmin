@@ -33,7 +33,7 @@ namespace Syrna.QuartzAdmin.Scheduler
         /// The name of the trigger.
         /// </summary>
         public string Name { get; set; }
-        
+
         /// <summary>
         /// The description of the trigger.
         /// </summary>
@@ -54,16 +54,19 @@ namespace Syrna.QuartzAdmin.Scheduler
         /// Default constructor.
         /// </summary>
         /// <param name="context">The <see cref="IJobExecutionContext"/> a job is running within.</param>
-        public ExecutingJobTriggerDetails(IJobExecutionContext context)
+        public static ExecutingJobTriggerDetails Create(IJobExecutionContext context)
         {
-            StartTimeUtc = context.Trigger.StartTimeUtc;
-            EndTimeUtc = context.Trigger.EndTimeUtc;
-            FinalFireTimeUtc = context.Trigger.FinalFireTimeUtc;
-            Group = context.Trigger.Key.Group;
-            Name = context.Trigger.Key.Name;
-            Description = context.Trigger.Description;
-            MisfireInstruction = context.Trigger.MisfireInstruction;
-            Priority = context.Trigger.Priority;
+            var result = new ExecutingJobTriggerDetails();
+            result.StartTimeUtc = context.Trigger.StartTimeUtc;
+            result.EndTimeUtc = context.Trigger.EndTimeUtc;
+            result.FinalFireTimeUtc = context.Trigger.FinalFireTimeUtc;
+            result.Group = context.Trigger.Key.Group;
+            result.Name = context.Trigger.Key.Name;
+            result.Description = context.Trigger.Description;
+            result.MisfireInstruction = context.Trigger.MisfireInstruction;
+            result.Priority = context.Trigger.Priority;
+            return result;
         }
+
     }
 }

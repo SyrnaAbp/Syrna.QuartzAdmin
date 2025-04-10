@@ -11,24 +11,26 @@ namespace Syrna.QuartzAdmin.Scheduler
         /// <summary>
         /// Statistic details for a <see cref="IScheduler"/>
         /// </summary>
-        public SchedulerJobStoreDetails(SchedulerMetaData metaData)
+        public static SchedulerJobStoreDetails Create(SchedulerMetaData metaData)
         {
-            Type = metaData.JobStoreType.AssemblyQualifiedNameWithoutVersion();
-            Clustered = metaData.JobStoreClustered;
-            Persistent = metaData.JobStoreSupportsPersistence;
+            var result = new SchedulerJobStoreDetails();
+            result.Type = metaData.JobStoreType.AssemblyQualifiedNameWithoutVersion();
+            result.Clustered = metaData.JobStoreClustered;
+            result.Persistent = metaData.JobStoreSupportsPersistence;
+            return result;
         }
 
         /// <summary>
         /// Job Store Type.
         /// </summary>
-        public string Type { get; }
+        public string Type { get; set; }
         /// <summary>
         /// Is Job Stored clustered.
         /// </summary>
-        public bool Clustered { get; }
+        public bool Clustered { get; set; }
         /// <summary>
         /// Is Job Store Persistent
         /// </summary>
-        public bool Persistent { get; }
+        public bool Persistent { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Blazorise.Bootstrap5;
+﻿using Autofac.Core;
+using Blazorise.Bootstrap5;
 using Blazorise.Icons.FontAwesome;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -20,14 +21,13 @@ using Volo.Abp.UI.Navigation;
 
 namespace Syrna.QuartzAdmin.MainDemo.Blazor.Host.Client;
 
-[DependsOn(
-    typeof(AbpAutofacWebAssemblyModule),
-    typeof(AbpAspNetCoreComponentsWebAssemblyBasicThemeModule),
-    typeof(AbpAccountApplicationContractsModule),
-    typeof(AbpIdentityBlazorWebAssemblyModule),
-    typeof(AbpTenantManagementBlazorWebAssemblyModule),
-    typeof(AbpSettingManagementBlazorWebAssemblyModule),
-    typeof(MainDemoBlazorWebAssemblyModule)
+[DependsOn(typeof(AbpAutofacWebAssemblyModule))]
+[DependsOn(typeof(AbpAspNetCoreComponentsWebAssemblyBasicThemeModule))]
+[DependsOn(typeof(AbpAccountApplicationContractsModule))]
+[DependsOn(typeof(AbpIdentityBlazorWebAssemblyModule))]
+[DependsOn(typeof(AbpTenantManagementBlazorWebAssemblyModule))]
+[DependsOn(typeof(AbpSettingManagementBlazorWebAssemblyModule))]
+[DependsOn(typeof(MainDemoBlazorWebAssemblyModule)
 )]
 public class MainDemoBlazorHostClientModule : AbpModule
 {
