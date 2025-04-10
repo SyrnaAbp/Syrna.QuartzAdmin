@@ -9,7 +9,7 @@
       "applicationUrl": "https://localhost:44358;http://localhost:44357",
       "sslPort": 44358
     },
-    "Syrna.Alpha.HttpApi.Host": {
+    "Syrna.QuartzAdmin.MainDemo.HttpApi.Host": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {

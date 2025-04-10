@@ -6,24 +6,24 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "https://localhost:44301;http://localhost:44300",
-      "sslPort": 44301
+      "applicationUrl": "https://localhost:44305;http://localhost:44304",
+      "sslPort": 44305
     },
-    "Syrna.QuartzAdmin.MainDemo.AuthServer": {
+    "Syrna.QuartzAdmin.MainDemo.Blazor.Host": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "https://localhost:44301;https://localhost:44300"
+      "applicationUrl": "https://localhost:44305;https://localhost:44304"
     }
   },
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "https://localhost:44301/",
-      "sslPort": 44301
+      "applicationUrl": "https://localhost:44305/",
+      "sslPort": 44305
     }
   }
 }

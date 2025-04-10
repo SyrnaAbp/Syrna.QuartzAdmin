@@ -7,7 +7,7 @@
 		<MicrosoftExtensionsPackageVersion>9.0.0.0</MicrosoftExtensionsPackageVersion>
 		<MicrosoftAspNetCorePackageVersion>9.0.0.0</MicrosoftAspNetCorePackageVersion>
 		<MicrosoftEntityFrameworkCorePackageVersion>9.0.0.0</MicrosoftEntityFrameworkCorePackageVersion>
-		
+
 		<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
 	</PropertyGroup>
 	<!-- Abp Framework -->
@@ -195,7 +195,9 @@
 		<PackageVersion Include="Volo.Abp.AspNetCore.Components.Web.Theming" Version="$(VoloAbpPackageVersion)" />
 		<PackageVersion Include="Volo.Abp.AspNetCore.Components.WebAssembly" Version="$(VoloAbpPackageVersion)" />
 		<PackageVersion Include="Volo.Abp.AspNetCore.Components.WebAssembly.Theming" Version="$(VoloAbpPackageVersion)" />
+		<PackageVersion Include="Volo.Abp.AspNetCore.Components.WebAssembly.Theming.Bundling" Version="$(VoloAbpPackageVersion)" />
 		<PackageVersion Include="Volo.Abp.AspNetCore.Components.WebAssembly.BasicTheme" Version="$(VoloAbpPackageVersion)" />
+		<PackageVersion Include="Volo.Abp.AspNetCore.Components.WebAssembly.BasicTheme.Bundling" Version="$(VoloAbpPackageVersion)" />
 		<PackageVersion Include="Volo.Abp.AspNetCore.Components.Server" Version="$(VoloAbpPackageVersion)" />
 		<PackageVersion Include="Volo.Abp.AspNetCore.Components.Server.Theming" Version="$(VoloAbpPackageVersion)" />
 		<PackageVersion Include="Volo.Abp.AspNetCore.Components.Server.BasicTheme" Version="$(VoloAbpPackageVersion)" />
@@ -538,5 +540,11 @@
 		
 		<PackageVersion Include="Quartz.AspNetCore" Version="3.13.0" />
 
+	</ItemGroup>
+	<ItemGroup>
+		<PackageVersion Include="Aspire.Hosting.AppHost" Version="9.0.0" />
+		<PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="9.0.0" />
+		<PackageVersion Include="Aspire.Hosting.Redis" Version="9.0.0" />
+		<PackageVersion Include="Aspire.Hosting.SqlServer" Version="9.0.0" />
 	</ItemGroup>
 </Project>

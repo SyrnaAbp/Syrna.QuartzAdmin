@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<Sdk Name="Aspire.AppHost.Sdk" Version="9.0.0" />
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net9.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<IsAspireHost>true</IsAspireHost>
+		<UserSecretsId>be737634-98c1-40cb-a7ef-bbde30d61ba4</UserSecretsId>
+		<LangVersion>latest</LangVersion>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Aspire.Hosting.AppHost" />
+		<PackageReference Include="Aspire.Hosting.PostgreSQL" />
+		<PackageReference Include="Aspire.Hosting.Redis" />
+		<PackageReference Include="Aspire.Hosting.SqlServer" />
+		<!--<PackageReference Include="Aspire.Microsoft.Data.SqlClient" />-->
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\demos\MainDemo\host\Syrna.QuartzAdmin.MainDemo.AuthServer\Syrna.QuartzAdmin.MainDemo.AuthServer.csproj" />
+	  <ProjectReference Include="..\..\demos\MainDemo\host\Syrna.QuartzAdmin.MainDemo.Blazor.Host.Client\Syrna.QuartzAdmin.MainDemo.Blazor.Host.Client.csproj" />
+	  <ProjectReference Include="..\..\demos\MainDemo\host\Syrna.QuartzAdmin.MainDemo.Blazor.Host\Syrna.QuartzAdmin.MainDemo.Blazor.Host.csproj" />
+	  <ProjectReference Include="..\..\demos\MainDemo\host\Syrna.QuartzAdmin.MainDemo.Blazor.Server.Host\Syrna.QuartzAdmin.MainDemo.Blazor.Server.Host.csproj" />
+	  <ProjectReference Include="..\..\demos\MainDemo\host\Syrna.QuartzAdmin.MainDemo.HttpApi.Host\Syrna.QuartzAdmin.MainDemo.HttpApi.Host.csproj" />
+	  <ProjectReference Include="..\..\demos\MainDemo\src\Syrna.QuartzAdmin.MainDemo.DbMigrator\Syrna.QuartzAdmin.MainDemo.DbMigrator.csproj" />
+	</ItemGroup>
+
+</Project>

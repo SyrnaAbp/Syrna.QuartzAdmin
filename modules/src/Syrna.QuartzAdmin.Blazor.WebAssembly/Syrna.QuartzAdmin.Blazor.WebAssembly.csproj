@@ -13,6 +13,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\Syrna.QuartzAdmin.Blazor.WebAssembly.Bundling\Syrna.QuartzAdmin.Blazor.WebAssembly.Bundling.csproj" />
 		<ProjectReference Include="..\Syrna.QuartzAdmin.Blazor\Syrna.QuartzAdmin.Blazor.csproj" />
 		<ProjectReference Include="..\Syrna.QuartzAdmin.HttpApi.Client\Syrna.QuartzAdmin.HttpApi.Client.csproj" />
 	</ItemGroup>

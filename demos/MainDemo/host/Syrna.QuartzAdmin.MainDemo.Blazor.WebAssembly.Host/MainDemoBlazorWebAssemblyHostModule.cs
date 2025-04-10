@@ -112,7 +112,7 @@ public class MainDemoBlazorWebAssemblyHostModule : AbpModule
         ConfigureHttpClient(context, environment);
         ConfigureBlazorise(context);
         ConfigureRouter(context);
-        ConfigureUi(builder);
+        //ConfigureUi(builder);
         ConfigureMenu(context);
         ConfigureAutoMapper(context);
 
@@ -169,10 +169,10 @@ public class MainDemoBlazorWebAssemblyHostModule : AbpModule
         });
     }
 
-    private static void ConfigureUi(WebAssemblyHostBuilder builder)
-    {
-        builder.RootComponents.Add<App>("#ApplicationContainer");
-    }
+    //private static void ConfigureUi(WebAssemblyHostBuilder builder)
+    //{
+    //    builder.RootComponents.Add<App>("#ApplicationContainer");
+    //}
 
     //private static void ConfigureTelerikBlazor(WebAssemblyHostBuilder builder)
     //{
