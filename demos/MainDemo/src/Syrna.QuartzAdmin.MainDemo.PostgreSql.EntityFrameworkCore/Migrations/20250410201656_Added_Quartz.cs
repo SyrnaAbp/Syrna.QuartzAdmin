@@ -11,11 +11,11 @@ namespace Syrna.QuartzAdmin.MainDemo.PostgreSql.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
-                name: "Quartz");
+                name: "quartz");
 
             migrationBuilder.CreateTable(
                 name: "qrtz_calendars",
-                schema: "Quartz",
+                schema: "quartz",
                 columns: table => new
                 {
                     sched_name = table.Column<string>(type: "text", nullable: false),
@@ -29,7 +29,7 @@ namespace Syrna.QuartzAdmin.MainDemo.PostgreSql.Migrations
 
             migrationBuilder.CreateTable(
                 name: "qrtz_fired_triggers",
-                schema: "Quartz",
+                schema: "quartz",
                 columns: table => new
                 {
                     sched_name = table.Column<string>(type: "text", nullable: false),
@@ -53,7 +53,7 @@ namespace Syrna.QuartzAdmin.MainDemo.PostgreSql.Migrations
 
             migrationBuilder.CreateTable(
                 name: "qrtz_job_details",
-                schema: "Quartz",
+                schema: "quartz",
                 columns: table => new
                 {
                     sched_name = table.Column<string>(type: "text", nullable: false),
@@ -74,7 +74,7 @@ namespace Syrna.QuartzAdmin.MainDemo.PostgreSql.Migrations
 
             migrationBuilder.CreateTable(
                 name: "qrtz_locks",
-                schema: "Quartz",
+                schema: "quartz",
                 columns: table => new
                 {
                     sched_name = table.Column<string>(type: "text", nullable: false),
@@ -87,7 +87,7 @@ namespace Syrna.QuartzAdmin.MainDemo.PostgreSql.Migrations
 
             migrationBuilder.CreateTable(
                 name: "qrtz_paused_trigger_grps",
-                schema: "Quartz",
+                schema: "quartz",
                 columns: table => new
                 {
                     sched_name = table.Column<string>(type: "text", nullable: false),
@@ -100,7 +100,7 @@ namespace Syrna.QuartzAdmin.MainDemo.PostgreSql.Migrations
 
             migrationBuilder.CreateTable(
                 name: "qrtz_scheduler_state",
-                schema: "Quartz",
+                schema: "quartz",
                 columns: table => new
                 {
                     sched_name = table.Column<string>(type: "text", nullable: false),
@@ -115,7 +115,7 @@ namespace Syrna.QuartzAdmin.MainDemo.PostgreSql.Migrations
 
             migrationBuilder.CreateTable(
                 name: "qrtz_triggers",
-                schema: "Quartz",
+                schema: "quartz",
                 columns: table => new
                 {
                     sched_name = table.Column<string>(type: "text", nullable: false),
@@ -141,7 +141,7 @@ namespace Syrna.QuartzAdmin.MainDemo.PostgreSql.Migrations
                     table.ForeignKey(
                         name: "FK_qrtz_triggers_qrtz_job_details_sched_name_job_name_job_group",
                         columns: x => new { x.sched_name, x.job_name, x.job_group },
-                        principalSchema: "Quartz",
+                        principalSchema: "quartz",
                         principalTable: "qrtz_job_details",
                         principalColumns: new[] { "sched_name", "job_name", "job_group" },
                         onDelete: ReferentialAction.Cascade);
@@ -149,7 +149,7 @@ namespace Syrna.QuartzAdmin.MainDemo.PostgreSql.Migrations
 
             migrationBuilder.CreateTable(
                 name: "qrtz_blob_triggers",
-                schema: "Quartz",
+                schema: "quartz",
                 columns: table => new
                 {
                     sched_name = table.Column<string>(type: "text", nullable: false),
@@ -163,7 +163,7 @@ namespace Syrna.QuartzAdmin.MainDemo.PostgreSql.Migrations
                     table.ForeignKey(
                         name: "FK_qrtz_blob_triggers_qrtz_triggers_sched_name_trigger_name_tr~",
                         columns: x => new { x.sched_name, x.trigger_name, x.trigger_group },
-                        principalSchema: "Quartz",
+                        principalSchema: "quartz",
                         principalTable: "qrtz_triggers",
                         principalColumns: new[] { "sched_name", "trigger_name", "trigger_group" },
                         onDelete: ReferentialAction.Cascade);
@@ -171,7 +171,7 @@ namespace Syrna.QuartzAdmin.MainDemo.PostgreSql.Migrations
 
             migrationBuilder.CreateTable(
                 name: "qrtz_cron_triggers",
-                schema: "Quartz",
+                schema: "quartz",
                 columns: table => new
                 {
                     sched_name = table.Column<string>(type: "text", nullable: false),
@@ -186,7 +186,7 @@ namespace Syrna.QuartzAdmin.MainDemo.PostgreSql.Migrations
                     table.ForeignKey(
                         name: "FK_qrtz_cron_triggers_qrtz_triggers_sched_name_trigger_name_tr~",
                         columns: x => new { x.sched_name, x.trigger_name, x.trigger_group },
-                        principalSchema: "Quartz",
+                        principalSchema: "quartz",
                         principalTable: "qrtz_triggers",
                         principalColumns: new[] { "sched_name", "trigger_name", "trigger_group" },
                         onDelete: ReferentialAction.Cascade);
@@ -194,7 +194,7 @@ namespace Syrna.QuartzAdmin.MainDemo.PostgreSql.Migrations
 
             migrationBuilder.CreateTable(
                 name: "qrtz_simple_triggers",
-                schema: "Quartz",
+                schema: "quartz",
                 columns: table => new
                 {
                     sched_name = table.Column<string>(type: "text", nullable: false),
@@ -210,7 +210,7 @@ namespace Syrna.QuartzAdmin.MainDemo.PostgreSql.Migrations
                     table.ForeignKey(
                         name: "FK_qrtz_simple_triggers_qrtz_triggers_sched_name_trigger_name_~",
                         columns: x => new { x.sched_name, x.trigger_name, x.trigger_group },
-                        principalSchema: "Quartz",
+                        principalSchema: "quartz",
                         principalTable: "qrtz_triggers",
                         principalColumns: new[] { "sched_name", "trigger_name", "trigger_group" },
                         onDelete: ReferentialAction.Cascade);
@@ -218,7 +218,7 @@ namespace Syrna.QuartzAdmin.MainDemo.PostgreSql.Migrations
 
             migrationBuilder.CreateTable(
                 name: "qrtz_simprop_triggers",
-                schema: "Quartz",
+                schema: "quartz",
                 columns: table => new
                 {
                     sched_name = table.Column<string>(type: "text", nullable: false),
@@ -243,7 +243,7 @@ namespace Syrna.QuartzAdmin.MainDemo.PostgreSql.Migrations
                     table.ForeignKey(
                         name: "FK_qrtz_simprop_triggers_qrtz_triggers_sched_name_trigger_name~",
                         columns: x => new { x.sched_name, x.trigger_name, x.trigger_group },
-                        principalSchema: "Quartz",
+                        principalSchema: "quartz",
                         principalTable: "qrtz_triggers",
                         principalColumns: new[] { "sched_name", "trigger_name", "trigger_group" },
                         onDelete: ReferentialAction.Cascade);
@@ -251,73 +251,73 @@ namespace Syrna.QuartzAdmin.MainDemo.PostgreSql.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "idx_qrtz_ft_job_group",
-                schema: "Quartz",
+                schema: "quartz",
                 table: "qrtz_fired_triggers",
                 column: "job_group");
 
             migrationBuilder.CreateIndex(
                 name: "idx_qrtz_ft_job_name",
-                schema: "Quartz",
+                schema: "quartz",
                 table: "qrtz_fired_triggers",
                 column: "job_name");
 
             migrationBuilder.CreateIndex(
                 name: "idx_qrtz_ft_job_req_recovery",
-                schema: "Quartz",
+                schema: "quartz",
                 table: "qrtz_fired_triggers",
                 column: "requests_recovery");
 
             migrationBuilder.CreateIndex(
                 name: "idx_qrtz_ft_trig_group",
-                schema: "Quartz",
+                schema: "quartz",
                 table: "qrtz_fired_triggers",
                 column: "trigger_group");
 
             migrationBuilder.CreateIndex(
                 name: "idx_qrtz_ft_trig_inst_name",
-                schema: "Quartz",
+                schema: "quartz",
                 table: "qrtz_fired_triggers",
                 column: "instance_name");
 
             migrationBuilder.CreateIndex(
                 name: "idx_qrtz_ft_trig_name",
-                schema: "Quartz",
+                schema: "quartz",
                 table: "qrtz_fired_triggers",
                 column: "trigger_name");
 
             migrationBuilder.CreateIndex(
                 name: "idx_qrtz_ft_trig_nm_gp",
-                schema: "Quartz",
+                schema: "quartz",
                 table: "qrtz_fired_triggers",
                 columns: new[] { "sched_name", "trigger_name", "trigger_group" });
 
             migrationBuilder.CreateIndex(
                 name: "idx_qrtz_j_req_recovery",
-                schema: "Quartz",
+                schema: "quartz",
                 table: "qrtz_job_details",
                 column: "requests_recovery");
 
             migrationBuilder.CreateIndex(
                 name: "IX_qrtz_triggers_sched_name_job_name_job_group",
-                schema: "Quartz",
+                schema: "quartz",
                 table: "qrtz_triggers",
                 columns: new[] { "sched_name", "job_name", "job_group" });
 
             migrationBuilder.CreateIndex(
                 name: "idx_qrtz_t_next_fire_time",
-                schema: "Quartz",
+                schema: "quartz",
                 table: "qrtz_triggers",
                 column: "next_fire_time");
 
             migrationBuilder.CreateIndex(
                 name: "idx_qrtz_t_nft_st",
-                schema: "Quartz",
+                schema: "quartz",
                 table: "qrtz_triggers",
                 columns: new[] { "next_fire_time", "trigger_state" });
 
             migrationBuilder.CreateIndex(
                 name: "idx_qrtz_t_state",
-                schema: "Quartz",
+                schema: "quartz",
                 table: "qrtz_triggers",
                 column: "trigger_state");
         }
@@ -327,47 +327,47 @@ namespace Syrna.QuartzAdmin.MainDemo.PostgreSql.Migrations
         {
             migrationBuilder.DropTable(
                 name: "qrtz_blob_triggers",
-                schema: "Quartz");
+                schema: "quartz");
 
             migrationBuilder.DropTable(
                 name: "qrtz_calendars",
-                schema: "Quartz");
+                schema: "quartz");
 
             migrationBuilder.DropTable(
                 name: "qrtz_cron_triggers",
-                schema: "Quartz");
+                schema: "quartz");
 
             migrationBuilder.DropTable(
                 name: "qrtz_fired_triggers",
-                schema: "Quartz");
+                schema: "quartz");
 
             migrationBuilder.DropTable(
                 name: "qrtz_locks",
-                schema: "Quartz");
+                schema: "quartz");
 
             migrationBuilder.DropTable(
                 name: "qrtz_paused_trigger_grps",
-                schema: "Quartz");
+                schema: "quartz");
 
             migrationBuilder.DropTable(
                 name: "qrtz_scheduler_state",
-                schema: "Quartz");
+                schema: "quartz");
 
             migrationBuilder.DropTable(
                 name: "qrtz_simple_triggers",
-                schema: "Quartz");
+                schema: "quartz");
 
             migrationBuilder.DropTable(
                 name: "qrtz_simprop_triggers",
-                schema: "Quartz");
+                schema: "quartz");
 
             migrationBuilder.DropTable(
                 name: "qrtz_triggers",
-                schema: "Quartz");
+                schema: "quartz");
 
             migrationBuilder.DropTable(
                 name: "qrtz_job_details",
-                schema: "Quartz");
+                schema: "quartz");
         }
     }
 }

@@ -11,16 +11,15 @@ using Microsoft.OpenApi.Models;
 using OpenIddict.Abstractions;
 using OpenIddict.Validation.AspNetCore;
 using Quartz;
-using Quartz.AspNetCore;
 using Quartz.Impl.AdoJobStore;
+using Quartz.Util;
 using Serilog;
 using StackExchange.Redis;
 using Syrna.Alpha.SilkierQuartz.PostgreSql.EntityFrameworkCore;
-using Syrna.QuartzAdmin.MainDemo.EntityFrameworkCore;
+using Syrna.QuartzAdmin.ExecutionHistory;
 using Syrna.QuartzAdmin.MainDemo.MultiTenancy;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using System.Text.Json.Serialization;
 using Volo.Abp;
 using Volo.Abp.Account;
 using Volo.Abp.Account.Web;
@@ -117,8 +116,8 @@ public class MainDemoHttpApiHostModule : AbpModule
         {
             options.Configurator = configure =>
             {
-                //configure.SetProperty("quartz.plugin.recentHistory.type", typeof(AbpExecutionHistoryPlugin).AssemblyQualifiedNameWithoutVersion());
-                //configure.SetProperty("quartz.plugin.recentHistory.storeType", typeof(AbpExecutionHistoryStore).AssemblyQualifiedNameWithoutVersion());
+                configure.SetProperty("quartz.plugin.recentHistory.type", typeof(AbpExecutionHistoryPlugin).AssemblyQualifiedNameWithoutVersion());
+                configure.SetProperty("quartz.plugin.recentHistory.storeType", typeof(AbpExecutionHistoryStore).AssemblyQualifiedNameWithoutVersion());
                 configure.UsePersistentStore(storeOptions =>
                 {
                     storeOptions.UseProperties = true;

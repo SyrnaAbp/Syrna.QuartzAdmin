@@ -16,8 +16,4 @@
 		<ProjectReference Include="..\Syrna.QuartzAdmin.Domain\Syrna.QuartzAdmin.Domain.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<Folder Include="Syrna\QuartzAdmin" />
-	</ItemGroup>
-
 </Project>

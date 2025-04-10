@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Syrna.QuartzAdmin.MainDemo.PostgreSql.EntityFrameworkCore;
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Syrna.QuartzAdmin.MainDemo.PostgreSql.Migrations
 {
     [DbContext(typeof(MainDemoMigrationsDbContext))]
-    partial class MainDemoMigrationsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250410201656_Added_Quartz")]
+    partial class Added_Quartz
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -23,78 +26,6 @@ namespace Syrna.QuartzAdmin.MainDemo.PostgreSql.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("Syrna.QuartzAdmin.ExecutionHistory.QuartzExecutionHistory", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("ActualFireTimeUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("ExceptionMessage")
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset?>("FinishedTimeUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("FireInstanceId")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<string>("Job")
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
-
-                    b.Property<bool>("Recovering")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTimeOffset?>("ScheduledFireTimeUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("SchedulerInstanceId")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<string>("SchedulerName")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<string>("Trigger")
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
-
-                    b.Property<bool>("Vetoed")
-                        .HasColumnType("boolean");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FireInstanceId");
-
-                    b.ToTable("QuartzExecutionHistories", "QuartzAdmin");
-                });
-
-            modelBuilder.Entity("Syrna.QuartzAdmin.ExecutionHistory.QuartzJobSummary", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("SchedulerName")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<int>("TotalJobsExecuted")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("TotalJobsFailed")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("QuartzJobSummaries", "QuartzAdmin");
-                });
 
             modelBuilder.Entity("Syrna.QuartzAdmin.Quartz.QuartzBlobTrigger", b =>
                 {

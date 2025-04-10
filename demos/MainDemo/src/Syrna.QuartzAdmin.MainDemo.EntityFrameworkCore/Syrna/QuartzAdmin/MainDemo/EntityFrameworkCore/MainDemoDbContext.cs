@@ -12,6 +12,6 @@ public class MainDemoDbContext(DbContextOptions<MainDemoDbContext> options) : Ab
     {
         base.OnModelCreating(builder);
 
-        builder.ConfigureQuartzAdmin();
+        //builder.ConfigureQuartzAdmin();
     }
 }

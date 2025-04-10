@@ -12,6 +12,11 @@
 	<ItemGroup>
 		<PackageReference Include="Volo.Abp.Ddd.Domain" />
 		<PackageReference Include="Volo.Abp.Users.Domain" />
+		
+		<PackageReference Include="Quartz" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<ProjectReference Include="..\Syrna.QuartzAdmin.Domain.Shared\Syrna.QuartzAdmin.Domain.Shared.csproj" />
 	</ItemGroup>
 

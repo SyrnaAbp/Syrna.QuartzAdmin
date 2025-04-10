@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Syrna.QuartzAdmin.EntityFrameworkCore;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.FeatureManagement.EntityFrameworkCore;

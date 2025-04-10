@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Syrna.QuartzAdmin.ExecutionHistory;
 using Volo.Abp.Data;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -10,6 +11,9 @@ namespace Syrna.QuartzAdmin.EntityFrameworkCore
         /* Add DbSet for each Aggregate Root here. Example:
          * public DbSet<Question> Questions { get; set; }
          */
+        public DbSet<QuartzExecutionHistory> QuartzExecutionHistories { get; set; }
+        public DbSet<QuartzJobSummary> QuartzJobSummaries { get; set; }
+        
         public QuartzAdminDbContext(DbContextOptions<QuartzAdminDbContext> options) 
             : base(options)
         {
@@ -20,7 +24,7 @@ namespace Syrna.QuartzAdmin.EntityFrameworkCore
         {
             base.OnModelCreating(builder);
 
-            builder.ConfigureQuartzAdmin();
+            //builder.ConfigureQuartzAdmin();
         }
     }
 }

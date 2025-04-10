@@ -6,7 +6,6 @@ using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
 using Volo.Abp.Identity.EntityFrameworkCore;
 using Volo.Abp.PermissionManagement.EntityFrameworkCore;
-using Syrna.QuartzAdmin.EntityFrameworkCore;
 using Volo.Abp.OpenIddict.EntityFrameworkCore;
 
 namespace Syrna.QuartzAdmin.MainDemo.SqlServer.EntityFrameworkCore;
