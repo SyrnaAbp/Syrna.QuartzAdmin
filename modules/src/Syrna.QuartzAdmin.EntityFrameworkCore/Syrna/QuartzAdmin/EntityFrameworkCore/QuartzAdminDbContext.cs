@@ -24,7 +24,8 @@ namespace Syrna.QuartzAdmin.EntityFrameworkCore
         {
             base.OnModelCreating(builder);
 
-            //builder.ConfigureQuartzAdmin();
+            builder.ConfigureQuartzAdmin();
+            builder.ConfigureQuartz();
         }
     }
 }

@@ -13,7 +13,7 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Syrna.QuartzAdmin.MainDemo.PostgreSql.Migrations
 {
     [DbContext(typeof(MainDemoMigrationsDbContext))]
-    [Migration("20250410201756_Added_ExecutionHistory")]
+    [Migration("20250411005510_Added_ExecutionHistory")]
     partial class Added_ExecutionHistory
     {
         /// <inheritdoc />
@@ -75,7 +75,7 @@ namespace Syrna.QuartzAdmin.MainDemo.PostgreSql.Migrations
 
                     b.HasIndex("FireInstanceId");
 
-                    b.ToTable("QuartzExecutionHistories", "QuartzAdmin");
+                    b.ToTable("QuartzExecutionHistories", "quartzadmin");
                 });
 
             modelBuilder.Entity("Syrna.QuartzAdmin.ExecutionHistory.QuartzJobSummary", b =>
@@ -96,7 +96,7 @@ namespace Syrna.QuartzAdmin.MainDemo.PostgreSql.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("QuartzJobSummaries", "QuartzAdmin");
+                    b.ToTable("QuartzJobSummaries", "quartzadmin");
                 });
 
             modelBuilder.Entity("Syrna.QuartzAdmin.Quartz.QuartzBlobTrigger", b =>

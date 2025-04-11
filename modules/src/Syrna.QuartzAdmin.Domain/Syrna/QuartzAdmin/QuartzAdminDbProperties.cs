@@ -4,7 +4,7 @@
     {
         public static string DbTablePrefix { get; set; } = "Quartz";
 
-        public static string DbSchema { get; set; } = "QuartzAdmin";
+        public static string DbSchema { get; set; } = "quartzadmin";
 
         public const string ConnectionStringName = "SyrnaQuartzAdmin";
     }

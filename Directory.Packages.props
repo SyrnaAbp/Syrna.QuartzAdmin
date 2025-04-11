@@ -539,6 +539,7 @@
 		<PackageVersion Include="System.Net.Http.Json" Version="9.0.0" />
 		
 		<PackageVersion Include="Quartz.AspNetCore" Version="3.13.0" />
+		<PackageVersion Include="EFCore.NamingConventions" Version="8.0.3" />
 
 	</ItemGroup>
 	<ItemGroup>

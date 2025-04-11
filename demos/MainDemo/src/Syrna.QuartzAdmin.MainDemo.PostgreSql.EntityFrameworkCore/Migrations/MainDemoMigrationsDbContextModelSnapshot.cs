@@ -72,7 +72,7 @@ namespace Syrna.QuartzAdmin.MainDemo.PostgreSql.Migrations
 
                     b.HasIndex("FireInstanceId");
 
-                    b.ToTable("QuartzExecutionHistories", "QuartzAdmin");
+                    b.ToTable("QuartzExecutionHistories", "quartzadmin");
                 });
 
             modelBuilder.Entity("Syrna.QuartzAdmin.ExecutionHistory.QuartzJobSummary", b =>
@@ -93,7 +93,7 @@ namespace Syrna.QuartzAdmin.MainDemo.PostgreSql.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("QuartzJobSummaries", "QuartzAdmin");
+                    b.ToTable("QuartzJobSummaries", "quartzadmin");
                 });
 
             modelBuilder.Entity("Syrna.QuartzAdmin.Quartz.QuartzBlobTrigger", b =>

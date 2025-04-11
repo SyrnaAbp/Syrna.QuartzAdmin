@@ -12,11 +12,11 @@ namespace Syrna.QuartzAdmin.MainDemo.PostgreSql.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
-                name: "QuartzAdmin");
+                name: "quartzadmin");
 
             migrationBuilder.CreateTable(
                 name: "QuartzExecutionHistories",
-                schema: "QuartzAdmin",
+                schema: "quartzadmin",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -39,7 +39,7 @@ namespace Syrna.QuartzAdmin.MainDemo.PostgreSql.Migrations
 
             migrationBuilder.CreateTable(
                 name: "QuartzJobSummaries",
-                schema: "QuartzAdmin",
+                schema: "quartzadmin",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -54,7 +54,7 @@ namespace Syrna.QuartzAdmin.MainDemo.PostgreSql.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_QuartzExecutionHistories_FireInstanceId",
-                schema: "QuartzAdmin",
+                schema: "quartzadmin",
                 table: "QuartzExecutionHistories",
                 column: "FireInstanceId");
         }
@@ -64,11 +64,11 @@ namespace Syrna.QuartzAdmin.MainDemo.PostgreSql.Migrations
         {
             migrationBuilder.DropTable(
                 name: "QuartzExecutionHistories",
-                schema: "QuartzAdmin");
+                schema: "quartzadmin");
 
             migrationBuilder.DropTable(
                 name: "QuartzJobSummaries",
-                schema: "QuartzAdmin");
+                schema: "quartzadmin");
         }
     }
 }

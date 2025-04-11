@@ -17,6 +17,7 @@ using Serilog;
 using StackExchange.Redis;
 using Syrna.Alpha.SilkierQuartz.PostgreSql.EntityFrameworkCore;
 using Syrna.QuartzAdmin.ExecutionHistory;
+using Syrna.QuartzAdmin.MainDemo.EntityFrameworkCore;
 using Syrna.QuartzAdmin.MainDemo.MultiTenancy;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -63,7 +64,8 @@ namespace Syrna.QuartzAdmin.MainDemo;
 
 [DependsOn(typeof(MainDemoHttpApiModule))]
 [DependsOn(typeof(MainDemoApplicationModule))]
-[DependsOn(typeof(MainDemoEntityFrameworkCorePostgreSqlModule))]
+[DependsOn(typeof(MainDemoEntityFrameworkCoreModule))]
+//[DependsOn(typeof(MainDemoEntityFrameworkCorePostgreSqlModule))]
 [DependsOn(typeof(AbpQuartzModule))]
 
 public class MainDemoHttpApiHostModule : AbpModule
@@ -112,32 +114,39 @@ public class MainDemoHttpApiHostModule : AbpModule
             });
         }
 
-        PreConfigure<AbpQuartzOptions>(options =>
+        var quartzEnable = configuration["Quartz:Enabled"];
+        if (quartzEnable == "true")
         {
-            options.Configurator = configure =>
+            PreConfigure<AbpQuartzOptions>(options =>
             {
-                configure.SetProperty("quartz.plugin.recentHistory.type", typeof(AbpExecutionHistoryPlugin).AssemblyQualifiedNameWithoutVersion());
-                configure.SetProperty("quartz.plugin.recentHistory.storeType", typeof(AbpExecutionHistoryStore).AssemblyQualifiedNameWithoutVersion());
-                configure.UsePersistentStore(storeOptions =>
+                options.Configurator = configure =>
                 {
-                    storeOptions.UseProperties = true;
-                    storeOptions.PerformSchemaValidation = false;
-                    storeOptions.UseNewtonsoftJsonSerializer();
-                    storeOptions.UsePostgres(configurer =>
+                    configure.SchedulerId = configuration["Quartz:SchedulerId"] ?? "QNOC";
+                    configure.SchedulerName = configuration["Quartz:SchedulerName"] ?? $"{Environment.MachineName}_Quartz";
+                    configure.SetProperty("quartz.plugin.recentHistory.type", typeof(AbpExecutionHistoryPlugin).AssemblyQualifiedNameWithoutVersion());
+                    configure.SetProperty("quartz.plugin.recentHistory.storeType", typeof(AbpExecutionHistoryStore).AssemblyQualifiedNameWithoutVersion());
+                    configure.UsePersistentStore(storeOptions =>
                     {
-                        configurer.UseDriverDelegate<PostgreSQLDelegate>(); ;
-                        configurer.TablePrefix = "quartz.qrtz_";
-                        configurer.ConnectionStringName = "Default";
+                        storeOptions.UseProperties = true;
+                        storeOptions.PerformSchemaValidation = false;
+                        storeOptions.UseNewtonsoftJsonSerializer();
+                        storeOptions.UsePostgres(configurer =>
+                        {
+                            configurer.UseDriverDelegate<PostgreSQLDelegate>();
+                            configurer.TablePrefix = "quartz.qrtz_";
+                            configurer.ConnectionStringName = "Default";
+                        });
+                        storeOptions.UseClustering(c =>
+                        {
+                            c.CheckinMisfireThreshold = TimeSpan.FromSeconds(20);
+                            c.CheckinInterval = TimeSpan.FromSeconds(10);
+                        });
                     });
-                    storeOptions.UseClustering(c =>
-                    {
-                        c.CheckinMisfireThreshold = TimeSpan.FromSeconds(20);
-                        c.CheckinInterval = TimeSpan.FromSeconds(10);
-                    });
-                });
-                configure.AddSchedulerListener<SampleSchedulerListener>();
-            };
-        });
+                    configure.AddSchedulerListener<SampleSchedulerListener>();
+                };
+            });
+        }
+
         //// ASP.NET Core hosting
         //context.Services.AddQuartzServer(options =>
         //{
@@ -238,6 +247,10 @@ public class MainDemoHttpApiHostModule : AbpModule
                 )
             );
         });
+
+        //var scheduler = context.ServiceProvider.GetRequiredService<IScheduler>();
+        //var executionHistoryStore = context.ServiceProvider.GetRequiredService<AbpExecutionHistoryStore>();
+        //scheduler.Context.SetExecutionHistoryStore(executionHistoryStore);
     }
 
     private void ConfigureAuthentication(ServiceConfigurationContext context)
@@ -337,7 +350,7 @@ public class MainDemoHttpApiHostModule : AbpModule
                 options.CustomSchemaIds(type => type.FullName);
 
                 //var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                var xmlFiles=Directory.GetFiles(AppContext.BaseDirectory, "Syrna.*.xml");
+                var xmlFiles = Directory.GetFiles(AppContext.BaseDirectory, "Syrna.*.xml");
                 foreach (var xmlFile in xmlFiles)
                 {
                     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFile));

@@ -43,7 +43,8 @@ public class MainDemoEntityFrameworkCoreModule : AbpModule
         {
             /* The main point to change your DBMS.
              * See also LayoutMigrationsDbContextFactory for EF Core tooling. */
-            options.UseSqlServer(x => x.UseCompatibilityLevel(120));
+            //options.UseSqlServer(x => x.UseCompatibilityLevel(120));
+            options.UseNpgsql();
         });
     }
 }
