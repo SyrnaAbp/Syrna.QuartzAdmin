@@ -7,14 +7,14 @@ namespace Syrna.QuartzAdmin.Jobs.Abstractions
 {
     public class DataMapValueResolver : IDataMapValueResolver
     {
-        private readonly IServiceProvider? _svcProvider;
+        private readonly IServiceProvider _svcProvider;
 
-        public DataMapValueResolver(IServiceProvider? svcProvider)
+        public DataMapValueResolver(IServiceProvider svcProvider)
         {
             _svcProvider = svcProvider;
         }
 
-        public string? Resolve(DataMapValue? dmv)
+        public string Resolve(DataMapValue dmv)
         {
             if (dmv == null)
                 return null;

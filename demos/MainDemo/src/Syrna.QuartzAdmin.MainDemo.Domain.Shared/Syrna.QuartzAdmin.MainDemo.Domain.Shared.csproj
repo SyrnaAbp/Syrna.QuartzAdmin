@@ -5,9 +5,9 @@
 
 	<PropertyGroup>
 		<TargetFramework>net9.0</TargetFramework>
-		<Nullable>enable</Nullable>
 		<RootNamespace>Syrna.QuartzAdmin.MainDemo</RootNamespace>
 		<GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
+		<!--<Nullable>enable</Nullable>-->
 	</PropertyGroup>
 
 	<ItemGroup>

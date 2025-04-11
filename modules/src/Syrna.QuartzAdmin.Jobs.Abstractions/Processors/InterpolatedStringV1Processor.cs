@@ -8,14 +8,14 @@ namespace Syrna.QuartzAdmin.Jobs.Abstractions.Processors
     {
         const string VariableRegex = @"\{{2}(\$.+?)\}{2}";
 
-        private readonly ILogger<InterpolatedStringV1Processor>? _logger;
+        private readonly ILogger<InterpolatedStringV1Processor> _logger;
 
-        public InterpolatedStringV1Processor(ILogger<InterpolatedStringV1Processor>? logger)
+        public InterpolatedStringV1Processor(ILogger<InterpolatedStringV1Processor> logger)
         {
             _logger = logger;
         }
 
-        public string? Process(DataMapValue interpolatedString)
+        public string Process(DataMapValue interpolatedString)
         {
             if (interpolatedString.Type != DataMapValueType.InterpolatedString)
                 throw new ArgumentException($"Invalid DataMapValue type {interpolatedString.Type}. Expected type {DataMapValueType.InterpolatedString}.");

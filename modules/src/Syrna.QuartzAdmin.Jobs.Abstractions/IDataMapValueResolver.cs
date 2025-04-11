@@ -2,6 +2,6 @@
 {
     public interface IDataMapValueResolver
     {
-        string? Resolve(DataMapValue? dmv);
+        string Resolve(DataMapValue dmv);
     }
 }

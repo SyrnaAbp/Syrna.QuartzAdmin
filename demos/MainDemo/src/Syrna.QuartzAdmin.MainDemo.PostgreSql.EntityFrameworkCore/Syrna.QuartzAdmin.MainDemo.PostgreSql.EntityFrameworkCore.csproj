@@ -5,8 +5,8 @@
 
 	<PropertyGroup>
 		<TargetFramework>net9.0</TargetFramework>
-		<Nullable>enable</Nullable>
 		<RootNamespace>Syrna.QuartzAdmin.MainDemo.PostgreSql</RootNamespace>
+		<!--<Nullable>enable</Nullable>-->
 	</PropertyGroup>
 
 	<ItemGroup>

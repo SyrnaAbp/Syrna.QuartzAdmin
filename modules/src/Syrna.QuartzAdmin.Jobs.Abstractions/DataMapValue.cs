@@ -7,7 +7,7 @@ namespace Syrna.QuartzAdmin.Jobs.Abstractions
     public class DataMapValue
     {
         public DataMapValueType Type { get; set; }
-        public string? Value { get; set; }
+        public string Value { get; set; }
         public int Version { get; set; }
 
         public DataMapValue() : this(DataMapValueType.InterpolatedString, 1)
@@ -18,7 +18,7 @@ namespace Syrna.QuartzAdmin.Jobs.Abstractions
         {
         }
 
-        public DataMapValue(DataMapValueType type, string? value = null, int version = 1)
+        public DataMapValue(DataMapValueType type, string value = null, int version = 1)
         {
             Type = type;
             Value = value;
@@ -35,7 +35,7 @@ namespace Syrna.QuartzAdmin.Jobs.Abstractions
         /// </summary>
         /// <param name="dataMapValue"></param>
         /// <returns></returns>
-        public static DataMapValue? Create(object? dataMapValue)
+        public static DataMapValue Create(object dataMapValue)
         {
             var value = Convert.ToString(dataMapValue, CultureInfo.InvariantCulture);
             if (value == null)
@@ -49,7 +49,7 @@ namespace Syrna.QuartzAdmin.Jobs.Abstractions
         /// </summary>
         /// <param name="dataMapValue"></param>
         /// <returns></returns>
-        public static DataMapValue? Create(string? dataMapValue)
+        public static DataMapValue Create(string dataMapValue)
         {
             if (dataMapValue == null)
                 return null;
@@ -58,8 +58,8 @@ namespace Syrna.QuartzAdmin.Jobs.Abstractions
             return new DataMapValue(DataMapValueType.InterpolatedString, dataMapValue, 1);
         }
 
-        public static DataMapValue Create(object? dataMapValue, DataMapValueType defaultType,
-            int defaultVersion, string? defaultValue = null)
+        public static DataMapValue Create(object dataMapValue, DataMapValueType defaultType,
+            int defaultVersion, string defaultValue = null)
         {
             var dmv = Create(dataMapValue);
             if (dmv != null)

@@ -25,7 +25,7 @@ namespace Syrna.QuartzAdmin.Jobs.Abstractions.Processors
         {
             var varName = varBlock.Split(separators, 2).First().Substring(2);
 
-            IResolver? resolver;
+            IResolver resolver;
             if (!Resolvers.TryGetValue(varName, out resolver))
             {
                 return varBlock;

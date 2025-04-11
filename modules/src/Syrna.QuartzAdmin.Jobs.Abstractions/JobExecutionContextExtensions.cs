@@ -30,7 +30,7 @@ namespace Syrna.QuartzAdmin.Jobs.Abstractions
             return context;
         }
 
-        public static string? GetReturnCode(this IJobExecutionContext context)
+        public static string GetReturnCode(this IJobExecutionContext context)
         {
             var val = context.Get(JobDataMapKeys.ReturnCode);
             if (val != null)
@@ -38,7 +38,7 @@ namespace Syrna.QuartzAdmin.Jobs.Abstractions
             return null;
         }
 
-        public static string? GetExecutionDetails(this IJobExecutionContext context)
+        public static string GetExecutionDetails(this IJobExecutionContext context)
         {
             var val = context.Get(JobDataMapKeys.ExecutionDetails);
             if (val != null)
@@ -55,13 +55,13 @@ namespace Syrna.QuartzAdmin.Jobs.Abstractions
             return Convert.ToBoolean(value);
         }
 
-        public static DataMapValue? GetDataMapValue(this IJobExecutionContext context, string key)
+        public static DataMapValue GetDataMapValue(this IJobExecutionContext context, string key)
         {
             var value = context.MergedJobDataMap.GetString(key);
             return DataMapValue.Create(value);
         }
 
-        public static DataMapValue? GetDataMapValue(this JobDataMap dataMap, string key)
+        public static DataMapValue GetDataMapValue(this JobDataMap dataMap, string key)
         {
             if (dataMap.TryGetString(key, out var value))
             { 
@@ -71,7 +71,7 @@ namespace Syrna.QuartzAdmin.Jobs.Abstractions
             return null;
         }
 
-        public static string? GetReturnCodeAndResult(this IJobExecutionContext context)
+        public static string GetReturnCodeAndResult(this IJobExecutionContext context)
         {
             var returnCode = context.GetReturnCode();
             var strBldr = new StringBuilder();
