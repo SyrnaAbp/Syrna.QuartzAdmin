@@ -29,7 +29,7 @@ public class AbpExecutionHistoryStore : IExecutionHistoryStore, ISingletonDepend
         ServiceScopeFactory = serviceScopeFactory;
     }
 
-    public async Task<ExecutionHistoryEntry?> Get(string fireInstanceId)
+    public async Task<ExecutionHistoryEntry> Get(string fireInstanceId)
     {
         using var scope = ServiceScopeFactory.CreateScope();
         var repository = scope.ServiceProvider.GetRequiredService<IQuartzExecutionHistoryRepository>();

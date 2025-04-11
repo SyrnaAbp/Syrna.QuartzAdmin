@@ -119,6 +119,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Syrna.QuartzAdmin.MainDemo.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Syrna.QuartzAdmin.MainDemo.Blazor.Host", "demos\MainDemo\host\Syrna.QuartzAdmin.MainDemo.Blazor.Host\Syrna.QuartzAdmin.MainDemo.Blazor.Host.csproj", "{AB1E9AAE-8D95-EBD7-6653-D4BDB623C7FF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Syrna.QuartzAdmin.MainDemo.Jobs", "demos\MainDemo\src\Syrna.QuartzAdmin.MainDemo.Jobs\Syrna.QuartzAdmin.MainDemo.Jobs.csproj", "{6C794913-35C1-2CDF-A2AF-ED26565348B1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Syrna.QuartzAdmin.Jobs.Abstractions", "modules\src\Syrna.QuartzAdmin.Jobs.Abstractions\Syrna.QuartzAdmin.Jobs.Abstractions.csproj", "{C3D2F97F-2522-A23D-412E-73201C96D291}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -285,6 +289,14 @@ Global
 		{AB1E9AAE-8D95-EBD7-6653-D4BDB623C7FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB1E9AAE-8D95-EBD7-6653-D4BDB623C7FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB1E9AAE-8D95-EBD7-6653-D4BDB623C7FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C794913-35C1-2CDF-A2AF-ED26565348B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C794913-35C1-2CDF-A2AF-ED26565348B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C794913-35C1-2CDF-A2AF-ED26565348B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C794913-35C1-2CDF-A2AF-ED26565348B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3D2F97F-2522-A23D-412E-73201C96D291}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3D2F97F-2522-A23D-412E-73201C96D291}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3D2F97F-2522-A23D-412E-73201C96D291}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3D2F97F-2522-A23D-412E-73201C96D291}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -335,6 +347,8 @@ Global
 		{94E3EB35-0DDF-D083-AFF0-CEDA28D6DFAC} = {649A3FFA-182F-4E56-9717-E6A9A2BEC545}
 		{4E54A86A-0B01-5F7A-813E-6492E952D22A} = {E400416D-2895-4512-9D17-90681EEC7E0A}
 		{AB1E9AAE-8D95-EBD7-6653-D4BDB623C7FF} = {E400416D-2895-4512-9D17-90681EEC7E0A}
+		{6C794913-35C1-2CDF-A2AF-ED26565348B1} = {F4EB94DD-4501-47C9-8BCF-2CE1A16C65BD}
+		{C3D2F97F-2522-A23D-412E-73201C96D291} = {649A3FFA-182F-4E56-9717-E6A9A2BEC545}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4324B3B4-B60B-4E3C-91D8-59576B4E26DD}

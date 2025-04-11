@@ -64,7 +64,7 @@ public class AbpExecutionHistoryPlugin : ISchedulerPlugin, IJobListener
         await _store.Save(entry);
     }
 
-    public async Task JobWasExecuted(IJobExecutionContext context, JobExecutionException? jobException, CancellationToken cancellationToken = default)
+    public async Task JobWasExecuted(IJobExecutionContext context, JobExecutionException jobException, CancellationToken cancellationToken = default)
     {
         var entry = await _store.Get(context.FireInstanceId);
         if (entry != null)
