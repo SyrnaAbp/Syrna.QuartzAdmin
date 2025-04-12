@@ -144,7 +144,7 @@ public class MainDemoHttpApiHostModule : AbpModule
                             c.CheckinInterval = TimeSpan.FromSeconds(10);
                         });
                     });
-                    configure.AddSchedulerListener<SampleSchedulerListener>();
+                    //configure.AddSchedulerListener<SampleSchedulerListener>();
                 };
             });
             context.Services.AddQuartzAdmin();

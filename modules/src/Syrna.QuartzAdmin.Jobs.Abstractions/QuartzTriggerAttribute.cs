@@ -21,6 +21,7 @@ namespace Syrna.QuartzAdmin.Jobs.Abstractions
         public QuartzTriggerAttribute(double minutes, double seconds, string _identity, string _desciption) : this(0, 0, minutes, seconds, 0, 0, _identity, _desciption)
         {
         }
+
         public QuartzTriggerAttribute(double seconds, string _identity, string _desciption) : this(0, 0, 0, seconds, 0, 0, _identity, _desciption)
         {
         }
@@ -37,6 +38,7 @@ namespace Syrna.QuartzAdmin.Jobs.Abstractions
         public QuartzTriggerAttribute(double minutes, double seconds) : this(0, 0, minutes, seconds, 0, 0, null, null)
         {
         }
+
         public QuartzTriggerAttribute(double seconds) : this(0, 0, 0, seconds, 0, 0, null, null)
         {
         }

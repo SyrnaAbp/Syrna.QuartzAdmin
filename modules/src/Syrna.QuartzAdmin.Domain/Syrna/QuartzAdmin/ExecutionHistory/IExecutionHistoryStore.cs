@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Syrna.QuartzAdmin.ExecutionHistory
@@ -20,5 +21,13 @@ namespace Syrna.QuartzAdmin.ExecutionHistory
 
         Task IncrementTotalJobsExecuted();
         Task IncrementTotalJobsFailed();
+
+        Task<bool> ExistsAsync(QuartzExecutionHistory log);
+        bool Exists(QuartzExecutionHistory log);
+        Task<int> DeleteLogsByDays(int daysToKeep, CancellationToken cancelToken = default);
+        Task AddExecutionLog(QuartzExecutionHistory log, CancellationToken cancelToken = default);
+        ValueTask UpdateExecutionLog(QuartzExecutionHistory log);
+        Task SaveChangesAsync(CancellationToken cancelToken = default);
+        Task MarkExecutingJobAsIncomplete(CancellationToken cancellToken = default);
     }
 }

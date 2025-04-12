@@ -13,7 +13,7 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Syrna.QuartzAdmin.MainDemo.PostgreSql.Migrations
 {
     [DbContext(typeof(MainDemoMigrationsDbContext))]
-    [Migration("20250411005438_Added_Quartz")]
+    [Migration("20250412120936_Added_Quartz")]
     partial class Added_Quartz
     {
         /// <inheritdoc />

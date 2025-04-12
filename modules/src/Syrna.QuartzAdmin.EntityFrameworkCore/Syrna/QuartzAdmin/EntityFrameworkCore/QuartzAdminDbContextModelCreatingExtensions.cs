@@ -23,29 +23,24 @@ namespace Syrna.QuartzAdmin.EntityFrameworkCore
 
             builder.Entity<QuartzExecutionHistory>(x =>
             {
+                x.ConfigureByConvention();
                 x.ToTable($"{options.TablePrefix}ExecutionHistories", options.Schema);
 
-                x.ConfigureByConvention();
+                x.OwnsOne(l => l.ExecutionHistoryDetail, e =>
+                {
+                    e.ToTable($"{options.TablePrefix}ExecutionHistoryDetail", options.Schema);
+                    e.WithOwner().HasForeignKey(x => x.LogId);
+                });
 
-                // Configure more properties here 
-                x.Property(p => p.FireInstanceId)
-                    .HasMaxLength(200);
-                x.Property(p => p.SchedulerInstanceId)
-                    .HasMaxLength(200);
-                x.Property(p => p.SchedulerName)
-                    .HasMaxLength(200);
-                x.Property(p => p.Job)
-                    .HasMaxLength(300);
-                x.Property(p => p.Trigger)
-                    .HasMaxLength(300);
-                x.Property(p => p.ScheduledFireTimeUtc)
-                    .HasColumnType("timestamp with time zone");
-                x.Property(p => p.ActualFireTimeUtc)
-                    .HasColumnType("timestamp with time zone");
-                x.Property(p => p.FinishedTimeUtc)
-                    .HasColumnType("timestamp with time zone");
+                x.HasIndex(l => l.FireInstanceId).IsUnique();
 
-                x.HasIndex(p => p.FireInstanceId);
+                // for housekeeping or system log display
+                x.HasIndex(l => new { l.DateAddedUtc, l.LogType });
+
+                // joining with job
+                x.HasIndex(l => new { l.TriggerName, l.TriggerGroup, l.JobName, l.JobGroup, l.DateAddedUtc });
+
+                x.Property(e => e.LogType).HasConversion<string>();
             });
 
             builder.Entity<QuartzJobSummary>(x =>

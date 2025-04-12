@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Quartz.Logging;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Guids;
 using Volo.Abp.Uow;
@@ -59,7 +61,8 @@ public class AbpExecutionHistoryStore : IExecutionHistoryStore, ISingletonDepend
         var quartzJobHistory = await repository.FindByFireInstanceIdAsync(entry.FireInstanceId);
         if (quartzJobHistory == null)
         {
-            quartzJobHistory = entry.ToEntity(new QuartzExecutionHistory(guidGenerator.Create(), entry.FireInstanceId));
+            quartzJobHistory = entry.ToEntity(new QuartzExecutionHistory(entry.FireInstanceId));
+            //quartzJobHistory = entry.ToEntity(new QuartzExecutionHistory(guidGenerator.Create(), entry.FireInstanceId));
             await repository.InsertAsync(quartzJobHistory);
         }
         else
@@ -148,5 +151,78 @@ public class AbpExecutionHistoryStore : IExecutionHistoryStore, ISingletonDepend
         }
 
         await uow.CompleteAsync();
+    }
+
+    public async Task AddExecutionLog(QuartzExecutionHistory log, CancellationToken cancelToken = default)
+    {
+        using var scope = ServiceScopeFactory.CreateScope();
+        var repository = scope.ServiceProvider.GetRequiredService<IQuartzExecutionHistoryRepository>();
+        await repository.InsertAsync(log, true, cancelToken);
+    }
+
+    public Task<bool> ExistsAsync(QuartzExecutionHistory log)
+    {
+        using var scope = ServiceScopeFactory.CreateScope();
+        var repository = scope.ServiceProvider.GetRequiredService<IQuartzExecutionHistoryRepository>();
+
+        return repository.AnyAsync(l => l.FireInstanceId == log.FireInstanceId);
+    }
+
+    public bool Exists(QuartzExecutionHistory log)
+    {
+        return ExistsAsync(log).Result;
+    }
+
+    public async Task<int> DeleteLogsByDays(int daysToKeep, CancellationToken cancelToken = default)
+    {
+        using var scope = ServiceScopeFactory.CreateScope();
+        var repository = scope.ServiceProvider.GetRequiredService<IQuartzExecutionHistoryRepository>();
+
+        return await repository.DeleteLogsByDays(daysToKeep, cancelToken);
+    }
+
+    public async Task SaveChangesAsync(CancellationToken cancelToken = default)
+    {
+        using var scope = ServiceScopeFactory.CreateScope();
+        var repository = scope.ServiceProvider.GetRequiredService<IQuartzExecutionHistoryRepository>();
+
+        await repository.SaveChangesAsync(cancelToken);
+    }
+
+    public async ValueTask UpdateExecutionLog(QuartzExecutionHistory log)
+    {
+        using var scope = ServiceScopeFactory.CreateScope();
+        var repository = scope.ServiceProvider.GetRequiredService<IQuartzExecutionHistoryRepository>();
+
+        var entry = await repository.FirstOrDefaultAsync(l => l.FireInstanceId == log.FireInstanceId);
+
+        if (entry != null)
+        {
+            entry.ExecutionHistoryDetail = log.ExecutionHistoryDetail;
+            entry.ErrorMessage = log.ErrorMessage;
+            entry.ExecutionHistoryDetail = log.ExecutionHistoryDetail;
+            entry.IsVetoed = log.IsVetoed;
+            entry.JobRunTime = log.JobRunTime;
+            entry.Result = log.Result;
+            entry.IsException = log.IsException;
+            entry.IsSuccess = log.IsSuccess;
+            entry.ReturnCode = log.ReturnCode;
+
+            await repository.UpdateAsync(entry);
+        }
+        else
+        {
+            Logger.LogWarning("Failed to UpdateExecutionLog. Cannot find run instance id [{fireInstanceId}]", log.FireInstanceId);
+        }
+
+        await ValueTask.CompletedTask;
+    }
+
+    public async Task MarkExecutingJobAsIncomplete(CancellationToken cancellToken = default)
+    {
+        using var scope = ServiceScopeFactory.CreateScope();
+        var repository = scope.ServiceProvider.GetRequiredService<IQuartzExecutionHistoryRepository>();
+
+        await repository.MarkExecutingJobAsIncomplete(cancellToken);
     }
 }

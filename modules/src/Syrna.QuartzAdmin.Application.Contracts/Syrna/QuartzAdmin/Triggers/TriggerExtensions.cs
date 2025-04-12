@@ -118,7 +118,7 @@ namespace Syrna.QuartzAdmin.Triggers
         /// <param name="repeatIntervalUnit">Time interval to use for the repeatInterval.</param>
         /// <param name="repeatCount">How many times a trigger will be fired.</param>
         /// <returns>String containing the scheduling description for the <see cref="ITrigger"/></returns>
-        public static string GetScheduleDescription(int repeatInterval, IntervalUnit repeatIntervalUnit, int repeatCount = 0)
+        public static string GetScheduleDescription(int repeatInterval, Quartz.IntervalUnit repeatIntervalUnit, int repeatCount = 0)
         {
             var result = "Repeat ";
             if(repeatCount > 0)

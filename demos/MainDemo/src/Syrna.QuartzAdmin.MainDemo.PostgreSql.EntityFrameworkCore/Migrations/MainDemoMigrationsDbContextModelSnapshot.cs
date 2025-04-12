@@ -26,51 +26,84 @@ namespace Syrna.QuartzAdmin.MainDemo.PostgreSql.Migrations
 
             modelBuilder.Entity("Syrna.QuartzAdmin.ExecutionHistory.QuartzExecutionHistory", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("bigint");
 
-                    b.Property<DateTimeOffset>("ActualFireTimeUtc")
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTimeOffset>("DateAddedUtc")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("ExceptionMessage")
+                    b.Property<string>("ErrorMessage")
                         .HasColumnType("text");
 
                     b.Property<DateTimeOffset?>("FinishedTimeUtc")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("FireInstanceId")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("text");
 
-                    b.Property<string>("Job")
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
+                    b.Property<DateTimeOffset>("FireTimeUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool?>("IsException")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsSuccess")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsVetoed")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("JobGroup")
+                        .HasColumnType("text");
+
+                    b.Property<string>("JobName")
+                        .HasColumnType("text");
+
+                    b.Property<TimeSpan?>("JobRunTime")
+                        .HasColumnType("interval");
+
+                    b.Property<string>("LogType")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<bool>("Recovering")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("Result")
+                        .HasColumnType("text");
+
+                    b.Property<int>("RetryCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ReturnCode")
+                        .HasColumnType("text");
 
                     b.Property<DateTimeOffset?>("ScheduledFireTimeUtc")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("SchedulerInstanceId")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("text");
 
                     b.Property<string>("SchedulerName")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("text");
 
-                    b.Property<string>("Trigger")
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
+                    b.Property<string>("TriggerGroup")
+                        .HasColumnType("text");
 
-                    b.Property<bool>("Vetoed")
-                        .HasColumnType("boolean");
+                    b.Property<string>("TriggerName")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FireInstanceId");
+                    b.HasIndex("FireInstanceId")
+                        .IsUnique();
+
+                    b.HasIndex("DateAddedUtc", "LogType");
+
+                    b.HasIndex("TriggerName", "TriggerGroup", "JobName", "JobGroup", "DateAddedUtc");
 
                     b.ToTable("QuartzExecutionHistories", "quartzadmin");
                 });
@@ -2230,6 +2263,37 @@ namespace Syrna.QuartzAdmin.MainDemo.PostgreSql.Migrations
                     b.HasKey("TenantId", "Name");
 
                     b.ToTable("AbpTenantConnectionStrings", (string)null);
+                });
+
+            modelBuilder.Entity("Syrna.QuartzAdmin.ExecutionHistory.QuartzExecutionHistory", b =>
+                {
+                    b.OwnsOne("Syrna.QuartzAdmin.ExecutionHistory.ExecutionHistoryDetail", "ExecutionHistoryDetail", b1 =>
+                        {
+                            b1.Property<long>("LogId")
+                                .HasColumnType("bigint");
+
+                            b1.Property<int?>("ErrorCode")
+                                .HasColumnType("integer");
+
+                            b1.Property<string>("ErrorHelpLink")
+                                .HasMaxLength(1000)
+                                .HasColumnType("character varying(1000)");
+
+                            b1.Property<string>("ErrorStackTrace")
+                                .HasColumnType("text");
+
+                            b1.Property<string>("ExecutionDetails")
+                                .HasColumnType("text");
+
+                            b1.HasKey("LogId");
+
+                            b1.ToTable("QuartzExecutionHistoryDetail", "quartzadmin");
+
+                            b1.WithOwner()
+                                .HasForeignKey("LogId");
+                        });
+
+                    b.Navigation("ExecutionHistoryDetail");
                 });
 
             modelBuilder.Entity("Syrna.QuartzAdmin.Quartz.QuartzBlobTrigger", b =>

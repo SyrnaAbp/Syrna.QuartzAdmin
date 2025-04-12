@@ -13,8 +13,8 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Syrna.QuartzAdmin.MainDemo.PostgreSql.Migrations
 {
     [DbContext(typeof(MainDemoMigrationsDbContext))]
-    [Migration("20250411005401_Initial")]
-    partial class Initial
+    [Migration("20250412121019_Added_ExecutionHistory")]
+    partial class Added_ExecutionHistory
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -26,6 +26,554 @@ namespace Syrna.QuartzAdmin.MainDemo.PostgreSql.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("Syrna.QuartzAdmin.ExecutionHistory.QuartzExecutionHistory", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTimeOffset>("DateAddedUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ErrorMessage")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset?>("FinishedTimeUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("FireInstanceId")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("FireTimeUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool?>("IsException")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsSuccess")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsVetoed")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("JobGroup")
+                        .HasColumnType("text");
+
+                    b.Property<string>("JobName")
+                        .HasColumnType("text");
+
+                    b.Property<TimeSpan?>("JobRunTime")
+                        .HasColumnType("interval");
+
+                    b.Property<string>("LogType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("Recovering")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Result")
+                        .HasColumnType("text");
+
+                    b.Property<int>("RetryCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ReturnCode")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset?>("ScheduledFireTimeUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("SchedulerInstanceId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SchedulerName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("TriggerGroup")
+                        .HasColumnType("text");
+
+                    b.Property<string>("TriggerName")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FireInstanceId")
+                        .IsUnique();
+
+                    b.HasIndex("DateAddedUtc", "LogType");
+
+                    b.HasIndex("TriggerName", "TriggerGroup", "JobName", "JobGroup", "DateAddedUtc");
+
+                    b.ToTable("QuartzExecutionHistories", "quartzadmin");
+                });
+
+            modelBuilder.Entity("Syrna.QuartzAdmin.ExecutionHistory.QuartzJobSummary", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("SchedulerName")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("TotalJobsExecuted")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TotalJobsFailed")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("QuartzJobSummaries", "quartzadmin");
+                });
+
+            modelBuilder.Entity("Syrna.QuartzAdmin.Quartz.QuartzBlobTrigger", b =>
+                {
+                    b.Property<string>("SchedulerName")
+                        .HasColumnType("text")
+                        .HasColumnName("sched_name");
+
+                    b.Property<string>("TriggerName")
+                        .HasColumnType("text")
+                        .HasColumnName("trigger_name");
+
+                    b.Property<string>("TriggerGroup")
+                        .HasColumnType("text")
+                        .HasColumnName("trigger_group");
+
+                    b.Property<byte[]>("BlobData")
+                        .HasColumnType("bytea")
+                        .HasColumnName("blob_data");
+
+                    b.HasKey("SchedulerName", "TriggerName", "TriggerGroup");
+
+                    b.ToTable("qrtz_blob_triggers", "quartz");
+                });
+
+            modelBuilder.Entity("Syrna.QuartzAdmin.Quartz.QuartzCalendar", b =>
+                {
+                    b.Property<string>("SchedulerName")
+                        .HasColumnType("text")
+                        .HasColumnName("sched_name");
+
+                    b.Property<string>("CalendarName")
+                        .HasColumnType("text")
+                        .HasColumnName("calendar_name");
+
+                    b.Property<byte[]>("Calendar")
+                        .IsRequired()
+                        .HasColumnType("bytea")
+                        .HasColumnName("calendar");
+
+                    b.HasKey("SchedulerName", "CalendarName");
+
+                    b.ToTable("qrtz_calendars", "quartz");
+                });
+
+            modelBuilder.Entity("Syrna.QuartzAdmin.Quartz.QuartzCronTrigger", b =>
+                {
+                    b.Property<string>("SchedulerName")
+                        .HasColumnType("text")
+                        .HasColumnName("sched_name");
+
+                    b.Property<string>("TriggerName")
+                        .HasColumnType("text")
+                        .HasColumnName("trigger_name");
+
+                    b.Property<string>("TriggerGroup")
+                        .HasColumnType("text")
+                        .HasColumnName("trigger_group");
+
+                    b.Property<string>("CronExpression")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("cron_expression");
+
+                    b.Property<string>("TimeZoneId")
+                        .HasColumnType("text")
+                        .HasColumnName("time_zone_id");
+
+                    b.HasKey("SchedulerName", "TriggerName", "TriggerGroup");
+
+                    b.ToTable("qrtz_cron_triggers", "quartz");
+                });
+
+            modelBuilder.Entity("Syrna.QuartzAdmin.Quartz.QuartzFiredTrigger", b =>
+                {
+                    b.Property<string>("SchedulerName")
+                        .HasColumnType("text")
+                        .HasColumnName("sched_name");
+
+                    b.Property<string>("EntryId")
+                        .HasColumnType("text")
+                        .HasColumnName("entry_id");
+
+                    b.Property<long>("FiredTime")
+                        .HasColumnType("bigint")
+                        .HasColumnName("fired_time");
+
+                    b.Property<string>("InstanceName")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("instance_name");
+
+                    b.Property<bool>("IsNonConcurrent")
+                        .HasColumnType("bool")
+                        .HasColumnName("is_nonconcurrent");
+
+                    b.Property<string>("JobGroup")
+                        .HasColumnType("text")
+                        .HasColumnName("job_group");
+
+                    b.Property<string>("JobName")
+                        .HasColumnType("text")
+                        .HasColumnName("job_name");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("integer")
+                        .HasColumnName("priority");
+
+                    b.Property<bool?>("RequestsRecovery")
+                        .HasColumnType("bool")
+                        .HasColumnName("requests_recovery");
+
+                    b.Property<long>("ScheduledTime")
+                        .HasColumnType("bigint")
+                        .HasColumnName("sched_time");
+
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("state");
+
+                    b.Property<string>("TriggerGroup")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("trigger_group");
+
+                    b.Property<string>("TriggerName")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("trigger_name");
+
+                    b.HasKey("SchedulerName", "EntryId");
+
+                    b.HasIndex("InstanceName")
+                        .HasDatabaseName("idx_qrtz_ft_trig_inst_name");
+
+                    b.HasIndex("JobGroup")
+                        .HasDatabaseName("idx_qrtz_ft_job_group");
+
+                    b.HasIndex("JobName")
+                        .HasDatabaseName("idx_qrtz_ft_job_name");
+
+                    b.HasIndex("RequestsRecovery")
+                        .HasDatabaseName("idx_qrtz_ft_job_req_recovery");
+
+                    b.HasIndex("TriggerGroup")
+                        .HasDatabaseName("idx_qrtz_ft_trig_group");
+
+                    b.HasIndex("TriggerName")
+                        .HasDatabaseName("idx_qrtz_ft_trig_name");
+
+                    b.HasIndex("SchedulerName", "TriggerName", "TriggerGroup")
+                        .HasDatabaseName("idx_qrtz_ft_trig_nm_gp");
+
+                    b.ToTable("qrtz_fired_triggers", "quartz");
+                });
+
+            modelBuilder.Entity("Syrna.QuartzAdmin.Quartz.QuartzJobDetail", b =>
+                {
+                    b.Property<string>("SchedulerName")
+                        .HasColumnType("text")
+                        .HasColumnName("sched_name");
+
+                    b.Property<string>("JobName")
+                        .HasColumnType("text")
+                        .HasColumnName("job_name");
+
+                    b.Property<string>("JobGroup")
+                        .HasColumnType("text")
+                        .HasColumnName("job_group");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text")
+                        .HasColumnName("description");
+
+                    b.Property<bool>("IsDurable")
+                        .HasColumnType("bool")
+                        .HasColumnName("is_durable");
+
+                    b.Property<bool>("IsNonConcurrent")
+                        .HasColumnType("bool")
+                        .HasColumnName("is_nonconcurrent");
+
+                    b.Property<bool>("IsUpdateData")
+                        .HasColumnType("bool")
+                        .HasColumnName("is_update_data");
+
+                    b.Property<string>("JobClassName")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("job_class_name");
+
+                    b.Property<byte[]>("JobData")
+                        .HasColumnType("bytea")
+                        .HasColumnName("job_data");
+
+                    b.Property<bool>("RequestsRecovery")
+                        .HasColumnType("bool")
+                        .HasColumnName("requests_recovery");
+
+                    b.HasKey("SchedulerName", "JobName", "JobGroup");
+
+                    b.HasIndex("RequestsRecovery")
+                        .HasDatabaseName("idx_qrtz_j_req_recovery");
+
+                    b.ToTable("qrtz_job_details", "quartz");
+                });
+
+            modelBuilder.Entity("Syrna.QuartzAdmin.Quartz.QuartzLock", b =>
+                {
+                    b.Property<string>("SchedulerName")
+                        .HasColumnType("text")
+                        .HasColumnName("sched_name");
+
+                    b.Property<string>("LockName")
+                        .HasColumnType("text")
+                        .HasColumnName("lock_name");
+
+                    b.HasKey("SchedulerName", "LockName");
+
+                    b.ToTable("qrtz_locks", "quartz");
+                });
+
+            modelBuilder.Entity("Syrna.QuartzAdmin.Quartz.QuartzPausedTriggerGroup", b =>
+                {
+                    b.Property<string>("SchedulerName")
+                        .HasColumnType("text")
+                        .HasColumnName("sched_name");
+
+                    b.Property<string>("TriggerGroup")
+                        .HasColumnType("text")
+                        .HasColumnName("trigger_group");
+
+                    b.HasKey("SchedulerName", "TriggerGroup");
+
+                    b.ToTable("qrtz_paused_trigger_grps", "quartz");
+                });
+
+            modelBuilder.Entity("Syrna.QuartzAdmin.Quartz.QuartzSchedulerState", b =>
+                {
+                    b.Property<string>("SchedulerName")
+                        .HasColumnType("text")
+                        .HasColumnName("sched_name");
+
+                    b.Property<string>("InstanceName")
+                        .HasColumnType("text")
+                        .HasColumnName("instance_name");
+
+                    b.Property<long>("CheckInInterval")
+                        .HasColumnType("bigint")
+                        .HasColumnName("checkin_interval");
+
+                    b.Property<long>("LastCheckInTime")
+                        .HasColumnType("bigint")
+                        .HasColumnName("last_checkin_time");
+
+                    b.HasKey("SchedulerName", "InstanceName");
+
+                    b.ToTable("qrtz_scheduler_state", "quartz");
+                });
+
+            modelBuilder.Entity("Syrna.QuartzAdmin.Quartz.QuartzSimplePropertyTrigger", b =>
+                {
+                    b.Property<string>("SchedulerName")
+                        .HasColumnType("text")
+                        .HasColumnName("sched_name");
+
+                    b.Property<string>("TriggerName")
+                        .HasColumnType("text")
+                        .HasColumnName("trigger_name");
+
+                    b.Property<string>("TriggerGroup")
+                        .HasColumnType("text")
+                        .HasColumnName("trigger_group");
+
+                    b.Property<bool?>("BooleanProperty1")
+                        .HasColumnType("bool")
+                        .HasColumnName("bool_prop_1");
+
+                    b.Property<bool?>("BooleanProperty2")
+                        .HasColumnType("bool")
+                        .HasColumnName("bool_prop_2");
+
+                    b.Property<decimal?>("DecimalProperty1")
+                        .HasColumnType("numeric")
+                        .HasColumnName("dec_prop_1");
+
+                    b.Property<decimal?>("DecimalProperty2")
+                        .HasColumnType("numeric")
+                        .HasColumnName("dec_prop_2");
+
+                    b.Property<int?>("IntegerProperty1")
+                        .HasColumnType("integer")
+                        .HasColumnName("int_prop_1");
+
+                    b.Property<int?>("IntegerProperty2")
+                        .HasColumnType("integer")
+                        .HasColumnName("int_prop_2");
+
+                    b.Property<long?>("LongProperty1")
+                        .HasColumnType("bigint")
+                        .HasColumnName("long_prop_1");
+
+                    b.Property<long?>("LongProperty2")
+                        .HasColumnType("bigint")
+                        .HasColumnName("long_prop_2");
+
+                    b.Property<string>("StringProperty1")
+                        .HasColumnType("text")
+                        .HasColumnName("str_prop_1");
+
+                    b.Property<string>("StringProperty2")
+                        .HasColumnType("text")
+                        .HasColumnName("str_prop_2");
+
+                    b.Property<string>("StringProperty3")
+                        .HasColumnType("text")
+                        .HasColumnName("str_prop_3");
+
+                    b.Property<string>("TimeZoneId")
+                        .HasColumnType("text")
+                        .HasColumnName("time_zone_id");
+
+                    b.HasKey("SchedulerName", "TriggerName", "TriggerGroup");
+
+                    b.ToTable("qrtz_simprop_triggers", "quartz");
+                });
+
+            modelBuilder.Entity("Syrna.QuartzAdmin.Quartz.QuartzSimpleTrigger", b =>
+                {
+                    b.Property<string>("SchedulerName")
+                        .HasColumnType("text")
+                        .HasColumnName("sched_name");
+
+                    b.Property<string>("TriggerName")
+                        .HasColumnType("text")
+                        .HasColumnName("trigger_name");
+
+                    b.Property<string>("TriggerGroup")
+                        .HasColumnType("text")
+                        .HasColumnName("trigger_group");
+
+                    b.Property<long>("RepeatCount")
+                        .HasColumnType("bigint")
+                        .HasColumnName("repeat_count");
+
+                    b.Property<long>("RepeatInterval")
+                        .HasColumnType("bigint")
+                        .HasColumnName("repeat_interval");
+
+                    b.Property<long>("TimesTriggered")
+                        .HasColumnType("bigint")
+                        .HasColumnName("times_triggered");
+
+                    b.HasKey("SchedulerName", "TriggerName", "TriggerGroup");
+
+                    b.ToTable("qrtz_simple_triggers", "quartz");
+                });
+
+            modelBuilder.Entity("Syrna.QuartzAdmin.Quartz.QuartzTrigger", b =>
+                {
+                    b.Property<string>("SchedulerName")
+                        .HasColumnType("text")
+                        .HasColumnName("sched_name");
+
+                    b.Property<string>("TriggerName")
+                        .HasColumnType("text")
+                        .HasColumnName("trigger_name");
+
+                    b.Property<string>("TriggerGroup")
+                        .HasColumnType("text")
+                        .HasColumnName("trigger_group");
+
+                    b.Property<string>("CalendarName")
+                        .HasColumnType("text")
+                        .HasColumnName("calendar_name");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text")
+                        .HasColumnName("description");
+
+                    b.Property<long?>("EndTime")
+                        .HasColumnType("bigint")
+                        .HasColumnName("end_time");
+
+                    b.Property<byte[]>("JobData")
+                        .HasColumnType("bytea")
+                        .HasColumnName("job_data");
+
+                    b.Property<string>("JobGroup")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("job_group");
+
+                    b.Property<string>("JobName")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("job_name");
+
+                    b.Property<short?>("MisfireInstruction")
+                        .HasColumnType("smallint")
+                        .HasColumnName("misfire_instr");
+
+                    b.Property<long?>("NextFireTime")
+                        .HasColumnType("bigint")
+                        .HasColumnName("next_fire_time");
+
+                    b.Property<long?>("PreviousFireTime")
+                        .HasColumnType("bigint")
+                        .HasColumnName("prev_fire_time");
+
+                    b.Property<int?>("Priority")
+                        .HasColumnType("integer")
+                        .HasColumnName("priority");
+
+                    b.Property<long>("StartTime")
+                        .HasColumnType("bigint")
+                        .HasColumnName("start_time");
+
+                    b.Property<string>("TriggerState")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("trigger_state");
+
+                    b.Property<string>("TriggerType")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("trigger_type");
+
+                    b.HasKey("SchedulerName", "TriggerName", "TriggerGroup");
+
+                    b.HasIndex("NextFireTime")
+                        .HasDatabaseName("idx_qrtz_t_next_fire_time");
+
+                    b.HasIndex("TriggerState")
+                        .HasDatabaseName("idx_qrtz_t_state");
+
+                    b.HasIndex("NextFireTime", "TriggerState")
+                        .HasDatabaseName("idx_qrtz_t_nft_st");
+
+                    b.HasIndex("SchedulerName", "JobName", "JobGroup");
+
+                    b.ToTable("qrtz_triggers", "quartz");
+                });
 
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLog", b =>
                 {
@@ -1720,6 +2268,92 @@ namespace Syrna.QuartzAdmin.MainDemo.PostgreSql.Migrations
                     b.ToTable("AbpTenantConnectionStrings", (string)null);
                 });
 
+            modelBuilder.Entity("Syrna.QuartzAdmin.ExecutionHistory.QuartzExecutionHistory", b =>
+                {
+                    b.OwnsOne("Syrna.QuartzAdmin.ExecutionHistory.ExecutionHistoryDetail", "ExecutionHistoryDetail", b1 =>
+                        {
+                            b1.Property<long>("LogId")
+                                .HasColumnType("bigint");
+
+                            b1.Property<int?>("ErrorCode")
+                                .HasColumnType("integer");
+
+                            b1.Property<string>("ErrorHelpLink")
+                                .HasMaxLength(1000)
+                                .HasColumnType("character varying(1000)");
+
+                            b1.Property<string>("ErrorStackTrace")
+                                .HasColumnType("text");
+
+                            b1.Property<string>("ExecutionDetails")
+                                .HasColumnType("text");
+
+                            b1.HasKey("LogId");
+
+                            b1.ToTable("QuartzExecutionHistoryDetail", "quartzadmin");
+
+                            b1.WithOwner()
+                                .HasForeignKey("LogId");
+                        });
+
+                    b.Navigation("ExecutionHistoryDetail");
+                });
+
+            modelBuilder.Entity("Syrna.QuartzAdmin.Quartz.QuartzBlobTrigger", b =>
+                {
+                    b.HasOne("Syrna.QuartzAdmin.Quartz.QuartzTrigger", "Trigger")
+                        .WithMany("BlobTriggers")
+                        .HasForeignKey("SchedulerName", "TriggerName", "TriggerGroup")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Trigger");
+                });
+
+            modelBuilder.Entity("Syrna.QuartzAdmin.Quartz.QuartzCronTrigger", b =>
+                {
+                    b.HasOne("Syrna.QuartzAdmin.Quartz.QuartzTrigger", "Trigger")
+                        .WithMany("CronTriggers")
+                        .HasForeignKey("SchedulerName", "TriggerName", "TriggerGroup")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Trigger");
+                });
+
+            modelBuilder.Entity("Syrna.QuartzAdmin.Quartz.QuartzSimplePropertyTrigger", b =>
+                {
+                    b.HasOne("Syrna.QuartzAdmin.Quartz.QuartzTrigger", "Trigger")
+                        .WithMany("SimplePropertyTriggers")
+                        .HasForeignKey("SchedulerName", "TriggerName", "TriggerGroup")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Trigger");
+                });
+
+            modelBuilder.Entity("Syrna.QuartzAdmin.Quartz.QuartzSimpleTrigger", b =>
+                {
+                    b.HasOne("Syrna.QuartzAdmin.Quartz.QuartzTrigger", "Trigger")
+                        .WithMany("SimpleTriggers")
+                        .HasForeignKey("SchedulerName", "TriggerName", "TriggerGroup")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Trigger");
+                });
+
+            modelBuilder.Entity("Syrna.QuartzAdmin.Quartz.QuartzTrigger", b =>
+                {
+                    b.HasOne("Syrna.QuartzAdmin.Quartz.QuartzJobDetail", "JobDetail")
+                        .WithMany("Triggers")
+                        .HasForeignKey("SchedulerName", "JobName", "JobGroup")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("JobDetail");
+                });
+
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLogAction", b =>
                 {
                     b.HasOne("Volo.Abp.AuditLogging.AuditLog", null)
@@ -1860,6 +2494,22 @@ namespace Syrna.QuartzAdmin.MainDemo.PostgreSql.Migrations
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Syrna.QuartzAdmin.Quartz.QuartzJobDetail", b =>
+                {
+                    b.Navigation("Triggers");
+                });
+
+            modelBuilder.Entity("Syrna.QuartzAdmin.Quartz.QuartzTrigger", b =>
+                {
+                    b.Navigation("BlobTriggers");
+
+                    b.Navigation("CronTriggers");
+
+                    b.Navigation("SimplePropertyTriggers");
+
+                    b.Navigation("SimpleTriggers");
                 });
 
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLog", b =>

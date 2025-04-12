@@ -1,15 +1,135 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using Microsoft.Extensions.Logging;
 using Quartz;
 using Quartz.Impl.Matchers;
 using Quartz.Spi;
+using Syrna.QuartzAdmin.Jobs.Abstractions;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 using Volo.Abp;
+using Volo.Abp.Domain.Services;
 
 namespace Syrna.QuartzAdmin.ExecutionHistory;
-
-public class AbpExecutionHistoryPlugin : ISchedulerPlugin, IJobListener
+public abstract class SchedulerListenerBase : DomainService, ISchedulerListener
 {
+    public virtual Task JobAdded(IJobDetail jobDetail, CancellationToken cancellationToken = default)
+    {
+        return Task.CompletedTask;
+    }
+
+    public virtual Task JobDeleted(JobKey jobKey, CancellationToken cancellationToken = default)
+    {
+        return Task.CompletedTask;
+    }
+
+    public virtual Task JobInterrupted(JobKey jobKey, CancellationToken cancellationToken = default)
+    {
+        return Task.CompletedTask;
+    }
+
+    public virtual Task JobPaused(JobKey jobKey, CancellationToken cancellationToken = default)
+    {
+        return Task.CompletedTask;
+    }
+
+    public virtual Task JobResumed(JobKey jobKey, CancellationToken cancellationToken = default)
+    {
+        return Task.CompletedTask;
+    }
+
+    public virtual Task JobScheduled(ITrigger trigger, CancellationToken cancellationToken = default)
+    {
+        return Task.CompletedTask;
+    }
+
+    public virtual Task JobsPaused(string jobGroup, CancellationToken cancellationToken = default)
+    {
+        return Task.CompletedTask;
+    }
+
+    public virtual Task JobsResumed(string jobGroup, CancellationToken cancellationToken = default)
+    {
+        return Task.CompletedTask;
+    }
+
+    public virtual Task JobUnscheduled(TriggerKey triggerKey, CancellationToken cancellationToken = default)
+    {
+        return Task.CompletedTask;
+    }
+
+    public virtual Task SchedulerError(string msg, SchedulerException cause, CancellationToken cancellationToken = default)
+    {
+        return Task.CompletedTask;
+    }
+
+    public virtual Task SchedulerInStandbyMode(CancellationToken cancellationToken = default)
+    {
+        return Task.CompletedTask;
+    }
+
+    public virtual Task SchedulerShutdown(CancellationToken cancellationToken = default)
+    {
+        return Task.CompletedTask;
+    }
+
+    public virtual Task SchedulerShuttingdown(CancellationToken cancellationToken = default)
+    {
+        return Task.CompletedTask;
+    }
+
+    public virtual Task SchedulerStarted(CancellationToken cancellationToken = default)
+    {
+        return Task.CompletedTask;
+    }
+
+    public virtual Task SchedulerStarting(CancellationToken cancellationToken = default)
+    {
+        return Task.CompletedTask;
+    }
+
+    public virtual Task SchedulingDataCleared(CancellationToken cancellationToken = default)
+    {
+        return Task.CompletedTask;
+    }
+
+    public virtual Task TriggerFinalized(ITrigger trigger, CancellationToken cancellationToken = default)
+    {
+        return Task.CompletedTask;
+    }
+
+    public virtual Task TriggerPaused(TriggerKey triggerKey, CancellationToken cancellationToken = default)
+    {
+        return Task.CompletedTask;
+    }
+
+    public virtual Task TriggerResumed(TriggerKey triggerKey, CancellationToken cancellationToken = default)
+    {
+        return Task.CompletedTask;
+    }
+
+    public virtual Task TriggersPaused(string triggerGroup, CancellationToken cancellationToken = default)
+    {
+        return Task.CompletedTask;
+    }
+
+    public virtual Task TriggersResumed(string triggerGroup, CancellationToken cancellationToken = default)
+    {
+        return Task.CompletedTask;
+    }
+}
+
+public class AbpExecutionHistoryPlugin : SchedulerListenerBase, ISchedulerPlugin, IJobListener, ITriggerListener
+{
+    //protected ILoggerFactory LoggerFactory => LazyServiceProvider.LazyGetRequiredService<ILoggerFactory>();
+    //protected ILogger Logger => LazyServiceProvider.LazyGetService<ILogger>(provider => LoggerFactory?.CreateLogger(GetType().FullName!) ?? NullLogger.Instance);
+
+    private const int RESULT_MAX_LENGTH = 8000;
+    private const int MAX_BATCH_SIZE = 50;
+
     private IScheduler _scheduler = null!;
     private IExecutionHistoryStore _store = null!;
 
@@ -26,8 +146,210 @@ public class AbpExecutionHistoryPlugin : ISchedulerPlugin, IJobListener
         return Task.FromResult(0);
     }
 
+    public async override Task JobScheduled(ITrigger trigger, CancellationToken cancellationToken = default)
+    {
+        var jKey = trigger.JobKey;
+        var tKey = trigger.Key;
+        var entry = new ExecutionHistoryEntry()
+        {
+            SchedulerInstanceId = _scheduler.SchedulerInstanceId,
+            SchedulerName = _scheduler.SchedulerName,
+            LogType = LogType.Trigger,
+            JobName = jKey.Name,
+            JobGroup = jKey.Group,
+            TriggerName = tKey.Name,
+            TriggerGroup = tKey.Group,
+            Result = "Job scheduled"
+        };
+        await _store.Save(entry);
+    }
+
+    public async override Task TriggerFinalized(ITrigger trigger, CancellationToken cancellationToken = default)
+    {
+        var jKey = trigger.JobKey;
+        var tKey = trigger.Key;
+        var entry = new ExecutionHistoryEntry()
+        {
+            SchedulerInstanceId = _scheduler.SchedulerInstanceId,
+            SchedulerName = _scheduler.SchedulerName,
+            LogType = LogType.Trigger,
+            JobName = jKey.Name,
+            JobGroup = jKey.Group,
+            TriggerName = tKey.Name,
+            TriggerGroup = tKey.Group,
+            Result = "Trigger ended"
+        };
+        await _store.Save(entry);
+    }
+
+    public async override Task TriggerResumed(TriggerKey triggerKey, CancellationToken cancellationToken = default)
+    {
+        var tKey = triggerKey;
+        var entry = new ExecutionHistoryEntry()
+        {
+            SchedulerInstanceId = _scheduler.SchedulerInstanceId,
+            SchedulerName = _scheduler.SchedulerName,
+            TriggerName = tKey.Name,
+            TriggerGroup = tKey.Group,
+            LogType = LogType.Trigger,
+            Result = "Trigger resumed"
+        };
+        if (entry.JobName == null &&
+            entry.TriggerName != null &&
+            entry.TriggerGroup != null)
+        {
+            // when there is no job name but has trigger name
+            // try to determine the job name
+            var trigger = await _scheduler.GetTrigger(new TriggerKey(entry.TriggerName, entry.TriggerGroup),
+                cancellationToken);
+            if (trigger != null)
+            {
+                entry.JobName = trigger.JobKey.Name;
+                entry.JobGroup = trigger.JobKey.Group;
+            }
+        }
+        await _store.Save(entry);
+    }
+
+    public async override Task TriggerPaused(TriggerKey triggerKey, CancellationToken cancellationToken = default)
+    {
+        var tKey = triggerKey;
+        var entry = new ExecutionHistoryEntry()
+        {
+            SchedulerInstanceId = _scheduler.SchedulerInstanceId,
+            SchedulerName = _scheduler.SchedulerName,
+            TriggerName = tKey.Name,
+            TriggerGroup = tKey.Group,
+            LogType = LogType.Trigger,
+            Result = "Trigger paused"
+        };
+        if (entry.JobName == null &&
+            entry.TriggerName != null &&
+            entry.TriggerGroup != null)
+        {
+            // when there is no job name but has trigger name
+            // try to determine the job name
+            var trigger = await _scheduler.GetTrigger(new TriggerKey(entry.TriggerName, entry.TriggerGroup),
+                cancellationToken);
+            if (trigger != null)
+            {
+                entry.JobName = trigger.JobKey.Name;
+                entry.JobGroup = trigger.JobKey.Group;
+            }
+        }
+        await _store.Save(entry);
+    }
+
+    public async Task TriggerMisfired(ITrigger trigger, CancellationToken cancellationToken = default)
+    {
+        var jKey = trigger.JobKey;
+        var tKey = trigger.Key;
+        var entry = new ExecutionHistoryEntry()
+        {
+            SchedulerInstanceId = _scheduler.SchedulerInstanceId,
+            SchedulerName = _scheduler.SchedulerName,
+            LogType = LogType.Trigger,
+            JobName = jKey.Name,
+            JobGroup = jKey.Group,
+            TriggerName = tKey.Name,
+            TriggerGroup = tKey.Group,
+            Result = "Trigger misfired"
+        };
+        await _store.Save(entry);
+    }
+
+    public async override Task SchedulerError(string msg, SchedulerException cause, CancellationToken cancellationToken = default)
+    {
+        var entry = new ExecutionHistoryEntry()
+        {
+            SchedulerInstanceId = _scheduler.SchedulerInstanceId,
+            SchedulerName = _scheduler.SchedulerName,
+            LogType = LogType.System,
+            IsException = true,
+            ErrorMessage = msg,
+            ExecutionHistoryDetail = new()
+            {
+                ErrorStackTrace = cause.NonNullStackTrace()
+            }
+        };
+        await _store.Save(entry);
+    }
+
+    public async override Task JobInterrupted(JobKey jobKey, CancellationToken cancellationToken = default)
+    {
+        var jKey = jobKey;
+        var entry = new ExecutionHistoryEntry
+        {
+            SchedulerInstanceId = _scheduler.SchedulerInstanceId,
+            SchedulerName = _scheduler.SchedulerName,
+            JobName = jKey.Name,
+            JobGroup = jKey.Group,
+            LogType = LogType.System,
+            Result = "Job interrupted"
+        };
+        await _store.Save(entry);
+    }
+
+    public async override Task JobDeleted(JobKey jobKey, CancellationToken cancellationToken = default)
+    {
+        JobKey jKey = jobKey;
+        var entry = new ExecutionHistoryEntry()
+        {
+            SchedulerInstanceId = _scheduler.SchedulerInstanceId,
+            SchedulerName = _scheduler.SchedulerName,
+            JobName = jKey.Name,
+            JobGroup = jKey.Group,
+            LogType = LogType.System,
+            Result = "Job deleted"
+        };
+        await _store.Save(entry);
+    }
+
+    public async Task JobExecutionVetoed(IJobExecutionContext context, CancellationToken cancellationToken = default)
+    {
+        var log = CreateScheduleJobLogEntry(context, defaultIsSuccess: false);
+        log.IsVetoed = true;
+        await _store.Save(log);
+        //var entry = await _store.Get(context.FireInstanceId);
+        //if (entry != null)
+        //{
+        //    var log = CreateScheduleJobLogEntry(context, defaultIsSuccess: false);
+        //    log.IsVetoed = true;
+        //    await _store.Save(log);
+        //}
+    }
+
+    public async Task JobWasExecuted(IJobExecutionContext context, JobExecutionException jobException, CancellationToken cancellationToken = default)
+    {
+        //var entry = await _store.Get(context.FireInstanceId);
+        //if (entry != null)
+        //{
+        //    entry.FinishedTimeUtc = DateTime.UtcNow;
+        //    entry.ErrorMessage = jobException?.GetBaseException()?.ToString();
+        //}
+        //else
+        //{
+        //    entry = CreateScheduleJobLogEntry(context, jobException, true);
+        //}
+        var entry = CreateScheduleJobLogEntry(context, jobException, true);
+        entry.FinishedTimeUtc = DateTime.UtcNow;
+        await _store.Save(entry);
+
+        if (jobException == null)
+            await _store.IncrementTotalJobsExecuted();
+        else
+            await _store.IncrementTotalJobsFailed();
+    }
+
+    public async Task JobToBeExecuted(IJobExecutionContext context, CancellationToken cancellationToken = default)
+    {
+        var entry = CreateScheduleJobLogEntry(context);
+        await _store.Save(entry);
+    }
+
     public async Task Start(CancellationToken cancellationToken = default)
     {
+        Logger.LogInformation("Plugin start");
         _store = _scheduler.Context.GetExecutionHistoryStore();
 
         if (_store == null)
@@ -40,7 +362,135 @@ public class AbpExecutionHistoryPlugin : ISchedulerPlugin, IJobListener
         if (_store is AbpExecutionHistoryStore abpStore)
             await abpStore.InitializeSummaryAsync();
 
-        await _store.Purge();
+        //await _store.Purge();
+        await PrepareAutoJobs();
+        await RegisterAutoJobsAsync(cancellationToken);
+        await MarkIncompleteExecution(cancellationToken);
+    }
+
+    internal async Task MarkIncompleteExecution(CancellationToken stoppingToken)
+    {
+        try
+        {
+            await _store.MarkExecutingJobAsIncomplete();
+        }
+        catch (OperationCanceledException)
+        {
+            // Prevent throwing if stoppingToken was signaled
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error occurred while updating executing status to incomplete status.");
+        }
+    }
+
+    public async Task PrepareAutoJobs()
+    {
+        var type = typeof(IJob);
+        var types = JobsListHelper.GetQuartzAdminJobs();
+        foreach (var t in types)
+        {
+            var so = t.GetCustomAttribute<QuartzTriggerAttribute>();
+            await PrepareAutoJob(t, () =>
+            {
+                if (!so.Manual)
+                {
+                    var tb = TriggerBuilder.Create();
+                    tb.WithSimpleSchedule(x =>
+                    {
+                        x.WithInterval(so.WithInterval);
+                        if (so.RepeatCount > 0)
+                        {
+                            x.WithRepeatCount(so.RepeatCount);
+
+                        }
+                        else
+                        {
+                            x.RepeatForever();
+                        }
+                    });
+                    if (so.StartAt == DateTimeOffset.MinValue)
+                    {
+                        tb.StartNow();
+                    }
+                    else
+                    {
+                        tb.StartAt(so.StartAt);
+                    }
+
+                    var tk = new TriggerKey(!string.IsNullOrEmpty(so.TriggerName) ? so.TriggerName : $"{t.Name}'s Trigger");
+                    if (!string.IsNullOrEmpty(so.TriggerGroup))
+                    {
+                        so.TriggerGroup = so.TriggerGroup;
+                    }
+                    tb.WithIdentity(tk);
+                    tb.WithDescription(so.TriggerDescription ?? $"{t.Name}'s Trigger,full name is {t.FullName}");
+                    if (so.Priority > 0) tb.WithPriority(so.Priority);
+                    return tb;
+                }
+                else
+                {
+                    return null;
+                }
+            });
+        }
+    }
+
+    public async Task PrepareAutoJob(Type t, Func<TriggerBuilder> triggerBuilders_func)
+    {
+        var lst = new List<TriggerBuilder>();
+        var tb = triggerBuilders_func?.Invoke();
+        if (tb != null)
+        {
+            lst.Add(tb);
+        }
+        await PrepareAutoJob(t, lst);
+    }
+    protected IEnumerable<IScheduleJob> _scheduleJobs => LazyServiceProvider.LazyGetRequiredService<IEnumerable<IScheduleJob>>();
+
+    public async Task PrepareAutoJob(Type t, IEnumerable<TriggerBuilder> triggerBuilders)
+    {
+        var job = from js in _scheduleJobs where js.JobDetail.JobType == t select js;
+        if (job.Any())
+        {
+            var scheduleJob = job.First();
+            var lstgs = (List<ITrigger>)scheduleJob.Triggers;
+            triggerBuilders.ToList().ForEach(triggerBuilder =>
+            {
+                lstgs.Add(triggerBuilder.ForJob(scheduleJob.JobDetail).Build());
+            });
+        }
+        await Task.CompletedTask;
+    }
+
+    public async Task RegisterAutoJobsAsync(CancellationToken cancellationToken)
+    {
+        if (_scheduleJobs == null || !_scheduleJobs.Any())
+            return;
+
+        foreach (var scheduleJob in _scheduleJobs)
+        {
+            var isNewJob = true;
+            foreach (var trigger in scheduleJob.Triggers)
+            {
+
+                if (isNewJob)
+                {
+                    if (!(await _scheduler.CheckExists(scheduleJob.JobDetail.Key, cancellationToken)))
+                    {
+                        await _scheduler.ScheduleJob(scheduleJob.JobDetail, trigger, cancellationToken);
+                    }
+                }
+                else
+                {
+                    if (!(await _scheduler.CheckExists(trigger.Key, cancellationToken)))
+                    {
+                        await _scheduler.ScheduleJob(trigger, cancellationToken);
+                    }
+                }
+                isNewJob = false;
+            }
+        }
     }
 
     public Task Shutdown(CancellationToken cancellationToken = default)
@@ -48,61 +498,152 @@ public class AbpExecutionHistoryPlugin : ISchedulerPlugin, IJobListener
         return Task.CompletedTask;
     }
 
-    public async Task JobToBeExecuted(IJobExecutionContext context, CancellationToken cancellationToken = default)
+    private ExecutionHistoryEntry CreateScheduleJobLogEntry(IJobExecutionContext context, JobExecutionException jobException = null, bool? defaultIsSuccess = null)
     {
-        var entry = new ExecutionHistoryEntry()
+        var log = new ExecutionHistoryEntry
         {
+            SchedulerInstanceId = _scheduler.SchedulerInstanceId,
+            SchedulerName = _scheduler.SchedulerName,
             FireInstanceId = context.FireInstanceId,
-            SchedulerInstanceId = context.Scheduler.SchedulerInstanceId,
-            SchedulerName = context.Scheduler.SchedulerName,
-            ActualFireTimeUtc = context.FireTimeUtc.UtcDateTime,
-            ScheduledFireTimeUtc = context.ScheduledFireTimeUtc?.UtcDateTime,
-            Recovering = context.Recovering,
-            Job = context.JobDetail.Key.ToString(),
-            Trigger = context.Trigger.Key.ToString(),
+            JobGroup = context.JobDetail.Key.Group,
+            JobName = context.JobDetail.Key.Name,
+            TriggerName = context.Trigger.Key.Name,
+            TriggerGroup = context.Trigger.Key.Group,
+            FireTimeUtc = context.FireTimeUtc,
+            ScheduledFireTimeUtc = context.ScheduledFireTimeUtc,
+            RetryCount = context.RefireCount,
+            JobRunTime = context.JobRunTime,
+            LogType = LogType.ScheduleJob
         };
-        await _store.Save(entry);
-    }
+        var logDetail = new ExecutionHistoryDetail();
 
-    public async Task JobWasExecuted(IJobExecutionContext context, JobExecutionException jobException, CancellationToken cancellationToken = default)
-    {
-        var entry = await _store.Get(context.FireInstanceId);
-        if (entry != null)
+        log.ReturnCode = context.GetReturnCode();
+        log.IsSuccess = context.GetIsSuccess();
+
+        if (log.IsSuccess is null)
+            log.IsSuccess = defaultIsSuccess;
+
+        var execDetail = context.GetExecutionDetails();
+        if (!string.IsNullOrEmpty(execDetail))
         {
-            entry.FinishedTimeUtc = DateTime.UtcNow;
-            entry.ExceptionMessage = jobException?.GetBaseException()?.ToString();
+            logDetail.ExecutionDetails = execDetail;
+            log.ExecutionHistoryDetail = logDetail;
+        }
+
+        if (jobException != null)
+        {
+            log.ErrorMessage = jobException.Message;
+            log.ExecutionHistoryDetail = logDetail;
+            logDetail.ErrorCode = jobException.HResult;
+            logDetail.ErrorStackTrace = jobException.ToString();
+            logDetail.ErrorHelpLink = jobException.HelpLink;
+
+            if (log.ReturnCode == null)
+                log.ReturnCode = jobException.HResult.ToString();
+
+            log.IsException = true;
+            log.IsSuccess = false;
         }
         else
         {
-            entry = new ExecutionHistoryEntry()
+            if (context.Result != null)
             {
-                FireInstanceId = context.FireInstanceId,
-                SchedulerInstanceId = context.Scheduler.SchedulerInstanceId,
-                SchedulerName = context.Scheduler.SchedulerName,
-                ActualFireTimeUtc = context.FireTimeUtc.UtcDateTime,
-                ScheduledFireTimeUtc = context.ScheduledFireTimeUtc?.UtcDateTime,
-                Recovering = context.Recovering,
-                Job = context.JobDetail.Key.ToString(),
-                Trigger = context.Trigger.Key.ToString(),
-                FinishedTimeUtc = DateTime.UtcNow,
-                ExceptionMessage = jobException?.GetBaseException()?.ToString()
-            };
+                var result = Convert.ToString(context.Result, CultureInfo.InvariantCulture);
+                log.Result = result?.Substring(0, Math.Min(result.Length, RESULT_MAX_LENGTH));
+            }
         }
-        await _store.Save(entry);
 
-        if (jobException == null)
-            await _store.IncrementTotalJobsExecuted();
-        else
-            await _store.IncrementTotalJobsFailed();
+        return log;
     }
 
-    public async Task JobExecutionVetoed(IJobExecutionContext context, CancellationToken cancellationToken = default)
+    public Task TriggerFired(ITrigger trigger, IJobExecutionContext context, CancellationToken cancellationToken = default)
     {
-        var entry = await _store.Get(context.FireInstanceId);
-        if (entry != null)
-        {
-            entry.Vetoed = true;
-            await _store.Save(entry);
-        }
+        return Task.CompletedTask;
+    }
+
+    public Task<bool> VetoJobExecution(ITrigger trigger, IJobExecutionContext context, CancellationToken cancellationToken = default)
+    {
+        return Task.FromResult(false);
+    }
+
+    public Task TriggerComplete(ITrigger trigger, IJobExecutionContext context, SchedulerInstruction triggerInstructionCode, CancellationToken cancellationToken = default)
+    {
+        return Task.CompletedTask;
+    }
+
+    //public Task JobUnscheduled(TriggerKey triggerKey, CancellationToken cancellationToken = default)
+    //{
+    //    return Task.CompletedTask;
+    //}
+
+    //public Task TriggersPaused(string triggerGroup, CancellationToken cancellationToken = default)
+    //{
+    //    return Task.CompletedTask;
+    //}
+
+    //public Task TriggersResumed(string triggerGroup, CancellationToken cancellationToken = default)
+    //{
+    //    return Task.CompletedTask;
+    //}
+
+    //public Task JobAdded(IJobDetail jobDetail, CancellationToken cancellationToken = default)
+    //{
+    //    return Task.CompletedTask;
+    //}
+
+    //public Task JobPaused(JobKey jobKey, CancellationToken cancellationToken = default)
+    //{
+    //    return Task.CompletedTask;
+    //}
+
+    //public Task JobsPaused(string jobGroup, CancellationToken cancellationToken = default)
+    //{
+    //    return Task.CompletedTask;
+    //}
+
+    //public Task JobResumed(JobKey jobKey, CancellationToken cancellationToken = default)
+    //{
+    //    return Task.CompletedTask;
+    //}
+
+    //public Task JobsResumed(string jobGroup, CancellationToken cancellationToken = default)
+    //{
+    //    return Task.CompletedTask;
+    //}
+
+    public override Task SchedulerInStandbyMode(CancellationToken cancellationToken = default)
+    {
+        Logger.LogInformation("Plugin SchedulerInStandbyMode");
+        return Task.CompletedTask;
+    }
+
+    public override Task SchedulerStarted(CancellationToken cancellationToken = default)
+    {
+        Logger.LogInformation("Plugin SchedulerStarted");
+        return Task.CompletedTask;
+    }
+
+    public override Task SchedulerStarting(CancellationToken cancellationToken = default)
+    {
+        Logger.LogInformation("Plugin SchedulerStarting");
+        return Task.CompletedTask;
+    }
+
+    public override Task SchedulerShutdown(CancellationToken cancellationToken = default)
+    {
+        Logger.LogInformation("Plugin SchedulerShutdown");
+        return Task.CompletedTask;
+    }
+
+    public override Task SchedulerShuttingdown(CancellationToken cancellationToken = default)
+    {
+        Logger.LogInformation("Plugin SchedulerShuttingdown");
+        return Task.CompletedTask;
+    }
+
+    public override Task SchedulingDataCleared(CancellationToken cancellationToken = default)
+    {
+        Logger.LogInformation("Plugin SchedulingDataCleared");
+        return Task.CompletedTask;
     }
 }
