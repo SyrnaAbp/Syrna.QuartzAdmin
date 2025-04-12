@@ -123,6 +123,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Syrna.QuartzAdmin.MainDemo.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Syrna.QuartzAdmin.Jobs.Abstractions", "modules\src\Syrna.QuartzAdmin.Jobs.Abstractions\Syrna.QuartzAdmin.Jobs.Abstractions.csproj", "{C3D2F97F-2522-A23D-412E-73201C96D291}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Syrna.QuartzAdmin.AspNetCore", "modules\src\Syrna.QuartzAdmin.AspNetCore\Syrna.QuartzAdmin.AspNetCore.csproj", "{965A7B5D-CFBE-C644-843A-DC8531D64885}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -297,6 +299,10 @@ Global
 		{C3D2F97F-2522-A23D-412E-73201C96D291}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C3D2F97F-2522-A23D-412E-73201C96D291}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C3D2F97F-2522-A23D-412E-73201C96D291}.Release|Any CPU.Build.0 = Release|Any CPU
+		{965A7B5D-CFBE-C644-843A-DC8531D64885}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{965A7B5D-CFBE-C644-843A-DC8531D64885}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{965A7B5D-CFBE-C644-843A-DC8531D64885}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{965A7B5D-CFBE-C644-843A-DC8531D64885}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -349,6 +355,7 @@ Global
 		{AB1E9AAE-8D95-EBD7-6653-D4BDB623C7FF} = {E400416D-2895-4512-9D17-90681EEC7E0A}
 		{6C794913-35C1-2CDF-A2AF-ED26565348B1} = {F4EB94DD-4501-47C9-8BCF-2CE1A16C65BD}
 		{C3D2F97F-2522-A23D-412E-73201C96D291} = {649A3FFA-182F-4E56-9717-E6A9A2BEC545}
+		{965A7B5D-CFBE-C644-843A-DC8531D64885} = {649A3FFA-182F-4E56-9717-E6A9A2BEC545}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4324B3B4-B60B-4E3C-91D8-59576B4E26DD}

@@ -68,9 +68,11 @@
 	</ItemGroup>
 	
 	<ItemGroup>
+		<ProjectReference Include="..\..\..\..\modules\src\Syrna.QuartzAdmin.AspNetCore\Syrna.QuartzAdmin.AspNetCore.csproj" />
 		<ProjectReference Include="..\..\src\Syrna.QuartzAdmin.MainDemo.Application\Syrna.QuartzAdmin.MainDemo.Application.csproj" />
 		<ProjectReference Include="..\..\src\Syrna.QuartzAdmin.MainDemo.Domain\Syrna.QuartzAdmin.MainDemo.Domain.csproj" />
 		<ProjectReference Include="..\..\src\Syrna.QuartzAdmin.MainDemo.HttpApi\Syrna.QuartzAdmin.MainDemo.HttpApi.csproj" />
+		<ProjectReference Include="..\..\src\Syrna.QuartzAdmin.MainDemo.Jobs\Syrna.QuartzAdmin.MainDemo.Jobs.csproj" />
 		<!--<ProjectReference Include="..\..\src\Syrna.QuartzAdmin.MainDemo.EntityFrameworkCore\Syrna.QuartzAdmin.MainDemo.EntityFrameworkCore.csproj" />-->
 		<ProjectReference Include="..\..\src\Syrna.QuartzAdmin.MainDemo.PostgreSql.EntityFrameworkCore\Syrna.QuartzAdmin.MainDemo.PostgreSql.EntityFrameworkCore.csproj" />
 	</ItemGroup>

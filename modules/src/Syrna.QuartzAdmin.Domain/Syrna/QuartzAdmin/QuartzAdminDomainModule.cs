@@ -16,12 +16,13 @@ namespace Syrna.QuartzAdmin
         {
             var configuration = context.ServiceProvider.GetRequiredService<IConfiguration>();
             var quartzOptions = configuration.GetSection("Quartz");
-            if (quartzOptions == null)
+            if (quartzOptions != null)
             {
-                if (quartzOptions["Enabled"] == "true") { }
-                var scheduler = context.ServiceProvider.GetRequiredService<IScheduler>();
-                var executionHistoryStore = context.ServiceProvider.GetRequiredService<AbpExecutionHistoryStore>();
-                scheduler.Context.SetExecutionHistoryStore(executionHistoryStore);
+                if (quartzOptions["Enabled"]?.ToLower() == "true") {
+                    var scheduler = context.ServiceProvider.GetRequiredService<IScheduler>();
+                    var executionHistoryStore = context.ServiceProvider.GetRequiredService<AbpExecutionHistoryStore>();
+                    scheduler.Context.SetExecutionHistoryStore(executionHistoryStore);
+                }
             }
         }
     }

@@ -18,6 +18,7 @@ using StackExchange.Redis;
 using Syrna.Alpha.SilkierQuartz.PostgreSql.EntityFrameworkCore;
 using Syrna.QuartzAdmin.ExecutionHistory;
 using Syrna.QuartzAdmin.MainDemo.EntityFrameworkCore;
+using Syrna.QuartzAdmin.MainDemo.Jobs;
 using Syrna.QuartzAdmin.MainDemo.MultiTenancy;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -67,6 +68,7 @@ namespace Syrna.QuartzAdmin.MainDemo;
 [DependsOn(typeof(MainDemoEntityFrameworkCoreModule))]
 //[DependsOn(typeof(MainDemoEntityFrameworkCorePostgreSqlModule))]
 [DependsOn(typeof(AbpQuartzModule))]
+[DependsOn(typeof(MainDemoJobsModule))]
 
 public class MainDemoHttpApiHostModule : AbpModule
 {
@@ -115,7 +117,7 @@ public class MainDemoHttpApiHostModule : AbpModule
         }
 
         var quartzEnable = configuration["Quartz:Enabled"];
-        if (quartzEnable == "true")
+        if (quartzEnable?.ToLower() == "true")
         {
             PreConfigure<AbpQuartzOptions>(options =>
             {
@@ -145,14 +147,8 @@ public class MainDemoHttpApiHostModule : AbpModule
                     configure.AddSchedulerListener<SampleSchedulerListener>();
                 };
             });
+            context.Services.AddQuartzAdmin();
         }
-
-        //// ASP.NET Core hosting
-        //context.Services.AddQuartzServer(options =>
-        //{
-        //    // when shutting down we want jobs to complete gracefully
-        //    options.WaitForJobsToComplete = true;
-        //});
     }
 
     private static void AutoLocalizationResourceContributors(IServiceCollection services)
@@ -248,9 +244,6 @@ public class MainDemoHttpApiHostModule : AbpModule
             );
         });
 
-        //var scheduler = context.ServiceProvider.GetRequiredService<IScheduler>();
-        //var executionHistoryStore = context.ServiceProvider.GetRequiredService<AbpExecutionHistoryStore>();
-        //scheduler.Context.SetExecutionHistoryStore(executionHistoryStore);
     }
 
     private void ConfigureAuthentication(ServiceConfigurationContext context)
@@ -428,6 +421,7 @@ public class MainDemoHttpApiHostModule : AbpModule
         app.UseAbpSerilogEnrichers();
         //TODO
         //app.UseMainDemoSerilogEnrichers();
+        //app.UseQuartzAdmin();
         app.UseConfiguredEndpoints();
     }
 

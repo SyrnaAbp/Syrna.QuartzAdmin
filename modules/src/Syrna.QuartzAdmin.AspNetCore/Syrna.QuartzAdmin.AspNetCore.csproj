@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<Import Project="..\..\..\common.props" />
+	<Import Project="..\..\..\configureawait.props" />
+	<Import Project="..\..\..\packing.props" />
+
+	<PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <AssetTargetFallback>$(AssetTargetFallback);portable-net45+win8+wp8+wpa81;</AssetTargetFallback>
+        <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+        <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+        <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+        <OutputType>Library</OutputType>
+        <NoDefaultLaunchSettingsFile>true</NoDefaultLaunchSettingsFile>
+        <RootNamespace />
+    </PropertyGroup>
+
+    <ItemGroup>
+		<PackageReference Include="Volo.Abp.AspNetCore" />
+		<PackageReference Include="Volo.Abp.MultiTenancy" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Quartz" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Syrna.QuartzAdmin.Jobs.Abstractions\Syrna.QuartzAdmin.Jobs.Abstractions.csproj" />
+    </ItemGroup>
+
+</Project>
