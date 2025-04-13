@@ -28,7 +28,7 @@ namespace Syrna.QuartzAdmin.Scheduler
         {
             try
             {
-                var metaData = await Scheduler.GetMetaData().ConfigureAwait(false);
+                var metaData = await Scheduler.GetMetaData();
                 return SchedulerDetails.Create(Scheduler, metaData);
             }
             catch (Exception ex)
@@ -49,11 +49,11 @@ namespace Syrna.QuartzAdmin.Scheduler
             {
                 if (delayMilliseconds == null)
                 {
-                    await Scheduler.Start().ConfigureAwait(false);
+                    await Scheduler.Start();
                 }
                 else
                 {
-                    await Scheduler.StartDelayed(TimeSpan.FromMilliseconds(delayMilliseconds.Value)).ConfigureAwait(false);
+                    await Scheduler.StartDelayed(TimeSpan.FromMilliseconds(delayMilliseconds.Value));
                 }
 
                 return ApiResponse.Success();
@@ -93,7 +93,7 @@ namespace Syrna.QuartzAdmin.Scheduler
         {
             try
             {
-                await Scheduler.Clear().ConfigureAwait(false);
+                await Scheduler.Clear();
                 return ApiResponse.Success();
             }
             catch (Exception ex)
@@ -115,7 +115,7 @@ namespace Syrna.QuartzAdmin.Scheduler
         {
             try
             {
-                await Scheduler.Shutdown(waitForJobsToComplete).ConfigureAwait(false);
+                await Scheduler.Shutdown(waitForJobsToComplete);
                 return ApiResponse.Success();
             }
             catch (Exception ex)
@@ -136,7 +136,7 @@ namespace Syrna.QuartzAdmin.Scheduler
         {
             try
             {
-                await Scheduler.Clear().ConfigureAwait(false);
+                await Scheduler.Clear();
                 var metaData = await Scheduler.GetCurrentlyExecutingJobs();
                 var model = metaData
                     .Select(context => ExecutingJobContext.Create(context))
@@ -353,9 +353,9 @@ namespace Syrna.QuartzAdmin.Scheduler
         }
 
         [HttpGet]
-        public async Task<SchedulerMetaData> GetMetadataAsync()
+        public async Task<SchedulerMetaDataDto> GetMetadataAsync()
         {
-            return await Scheduler.GetMetaData();
+            return SchedulerMetaDataDto.Create(await Scheduler.GetMetaData());
         }
 
         [HttpPost]
@@ -392,13 +392,13 @@ namespace Syrna.QuartzAdmin.Scheduler
             var trigger = BuildTrigger(newTriggerModel, newJob.Key);
             // determine if old triggerKey exists
             if (oldTriggerKey != null &&
-                await Scheduler.CheckExists(oldTriggerKey.ToTriggerKey()).ConfigureAwait(false))
+                await Scheduler.CheckExists(oldTriggerKey.ToTriggerKey()))
             {
                 await Scheduler.UnscheduleJob(oldTriggerKey.ToTriggerKey())
-                    .ConfigureAwait(false);
+                    ;
             }
 
-            var existingTriggers = await Scheduler.GetTriggersOfJob(oJobKey).ConfigureAwait(false);
+            var existingTriggers = await Scheduler.GetTriggersOfJob(oJobKey);
 
             // assign new job to all triggers
             var triggers = existingTriggers.Select(t =>
@@ -411,10 +411,10 @@ namespace Syrna.QuartzAdmin.Scheduler
             triggers.Add(trigger);
 
             // delete old job
-            await Scheduler.DeleteJob(oJobKey).ConfigureAwait(false);
+            await Scheduler.DeleteJob(oJobKey);
 
             // save new job with triggers
-            await Scheduler.ScheduleJob(newJob, triggers, replace: true).ConfigureAwait(false);
+            await Scheduler.ScheduleJob(newJob, triggers, replace: true);
         }
 
         [HttpGet]

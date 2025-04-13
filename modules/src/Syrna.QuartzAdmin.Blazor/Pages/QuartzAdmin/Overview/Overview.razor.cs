@@ -31,10 +31,9 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Overview
 
         [Inject] IExecutionLogAppService LogSvc { get; set; } = null!;
         [Inject] ISchedulerAppService SchSvc { get; set; } = null!;
-        //[Inject] ISchedulerListenerService SchLisSvc { get; set; } = null!;
 
         private DataGrid<ExecutionLogDto> table = null!;
-        private ExecutionLogFilter _errorExecutionLogFilter = new ExecutionLogFilter
+        private ExecutionLogFilter _errorExecutionLogFilter = new()
         {
             ErrorOnly = true,
             LogTypes = new HashSet<LogType> { LogType.ScheduleJob },
@@ -42,9 +41,9 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Overview
 
         private DateTimeOffset? RunningSince;
 
-        private IEnumerable<ExecutionLogDto> ErrorLogPagedList;
-        private long _firstLogId;
-        private OrderedDictionary SchedulerInfo = new();
+        protected List<ExecutionLogDto> ErrorLogPagedList { get; set; }
+        //private long _firstLogId;
+        private OrderedDictionary SchedulerInfo = [];
 
         private bool IsPauseResumeDisabled;
         private bool IsStartStandbyDisabled;
@@ -59,7 +58,7 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Overview
         private int SysTriggerCount;
         private int TotalLogDays { get; set; }
         protected int PageSize { get; set; } = 10;
-        protected int ErrorLogTotalItems { get; set; } = 1;
+        protected int ErrorLogTotalItems { get; set; } = 0;
 
         private string[] Labels;
         private List<string> borderColors = [
@@ -166,39 +165,46 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Overview
         private DateTimeOffset lastCaptureDate = DateTimeOffset.Now.Date;
         #endregion charts
 
-        #region Refresh timer
         private Timer _refreshTimer;
+        private Timer _trackTimer;
         private const int REFRESH_IN_MS = 10000;
         private bool AutoRefresh = true;
-        #endregion Refresh timer
 
         public Overview()
         {
             LocalizationResource = typeof(QuartzAdminResource);
         }
 
-        protected override async Task OnInitializedAsync()
-        {
-            Labels = [L["Success"], L["Failed"], L["Working"]];
-            //await Task.Run(RegisterEventListeners);
-            await LoadInfo();
-        }
+        //protected override async Task OnInitializedAsync()
+        //{
+        //}
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
             {
+                Labels = [L["Success"], L["Failed"], L["Working"]];
+                await LoadInfo();
                 await Task.WhenAll(RefreshErrorLogs(),
                 RefreshSchedulesCount(),
                 RefreshLogSummary(),
                 LoadYesterdaysLogSummary());
 
+                _trackTimer = new Timer(async (_) =>
+                {
+                    await InvokeAsync(async () =>
+                    {
+                        await RefreshStatus();
+
+                        // Update the UI
+                        StateHasChanged();
+                    });
+                }, null, REFRESH_IN_MS, REFRESH_IN_MS);
+
                 _refreshTimer = new Timer(async (_) =>
                 {
                     await InvokeAsync(async () =>
                     {
-                        //_logger.LogInformation("{time} Refresh trade summary", DateTime.Now);
-                        RefreshUptime();
                         await Task.WhenAll(RefreshErrorLogs(),
                             RefreshSchedulesCount(),
                             RefreshLogSummary());
@@ -211,23 +217,7 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Overview
             }
         }
 
-        //private void UnRegisterEventListeners()
-        //{
-        //    SchLisSvc.OnSchedulerInStandbyMode -= SchLisSvc_OnSchedulerInStandbyMode;
-        //    SchLisSvc.OnSchedulerShutdown -= SchLisSvc_OnSchedulerShutdown;
-        //    SchLisSvc.OnSchedulerStarted -= SchLisSvc_OnSchedulerStarted;
-        //    SchLisSvc.OnSchedulerStarting -= SchLisSvc_OnSchedulerStarting;
-        //}
-
-        //private void RegisterEventListeners()
-        //{
-        //    SchLisSvc.OnSchedulerInStandbyMode += SchLisSvc_OnSchedulerInStandbyMode;
-        //    SchLisSvc.OnSchedulerShutdown += SchLisSvc_OnSchedulerShutdown;
-        //    SchLisSvc.OnSchedulerStarted += SchLisSvc_OnSchedulerStarted;
-        //    SchLisSvc.OnSchedulerStarting += SchLisSvc_OnSchedulerStarting;
-        //}
-
-        private async void SchLisSvc_OnSchedulerStarting(object sender, CancellationToken e)
+        private async Task OnSchedulerStarting()
         {
             await InvokeAsync(() =>
             {
@@ -238,12 +228,11 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Overview
             });
         }
 
-        private async void SchLisSvc_OnSchedulerStarted(object sender, CancellationToken e)
+        private async Task OnSchedulerStarted()
         {
             await InvokeAsync(async () =>
             {
                 await Notify.Info(L["SchedulerStarted"]);
-                await LoadInfo();
                 IsStartStandbyDisabled = false;
                 StartAutoRefresh();
 
@@ -251,24 +240,22 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Overview
             });
         }
 
-        private async void SchLisSvc_OnSchedulerShutdown(object sender, CancellationToken e)
+        private async Task OnSchedulerShutdown()
         {
             await InvokeAsync(async () =>
             {
                 await Notify.Info(L["SchedulerWasShutdown"]);
-                await LoadInfo();
                 StopAutoRefresh();
 
                 StateHasChanged();
             });
         }
 
-        private async void SchLisSvc_OnSchedulerInStandbyMode(object sender, CancellationToken e)
+        private async Task OnSchedulerInStandbyMode()
         {
             await InvokeAsync(async () =>
             {
                 await Notify.Info(L["SchedulerInStandbyMode"]);
-                await LoadInfo();
                 StopAutoRefresh();
 
                 StateHasChanged();
@@ -279,9 +266,8 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Overview
         private async Task RefreshLogSummary()
         {
             var todayDateUtc = DateTime.Now.Date.ToUniversalTime();
-            var today = await LogSvc.GetJobExecutionStatusSummary(
-                todayDateUtc);
-            var allTime = await LogSvc.GetJobExecutionStatusSummary(null);
+            var today = await LogSvc.GetJobExecutionStatusSummary(new JobExecutionStatusSummaryReadArgs { EndTimeUtc = todayDateUtc });
+            var allTime = await LogSvc.GetJobExecutionStatusSummary(new JobExecutionStatusSummaryReadArgs { EndTimeUtc = null });
             var nowDate = DateTimeOffset.Now.Date;
 
             if (today.Data.Count == 0)
@@ -330,7 +316,7 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Overview
         {
             var todayDateUtc = DateTime.Now.Date.ToUniversalTime();
             var yesterdayDateUtc = DateTime.Now.Date.AddDays(-1).ToUniversalTime();
-            var yesterday = await LogSvc.GetJobExecutionStatusSummary(yesterdayDateUtc, todayDateUtc.AddMilliseconds(-1));
+            var yesterday = await LogSvc.GetJobExecutionStatusSummary(new JobExecutionStatusSummaryReadArgs { EndTimeUtc = yesterdayDateUtc, StartTimeUtc = todayDateUtc.AddMilliseconds(-1) });
             if (!yesterday.Data.Any())
             {
                 YesterdaysLogData = EmptyData;
@@ -368,20 +354,20 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Overview
             }
             else
             {
-                pageMeta =new PageMetadata { Page = state.CurrentPage - 1, PageSize = state.PageSize };
+                pageMeta = new PageMetadata { Page = state.CurrentPage - 1, PageSize = state.PageSize };
             }
-            var args=new ExecutionLogReadArgs
+            var args = new ExecutionLogReadArgs
             {
                 Filter = _errorExecutionLogFilter,
                 PageMetadata = pageMeta,
-                FirstLogId = _firstLogId
+                //FirstLogId = _firstLogId
             };
             var data = await LogSvc.GetExecutionLogs(args);
-            ErrorLogPagedList = data.Items;
-            if (pageMeta.Page == 0)
-            {
-                _firstLogId = ErrorLogPagedList.FirstOrDefault()?.Id ?? 0;
-            }
+            ErrorLogPagedList = [.. data.Items];
+            //if (pageMeta.Page == 0)
+            //{
+            //    _firstLogId = ErrorLogPagedList.FirstOrDefault()?.Id ?? 0;
+            //}
 
             ErrorLogTotalItems = (int)data.TotalCount;
         }
@@ -414,11 +400,29 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Overview
             TriggerCount -= SysTriggerCount;
         }
         public TimeSpan Uptime { get; set; } = TimeSpan.Zero;
-        private void RefreshUptime()
+        private async Task RefreshStatus()
         {
-            Uptime = RunningSince.HasValue ?
-                DateTimeOffset.UtcNow.Subtract(RunningSince.Value) : TimeSpan.Zero;
+            Uptime = RunningSince.HasValue ? DateTimeOffset.UtcNow.Subtract(RunningSince.Value) : TimeSpan.Zero;
             SchedulerInfo[UptimeKey] = Uptime.ToHumanTimeString();
+            if (!metadataLoaded)
+            {
+                await LoadInfo();
+            }
+            var metadata = await SchSvc.GetMetadataAsync();
+            if (metadata == null)
+            {
+                return;
+            }
+            var newStatus = metadata.Shutdown ? SHUTDOWN : metadata.InStandbyMode ? STANDBY : metadata.Started ? STARTED : "Unknown";
+            if (newStatus != Status)
+            {
+                Status = newStatus;
+                await OnStatusChanged(newStatus);
+            }
+
+            IsStartButtonVisible = metadata.InStandbyMode || metadata.Shutdown;
+            IsShutdown = metadata.Shutdown;
+            IsPauseResumeDisabled = IsStartButtonVisible || IsShutdown;
         }
 
         public string Status { get; set; }
@@ -433,6 +437,28 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Overview
                 _ => Background.Dark
             };
         }
+        async Task OnStatusChanged(string status)
+        {
+            switch (status)
+            {
+                case "Started":
+                    await OnSchedulerStarted();
+                    break;
+                case "Shutdown":
+                    await OnSchedulerShutdown();
+                    break;
+                case "Standby":
+                    await OnSchedulerInStandbyMode();
+                    break;
+                case "Starting":
+                    await OnSchedulerStarting();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private bool metadataLoaded = false;
         private async Task LoadInfo()
         {
             var metadata = await SchSvc.GetMetadataAsync();
@@ -440,17 +466,20 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Overview
             {
                 return;
             }
-
+            metadataLoaded = true;
             SchedulerInfo.Clear();
-            Status = metadata.Shutdown ? SHUTDOWN :
-                metadata.InStandbyMode ? STANDBY :
-                    metadata.Started ? STARTED : "Unknown";
-            RunningSince = metadata.RunningSince;
+            var newStatus = metadata.Shutdown ? SHUTDOWN : metadata.InStandbyMode ? STANDBY : metadata.Started ? STARTED : "Unknown";
+            if (newStatus != Status)
+            {
+                Status = newStatus;
+                await OnStatusChanged(newStatus);
+            }
 
             IsStartButtonVisible = metadata.InStandbyMode || metadata.Shutdown;
             IsShutdown = metadata.Shutdown;
             IsPauseResumeDisabled = IsStartButtonVisible || IsShutdown;
 
+            RunningSince = metadata.RunningSince;
             SchedulerInfo.Add("QuartzVersion", metadata.Version);
             SchedulerInfo.Add("BlazoriseQuartzVersion", typeof(Overview).Assembly.GetName().Version);
             SchedulerInfo.Add(StatusKey, Status);
@@ -459,12 +488,12 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Overview
             SchedulerInfo.Add("SchedulerInstanceId", metadata.SchedulerInstanceId);
             SchedulerInfo.Add("SchedulerName", metadata.SchedulerName);
             SchedulerInfo.Add("SchedulerRemote", metadata.SchedulerRemote ? "Yes" : "No");
-            SchedulerInfo.Add("SchedulerType", metadata.SchedulerType);
-            SchedulerInfo.Add("JobStoreType", metadata.JobStoreType);
+            SchedulerInfo.Add("SchedulerType", metadata.SchedulerTypeName);
+            SchedulerInfo.Add("JobStoreType", metadata.JobStoreTypeName);
             SchedulerInfo.Add("SupportPersistence", metadata.JobStoreSupportsPersistence ? "Yes" : "No");
             SchedulerInfo.Add("Clustered", metadata.JobStoreClustered ? "Yes" : "No");
             SchedulerInfo.Add("ThreadPoolSize", metadata.ThreadPoolSize);
-            SchedulerInfo.Add("ThreadPoolType", metadata.ThreadPoolType);
+            SchedulerInfo.Add("ThreadPoolType", metadata.ThreadPoolTypeName);
         }
 
         ExecutionDetailsDialog ExecutionDetailsDialogRef;
@@ -546,8 +575,8 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Overview
             if (disposing)
             {
                 //modalRef?.Dispose();
+                _trackTimer?.Dispose();
                 _refreshTimer?.Dispose();
-                //UnRegisterEventListeners();
             }
             base.Dispose(disposing);
         }

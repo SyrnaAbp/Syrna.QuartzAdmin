@@ -11,26 +11,26 @@ namespace Syrna.QuartzAdmin.ExecutionLog
     public class ExecutionLogAppService(IQuartzExecutionHistoryRepository executionLogRepository) : QuartzAdminAppService, IExecutionLogAppService
     {
         [HttpPost]
-        public async Task<DataEnvelope<ExecutionLogDto>> GetLatestExecutionLog(string jobName, string jobGroup, string triggerName, string triggerGroup, PageMetadata pageMetadata = null, long firstLogId = 0, HashSet<LogType> logTypes = null)
+        public async Task<DataEnvelope<ExecutionLogDto>> GetLatestExecutionLog(LatestExecutionLogReadArgs args)
         {
-            var query = await executionLogRepository.GetLatestExecutionLog(jobName, jobGroup, triggerName, triggerGroup, firstLogId, logTypes);
+            var query = await executionLogRepository.GetLatestExecutionLog(args.JobName, args.JobGroup, args.TriggerName, args.TriggerGroup, args.FirstLogId, args.LogTypes);
             var totalRecords = query.Count();
-            if (pageMetadata == null)
+            if (args.PageMetadata == null)
             {
                 var list = ObjectMapper.Map<List<QuartzExecutionHistory>, List<ExecutionLogDto>>([.. query]);
                 return new DataEnvelope<ExecutionLogDto>() { Items = list, TotalCount = 0 };
             }
             else
             {
-                PageMetadata newPageMetadata = pageMetadata;
-                if (pageMetadata.Page == 0)
+                PageMetadata newPageMetadata = args.PageMetadata;
+                if (args.PageMetadata.Page == 0)
                 {
                     newPageMetadata = new PageMetadata { TotalCount = totalRecords };
                 }
 
                 var result = query
-                    .Skip(pageMetadata.Page * pageMetadata.PageSize)
-                    .Take(pageMetadata.PageSize)
+                    .Skip(args.PageMetadata.Page * args.PageMetadata.PageSize)
+                    .Take(args.PageMetadata.PageSize)
                     .ToList();
                 var list = ObjectMapper.Map<List<QuartzExecutionHistory>, List<ExecutionLogDto>>([.. result]);
                 return new DataEnvelope<ExecutionLogDto>() { Items = list, TotalCount = totalRecords };
@@ -87,9 +87,9 @@ namespace Syrna.QuartzAdmin.ExecutionLog
 
 
         [HttpPost]
-        public async Task<JobExecutionStatusSummaryModel> GetJobExecutionStatusSummary(DateTimeOffset? startTimeUtc, DateTimeOffset? endTimeUtc = null)
+        public async Task<JobExecutionStatusSummaryModel> GetJobExecutionStatusSummary(JobExecutionStatusSummaryReadArgs args)
         {
-            return await executionLogRepository.GetJobExecutionStatusSummary(startTimeUtc, endTimeUtc);
+            return await executionLogRepository.GetJobExecutionStatusSummary(args.StartTimeUtc, args.EndTimeUtc);
         }
     }
 }
