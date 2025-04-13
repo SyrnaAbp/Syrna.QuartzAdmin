@@ -80,11 +80,11 @@
                                 <FieldLabel RequiredIndicator="true">@L["TriggerDetail:InTimeZone"]</FieldLabel>
                                 <FieldBody>
                                     <Autocomplete TItem="TimeZoneInfo"
-                                                  TValue="TimeZoneInfo"
+                                                  TValue="string"
                                                   Data="@_timeZones"
                                                   TextField="((item) => item.DisplayName)"
-                                                  ValueField="((item) => item)"
-                                                  @bind-SelectedValue="@TriggerDetail.InTimeZone"
+                                                  ValueField="((item) => item.Id)"
+                                                  @bind-SelectedValue="@TriggerDetail.InTimeZoneId"
                                                   Placeholder="@L["SearchPlaceHolder"]"
                                                   Filter="AutocompleteFilter.Contains">
                                         <NotFoundContent>@string.Format(L["NotFoundContent"], context)</NotFoundContent>
@@ -130,11 +130,11 @@
                                     <FieldLabel RequiredIndicator="true">@L["TriggerDetail:InTimeZone"]</FieldLabel>
                                     <FieldBody>
                                         <Autocomplete TItem="TimeZoneInfo"
-                                                      TValue="TimeZoneInfo"
+                                                      TValue="string"
                                                       Data="@_timeZones"
                                                       TextField="((item) => item.DisplayName)"
-                                                      ValueField="((item) => item)"
-                                                      @bind-SelectedValue="@TriggerDetail.InTimeZone"
+                                                      ValueField="((item) => item.Id)"
+                                                      @bind-SelectedValue="@TriggerDetail.InTimeZoneId"
                                                       Placeholder="@L["SearchPlaceHolder"]"
                                                       Filter="AutocompleteFilter.Contains">
                                             <NotFoundContent>@string.Format(L["NotFoundContent"], context)</NotFoundContent>
@@ -195,11 +195,11 @@
                                     <FieldLabel RequiredIndicator="true">@L["TriggerDetail:InTimeZone"]</FieldLabel>
                                     <FieldBody>
                                         <Autocomplete TItem="TimeZoneInfo"
-                                                      TValue="TimeZoneInfo"
+                                                      TValue="string"
                                                       Data="@_timeZones"
                                                       TextField="((item) => item.DisplayName)"
-                                                      ValueField="((item) => item)"
-                                                      @bind-SelectedValue="@TriggerDetail.InTimeZone"
+                                                      ValueField="((item) => item.Id)"
+                                                      @bind-SelectedValue="@TriggerDetail.InTimeZoneId"
                                                       Placeholder="@L["SearchPlaceHolder"]"
                                                       Filter="AutocompleteFilter.Contains">
                                             <NotFoundContent>@string.Format(L["NotFoundContent"], context)</NotFoundContent>
@@ -229,7 +229,7 @@
                                         <Select TValue="IntervalUnit?"
                                                 @bind-SelectedValue="@TriggerDetail.TriggerIntervalUnit">
                                             <ChildContent>
-                                                @foreach (var unit in SchedulerDefSvc.GetTriggerIntervalUnits(TriggerDetail.TriggerType))
+                                                @foreach (var unit in SchedulerDefSvc.GetTriggerIntervalUnits(TriggerDetail.TriggerType).Result)
                                                 {
                                                     <SelectItem TValue="IntervalUnit?" Value="unit">@L[$"IntervalUnit:{unit.ToString()}"]</SelectItem>
                                                 }
@@ -312,12 +312,12 @@
                                 <Field>
                                     <FieldLabel RequiredIndicator="true">@L["TriggerDetail:StartTimezone"]</FieldLabel>
                                     <FieldBody>
-                                        <Select TValue="TimeZoneInfo" @bind-SelectedValue="TriggerDetail.StartTimezone">
+                                        <Select TValue="string" @bind-SelectedValue="TriggerDetail.StartTimezoneId">
                                             <ChildContent>
-                                                <SelectItem TValue="TimeZoneInfo" Value="@(TimeZoneInfo.Utc)">@TimeZoneInfo.Utc.DisplayName</SelectItem>
+                                                <SelectItem TValue="string" Value="@(TimeZoneInfo.Utc.Id)">@TimeZoneInfo.Utc.DisplayName</SelectItem>
                                                 @if (!TimeZoneInfo.Utc.Equals(TimeZoneInfo.Local))
                                                 {
-                                                    <SelectItem TValue="TimeZoneInfo" Value="@(TimeZoneInfo.Local)">@TimeZoneInfo.Local.DisplayName</SelectItem>
+                                                    <SelectItem TValue="string" Value="@(TimeZoneInfo.Local.Id)">@TimeZoneInfo.Local.DisplayName</SelectItem>
                                                 }
                                             </ChildContent>
                                             <Feedback>
@@ -376,7 +376,7 @@
                                     <Select TValue="MisfireAction"
                                             @bind-SelectedValue="@TriggerDetail.MisfireAction">
                                         <ChildContent>
-                                            @foreach (var action in SchedulerDefSvc.GetMisfireActions(TriggerDetail.TriggerType))
+                                            @foreach (var action in SchedulerDefSvc.GetMisfireActions(TriggerDetail.TriggerType).Result)
                                             {
                                                 <SelectItem TValue="MisfireAction" Value="action">@L[$"MisfireAction:{@action.ToString()}"]</SelectItem>
                                             }

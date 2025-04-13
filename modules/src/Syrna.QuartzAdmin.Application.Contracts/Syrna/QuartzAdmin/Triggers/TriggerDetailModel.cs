@@ -79,7 +79,17 @@ namespace Syrna.QuartzAdmin.Triggers
         /// <summary>
         /// Timezone of start time
         /// </summary>
-        public TimeZoneInfo StartTimezone { get; set; } = TimeZoneInfo.Utc;
+        //public TimeZoneInfo StartTimezone { get; set; } = TimeZoneInfo.Utc;
+
+        public string StartTimezoneId { get; set; } = TimeZoneInfo.Utc.Id;
+
+        private TimeZoneInfo StartTimezone
+        {
+            get => TimeZoneInfo.FindSystemTimeZoneById(StartTimezoneId);
+            set => StartTimezoneId = value.Id;
+        }
+
+
         public int Priority { get; set; } = 5;
         public string CronExpression { get; set; }
         public bool RepeatForever { get; set; }
@@ -88,10 +98,19 @@ namespace Syrna.QuartzAdmin.Triggers
         public bool[] DailyDayOfWeek { get; set; } = new bool[7];
         public TimeSpan? StartDailyTime { get; set; }
         public TimeSpan? EndDailyTime { get; set; }
+        
         /// <summary>
         /// The timezone in which to base the scheduled. Used in Cron schedule, Calendar schedule and Daily schedule.
         /// </summary>
-        public TimeZoneInfo InTimeZone { get; set; } = TimeZoneInfo.Local;
+        //public TimeZoneInfo InTimeZone { get; set; } = TimeZoneInfo.Local;
+
+        public string InTimeZoneId { get; set; } = TimeZoneInfo.Local.Id;
+
+        private TimeZoneInfo InTimeZone
+        {
+            get => TimeZoneInfo.FindSystemTimeZoneById(InTimeZoneId);
+            set => InTimeZoneId = value.Id;
+        }
 
         public int TriggerInterval { get; set; } = 1;
         public IntervalUnit? TriggerIntervalUnit { get; set; } = IntervalUnit.Minute;

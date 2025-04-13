@@ -109,7 +109,7 @@ namespace Syrna.QuartzAdmin.Blazor.Services
                 return;
             }
 
-            var jobTypes = _schDefSvc.GetJobTypes().Select(j => j.FullName).ToHashSet();
+            var jobTypes = _schDefSvc.GetJobTypeNames(false).Result;//.Select(j => j.FullName).ToHashSet();
             foreach (var jobUIType in jobUITypes)
             {
                 var jobClass = GetJobClass(jobUIType);
@@ -124,7 +124,7 @@ namespace Syrna.QuartzAdmin.Blazor.Services
 
         private string GetJobClass(Type jobUIType)
         {
-            var jobUI = (IJobUI?)Activator.CreateInstance(jobUIType);
+            var jobUI = (IJobUI)Activator.CreateInstance(jobUIType);
             if (jobUI != null)
                 return jobUI.JobClass;
 

@@ -4,19 +4,20 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Quartz;
 
 namespace Syrna.QuartzAdmin.Scheduler
 {
-    public class SchedulerDefinitionService : ISchedulerDefinitionService
+    public class SchedulerDefinitionService : QuartzAdminAppService, ISchedulerDefinitionService
     {
-        private readonly ISchedulerFactory _schedulerFactory;
-        private IEnumerable<IntervalUnit> _calendarIntervalUnits;
-        private IEnumerable<IntervalUnit> _simpleIntervalUnits;
-        private IEnumerable<MisfireAction> _cronCalDailyMisfireActions;
-        private IEnumerable<MisfireAction> _simpleMisfireActions;
+        private List<IntervalUnit> _calendarIntervalUnits;
+        private List<IntervalUnit> _simpleIntervalUnits;
+        private List<MisfireAction> _cronCalDailyMisfireActions;
+        private List<MisfireAction> _simpleMisfireActions;
         private readonly QuartzAdminCoreOptions _options;
         private readonly ILogger<SchedulerDefinitionService> _logger;
         private List<Type> _allowedJobTypes;
@@ -26,7 +27,6 @@ namespace Syrna.QuartzAdmin.Scheduler
             IOptions<QuartzAdminCoreOptions> options)
         {
             _logger = logger;
-            _schedulerFactory = schedulerFactory;
             _options = options.Value;
             Init();
         }
@@ -53,42 +53,49 @@ namespace Syrna.QuartzAdmin.Scheduler
             };
         }
 
-        public IEnumerable<IntervalUnit> GetTriggerIntervalUnits(TriggerType triggerType)
+        [HttpGet]
+        public Task<List<IntervalUnit>> GetTriggerIntervalUnits(TriggerType triggerType)
         {
-            switch (triggerType)
+            return Task.Run(() =>
             {
-                case TriggerType.Calendar:
-                    return _calendarIntervalUnits;
-                case TriggerType.Daily:
-                case TriggerType.Simple:
-                    return _simpleIntervalUnits;
-                default:
-                    return Enumerable.Empty<IntervalUnit>();
-            }
+                switch (triggerType)
+                {
+                    case TriggerType.Calendar:
+                        return _calendarIntervalUnits;
+                    case TriggerType.Daily:
+                    case TriggerType.Simple:
+                        return _simpleIntervalUnits;
+                    default:
+                        return new List<IntervalUnit>();
+                }
+            });
         }
 
-        public IEnumerable<MisfireAction> GetMisfireActions(TriggerType triggerType)
+        [HttpGet]
+        public Task<List<MisfireAction>> GetMisfireActions(TriggerType triggerType)
         {
-            switch (triggerType)
+            return Task.Run(() =>
             {
-                case TriggerType.Cron:
-                case TriggerType.Daily:
-                case TriggerType.Calendar:
-                    if (_cronCalDailyMisfireActions == null)
-                    {
-                        _cronCalDailyMisfireActions = new List<MisfireAction>
+                switch (triggerType)
+                {
+                    case TriggerType.Cron:
+                    case TriggerType.Daily:
+                    case TriggerType.Calendar:
+                        if (_cronCalDailyMisfireActions == null)
+                        {
+                            _cronCalDailyMisfireActions = new List<MisfireAction>
                         {
                             MisfireAction.SmartPolicy,
                             MisfireAction.DoNothing,
                             MisfireAction.IgnoreMisfirePolicy,
                             MisfireAction.FireOnceNow
                         };
-                    }
-                    return _cronCalDailyMisfireActions;
-                case TriggerType.Simple:
-                    if (_simpleMisfireActions == null)
-                    {
-                        _simpleMisfireActions = new List<MisfireAction>
+                        }
+                        return _cronCalDailyMisfireActions;
+                    case TriggerType.Simple:
+                        if (_simpleMisfireActions == null)
+                        {
+                            _simpleMisfireActions = new List<MisfireAction>
                         {
                             MisfireAction.SmartPolicy,
                             MisfireAction.FireNow,
@@ -98,61 +105,71 @@ namespace Syrna.QuartzAdmin.Scheduler
                             MisfireAction.RescheduleNowWithExistingRepeatCount,
                             MisfireAction.RescheduleNowWithRemainingRepeatCount
                         };
-                    }
-                    return _simpleMisfireActions;
-            }
+                        }
+                        return _simpleMisfireActions;
+                }
 
-            return Enumerable.Empty<MisfireAction>();
+                return new List<MisfireAction>();
+            });
         }
 
-        public IEnumerable<Type> GetJobTypes(bool reload=false)
+        [HttpPost]
+        public async Task<List<string>> GetJobTypeNames(bool reload)
         {
-            if (_options.AllowedJobAssemblyFiles == null)
-                return Enumerable.Empty<Type>();
+            return (await GetJobTypes(reload)).Select(x => x.FullName ?? string.Empty).ToList();
+        }
 
-            // use cached job types if already loaded
-            if (_allowedJobTypes != null && !reload)
-                return _allowedJobTypes;
-
-            HashSet<string> disallowedJobs = new(_options.DisallowedJobTypes ?? Enumerable.Empty<string>());
-
-            if (_options.DisallowedJobTypes != null)
-                _logger.LogInformation("{disallowedVar} was set. Will not load following job types {jobTypes}",
-                    nameof(_options.DisallowedJobTypes), _options.DisallowedJobTypes);
-
-            var path = Path.GetDirectoryName(Assembly.GetAssembly(typeof(SchedulerDefinitionService))!.Location) ?? string.Empty;
-            List<Type> jobTypes = new();
-            foreach(var assemblyStr in _options.AllowedJobAssemblyFiles)
+        private async Task<IEnumerable<Type>> GetJobTypes(bool reload)
+        {
+            return await Task.Run(() =>
             {
-                string assemblyPath = Path.Combine(path, assemblyStr + ".dll");
-                try
+                if (_options.AllowedJobAssemblyFiles == null)
+                    return Enumerable.Empty<Type>();
+
+                // use cached job types if already loaded
+                if (_allowedJobTypes != null && !reload)
+                    return _allowedJobTypes;
+
+                HashSet<string> disallowedJobs = new(_options.DisallowedJobTypes ?? Enumerable.Empty<string>());
+
+                if (_options.DisallowedJobTypes != null)
+                    _logger.LogInformation("{disallowedVar} was set. Will not load following job types {jobTypes}",
+                        nameof(_options.DisallowedJobTypes), _options.DisallowedJobTypes);
+
+                var path = Path.GetDirectoryName(Assembly.GetAssembly(typeof(SchedulerDefinitionService))!.Location) ?? string.Empty;
+                List<Type> jobTypes = new();
+                foreach (var assemblyStr in _options.AllowedJobAssemblyFiles)
                 {
-                    Assembly assembly = Assembly.LoadFrom(assemblyPath);
-                    if (assembly == null)
+                    string assemblyPath = Path.Combine(path, assemblyStr + ".dll");
+                    try
                     {
-                        _logger.LogWarning("Cannot load allowed job assembly name '{assembly}'", assemblyStr);
+                        Assembly assembly = Assembly.LoadFrom(assemblyPath);
+                        if (assembly == null)
+                        {
+                            _logger.LogWarning("Cannot load allowed job assembly name '{assembly}'", assemblyStr);
+                            continue;
+                        }
+
+                        jobTypes.AddRange(assembly.GetExportedTypes()
+                            .Where(x =>
+                                x.IsPublic &&
+                                x.IsClass &&
+                                !x.IsAbstract &&
+                                typeof(IJob).IsAssignableFrom(x) &&
+                                !disallowedJobs.Contains(x.FullName ?? string.Empty)));
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogWarning(ex, "Failed to load allowed job assembly filename '{assembly}'", assemblyStr);
                         continue;
                     }
-
-                    jobTypes.AddRange(assembly.GetExportedTypes()
-                        .Where(x =>
-                            x.IsPublic &&
-                            x.IsClass &&
-                            !x.IsAbstract &&
-                            typeof(IJob).IsAssignableFrom(x) &&
-                            !disallowedJobs.Contains(x.FullName ?? string.Empty)));
                 }
-                catch (Exception ex)
-                {
-                    _logger.LogWarning(ex, "Failed to load allowed job assembly filename '{assembly}'", assemblyStr);
-                    continue;
-                }
-            }
-            if (!jobTypes.Any())
-                return jobTypes;
+                if (!jobTypes.Any())
+                    return jobTypes;
 
-            _allowedJobTypes = jobTypes;
-            return _allowedJobTypes.AsReadOnly();
+                _allowedJobTypes = jobTypes;
+                return _allowedJobTypes.AsReadOnly();
+            });
         }
     }
 }

@@ -285,10 +285,10 @@ namespace Syrna.QuartzAdmin.Scheduler
 
         //CAK
         [HttpGet]
-        public async IAsyncEnumerable<ScheduleModel> GetAllJobsAsync(ScheduleJobFilter filter = null)
+        public async Task<List<ScheduleModel>> GetAllJobsAsync(ScheduleJobFilter filter)
         {
             var jobGroupNames = await Scheduler.GetJobGroupNames();
-
+            var list = new List<ScheduleModel>(jobGroupNames.Count);
             foreach (var jobGrp in jobGroupNames)
             {
                 if (filter != null && !filter.IncludeSystemJobs)
@@ -301,12 +301,13 @@ namespace Syrna.QuartzAdmin.Scheduler
 
                 foreach (var jobKey in jobKeys)
                 {
-                    await foreach (var job in GetScheduleModelsAsync(jobKey))
+                    foreach (var job in await GetScheduleModelsAsync(jobKey))
                     {
-                        yield return job;
+                        list.Add( job);
                     }
                 }
             }
+            return list;
         }
 
         [HttpGet]
@@ -607,11 +608,12 @@ namespace Syrna.QuartzAdmin.Scheduler
             };
         }
 
-        private async IAsyncEnumerable<ScheduleModel> GetScheduleModelsAsync(JobKey jobkey)
+        private async Task<List<ScheduleModel>> GetScheduleModelsAsync(JobKey jobkey)
         {
             IJobDetail jobDetail = null;
             IReadOnlyCollection<ITrigger> jobTriggers = null;
             ScheduleModel exceptionJob = null;
+            var list = new List<ScheduleModel>();
             try
             {
                 jobTriggers = await Scheduler.GetTriggersOfJob(jobkey);
@@ -635,7 +637,7 @@ namespace Syrna.QuartzAdmin.Scheduler
                 if (jobTriggers == null || !jobTriggers.Any())
                 {
                     exceptionJob.TriggerType = TriggerType.Unknown;
-                    yield return exceptionJob;
+                    list.Add(exceptionJob);
                 }
                 else
                 {
@@ -646,27 +648,29 @@ namespace Syrna.QuartzAdmin.Scheduler
                         jobModel.JobGroup = exceptionJob.JobGroup;
                         jobModel.JobStatus = exceptionJob.JobStatus;
                         jobModel.ExceptionMessage = exceptionJob.ExceptionMessage;
-                        yield return jobModel;
+                        list.Add(jobModel);
                     }
                 }
             }
             else if (jobTriggers == null || !jobTriggers.Any())
             {
-                yield return new ScheduleModel
+                var sm= new ScheduleModel
                 {
                     JobName = jobkey.Name,
                     JobGroup = jobkey.Group,
                     JobType = jobDetail?.JobType.ToString(),
                     JobStatus = JobStatus.NoTrigger
                 };
+                list.Add(sm);
             }
             else
             {
                 foreach (var trigger in jobTriggers)
                 {
-                    yield return await CreateScheduleModel(jobDetail, trigger);
+                    list.Add( await CreateScheduleModel(jobDetail, trigger));
                 }
             }
+            return list;
         }
 
         private TriggerDetailModel CreateTriggerDetailModel(ITrigger trigger)
@@ -683,7 +687,7 @@ namespace Syrna.QuartzAdmin.Scheduler
                 EndTimeSpan = trigger.EndTimeUtc?.TimeOfDay,
                 StartDate = trigger.StartTimeUtc.Date,
                 StartTimeSpan = trigger.StartTimeUtc.TimeOfDay,
-                StartTimezone = TimeZoneInfo.Utc,
+                InTimeZoneId = TimeZoneInfo.Utc.Id,
                 TriggerType = triggerType,
                 ModifiedByCalendar = trigger.CalendarName,
                 Priority = trigger.Priority,
@@ -709,7 +713,7 @@ namespace Syrna.QuartzAdmin.Scheduler
                 case TriggerType.Cron:
                     var cron = (ICronTrigger)trigger;
                     model.CronExpression = cron.CronExpressionString;
-                    model.InTimeZone = cron.TimeZone;
+                    model.InTimeZoneId = cron.TimeZone.Id;
                     switch (cron.MisfireInstruction)
                     {
                         case MisfireInstruction.CronTrigger.DoNothing:
@@ -738,7 +742,7 @@ namespace Syrna.QuartzAdmin.Scheduler
                     model.RepeatCount = daily.RepeatCount;
                     model.TriggerInterval = daily.RepeatInterval;
                     model.TriggerIntervalUnit = daily.RepeatIntervalUnit.ToBlazoriseQuartzIntervalUnit();
-                    model.InTimeZone = daily.TimeZone;
+                    model.InTimeZoneId = daily.TimeZone.Id;
                     model.StartDailyTime = new TimeSpan(daily.StartTimeOfDay.Hour, daily.StartTimeOfDay.Minute, daily.StartTimeOfDay.Second);
                     model.EndDailyTime = new TimeSpan(daily.EndTimeOfDay.Hour, daily.EndTimeOfDay.Minute, daily.EndTimeOfDay.Second);
                     break;
@@ -759,7 +763,7 @@ namespace Syrna.QuartzAdmin.Scheduler
                     }
                     model.TriggerInterval = calTrigger.RepeatInterval;
                     model.TriggerIntervalUnit = calTrigger.RepeatIntervalUnit.ToBlazoriseQuartzIntervalUnit();
-                    model.InTimeZone = calTrigger.TimeZone;
+                    model.InTimeZoneId = calTrigger.TimeZone.Id;
                     break;
             }
 
@@ -823,7 +827,7 @@ namespace Syrna.QuartzAdmin.Scheduler
                                     x.WithMisfireHandlingInstructionIgnoreMisfires();
                                     break;
                             }
-                            x.InTimeZone(triggerDetailModel.InTimeZone);
+                            x.InTimeZone(TimeZoneInfo.FindSystemTimeZoneById(triggerDetailModel.InTimeZoneId));
                         });
                     break;
                 case TriggerType.Daily:
@@ -850,7 +854,7 @@ namespace Syrna.QuartzAdmin.Scheduler
                         {
                             x.EndingDailyAt(triggerDetailModel.EndDailyTime.Value.ToTimeOfDay());
                         }
-                        x.InTimeZone(triggerDetailModel.InTimeZone);
+                        x.InTimeZone(TimeZoneInfo.FindSystemTimeZoneById(triggerDetailModel.InTimeZoneId));
                         if (triggerDetailModel.TriggerInterval > 0 && triggerDetailModel.TriggerIntervalUnit.HasValue)
                         {
                             x.WithInterval(triggerDetailModel.TriggerInterval,
@@ -934,7 +938,7 @@ namespace Syrna.QuartzAdmin.Scheduler
                                 break;
                         }
 
-                        x.InTimeZone(triggerDetailModel.InTimeZone);
+                        x.InTimeZone(TimeZoneInfo.FindSystemTimeZoneById(triggerDetailModel.InTimeZoneId));
                         if (triggerDetailModel.TriggerInterval > 0 && triggerDetailModel.TriggerIntervalUnit.HasValue)
                         {
                             x.WithInterval(triggerDetailModel.TriggerInterval,

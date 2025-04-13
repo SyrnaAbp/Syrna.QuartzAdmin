@@ -9,144 +9,151 @@ using Syrna.QuartzAdmin.Scheduler;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Syrna.QuartzAdmin.Blazor.Components
 {
-	public partial class BlazoriseJob
-	{
+    public partial class BlazoriseJob
+    {
         [Inject] protected new IStringLocalizer<QuartzAdminResource> L { get; set; }
         [Inject] private ISchedulerDefinitionService SchedulerDefSvc { get; set; } = null!;
-		[Inject] private ISchedulerAppService SchedulerSvc { get; set; } = null!;
-		[Inject] private IJobUIProvider JobUIProvider { get; set; } = null!;
+        [Inject] private ISchedulerAppService SchedulerSvc { get; set; } = null!;
+        [Inject] private IJobUIProvider JobUIProvider { get; set; } = null!;
 
-		[Parameter]
-		[EditorRequired]
-		public JobDetailModel JobDetail { get; set; } = new();
-		[Parameter] public bool IsReadOnly { get; set; }
+        [Parameter]
+        [EditorRequired]
+        public JobDetailModel JobDetail { get; set; } = new();
+        [Parameter] public bool IsReadOnly { get; set; }
 
-		[Parameter] public bool IsValid { get; set; }
+        [Parameter] public bool IsValid { get; set; }
 
-		[Parameter] public EventCallback<bool> IsValidChanged { get; set; }
+        [Parameter] public EventCallback<bool> IsValidChanged { get; set; }
 
-		private Key OriginalJobKey = new(string.Empty, "No Group");
+        private Key OriginalJobKey = new(string.Empty, "No Group");
 
-		private IEnumerable<Type> AvailableJobTypes = Enumerable.Empty<Type>();
-		private IEnumerable<SelectListItem> ExistingJobGroups;
-		private Validations _validations = null!;
-		private Type JobUIType = null;
-		private Dictionary<string, object> JobUITypeParameters = new();
-		private DynamicComponent _jobUIComponent;
+        private IEnumerable<Type> AvailableJobTypes = Enumerable.Empty<Type>();
+        private IEnumerable<SelectListItem> ExistingJobGroups;
+        private Validations _validations = null!;
+        private Type JobUIType = null;
+        private Dictionary<string, object> JobUITypeParameters = new();
+        private DynamicComponent _jobUIComponent;
 
         public BlazoriseJob()
         {
             LocalizationResource = typeof(QuartzAdminResource);
         }
-        
-		protected override async Task OnInitializedAsync()
-		{
-			var types = SchedulerDefSvc.GetJobTypes();
-			var typeList = new HashSet<Type>(types);
-			if (JobDetail.JobClass != null)
-			{
-				typeList.Add(JobDetail.JobClass);
-			}
-			AvailableJobTypes = typeList;
-			await OnJobClassValueChanged(JobDetail.JobClass?.FullName);
 
-			OriginalJobKey = new(JobDetail.Name, JobDetail.Group);
-			await GetJobGroups();
-		}
+        protected override async Task OnInitializedAsync()
+        {
+            var typeNames = await SchedulerDefSvc.GetJobTypeNames(false);
+            var typeList = new HashSet<Type>();
+            foreach (var typeName in typeNames)
+            {
+                var type = TypeInfo.GetType(typeName);
+                typeList.Add(type);
+            }
 
-		private async Task GetJobGroups()
-		{
-			if (ExistingJobGroups == null)
-			{
-				ExistingJobGroups = (await SchedulerSvc.GetJobGroups()).Select(s => new SelectListItem(s, s));
-			}
-		}
+            if (JobDetail.JobClass != null)
+            {
+                typeList.Add(JobDetail.JobClass);
+            }
+            AvailableJobTypes = typeList;
+            await OnJobClassValueChanged(JobDetail.JobClass?.FullName);
 
-		private void OnSetIsValid(ValidationsStatusChangedEventArgs eventArgs)
-		{
-			if (eventArgs.Status != ValidationStatus.Success)
-				return;
-			IsValid = eventArgs.Status == ValidationStatus.Success;
-			IsValidChanged.InvokeAsync(IsValid).RunSynchronously();
-		}
+            OriginalJobKey = new(JobDetail.Name, JobDetail.Group);
+            await GetJobGroups();
+        }
 
-		public async Task Validate()
-		{
-			if (_jobUIComponent?.Instance is IJobUI jobUi)
-			{
-				if (!await jobUi.ApplyChanges())
-				{
-					//TODO:
-					//OnSetIsValid();
-					return;
-				}
-			}
+        private async Task GetJobGroups()
+        {
+            if (ExistingJobGroups == null)
+            {
+                ExistingJobGroups = (await SchedulerSvc.GetJobGroups()).Select(s => new SelectListItem(s, s));
+            }
+        }
 
-			await _validations.ValidateAll();
-		}
+        private void OnSetIsValid(ValidationsStatusChangedEventArgs eventArgs)
+        {
+            if (eventArgs.Status != ValidationStatus.Success)
+                return;
+            IsValid = eventArgs.Status == ValidationStatus.Success;
+            IsValidChanged.InvokeAsync(IsValid).RunSynchronously();
+        }
 
-		public static void IsObjectSelected(ValidatorEventArgs e)
-		{
-			e.Status = e.Value != null ? ValidationStatus.Success : ValidationStatus.Error;
-		}
+        public async Task Validate()
+        {
+            if (_jobUIComponent?.Instance is IJobUI jobUi)
+            {
+                if (!await jobUi.ApplyChanges())
+                {
+                    //TODO:
+                    //OnSetIsValid();
+                    return;
+                }
+            }
 
-		private async Task ValidateJobName(ValidatorEventArgs e, CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
+            await _validations.ValidateAll();
+        }
 
-			e.Status = ValidationStatus.Success;
+        public static void IsObjectSelected(ValidatorEventArgs e)
+        {
+            e.Status = e.Value != null ? ValidationStatus.Success : ValidationStatus.Error;
+        }
 
-			var name = Convert.ToString(e.Value);
+        private async Task ValidateJobName(ValidatorEventArgs e, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
 
-			if (string.IsNullOrEmpty(name))
-			{
-				e.Status = ValidationStatus.Error;
-				return;
-			}
-			var detail = await SchedulerSvc.GetJobDetail(name, JobDetail.Group);
-			if (detail != null)
-			{
-				e.Status = ValidationStatus.Error;
-				e.ErrorText = @L["Error:JobNameAlreadyInUsed"];
-				return;
-			}
+            e.Status = ValidationStatus.Success;
 
-			// accept if same as original
-			//if (OriginalJobKey.Equals(name, JobDetail.Group))
-			//    return null;
+            var name = Convert.ToString(e.Value);
 
-			//if (IsReadOnly)
-			//{
-			//    Logger.LogDebug("Skip checking of job name uniqueness if in readonly mode");
-			//    return null;
-			//}
-		}
+            if (string.IsNullOrEmpty(name))
+            {
+                e.Status = ValidationStatus.Error;
+                return;
+            }
+            var detail = await SchedulerSvc.GetJobDetail(name, JobDetail.Group);
+            if (detail != null)
+            {
+                e.Status = ValidationStatus.Error;
+                e.ErrorText = @L["Error:JobNameAlreadyInUsed"];
+                return;
+            }
 
-		private async Task OnJobClassValueChanged(string jobTypeName)
-		{
-			var jobType = AvailableJobTypes.FirstOrDefault(w => w.FullName == jobTypeName);
-			JobDetail.JobClass = jobType;
-			if (jobType != null)
-			{
-				// clear previous changes
-				if (_jobUIComponent?.Instance is IJobUI jobUi)
-					await jobUi.ClearChanges();
+            // accept if same as original
+            //if (OriginalJobKey.Equals(name, JobDetail.Group))
+            //    return null;
 
-				var jobUiType = JobUIProvider.GetJobUIType(jobType!.FullName);
-				JobUITypeParameters.Clear();
-				JobUITypeParameters[nameof(IsReadOnly)] = IsReadOnly;
-				if (jobUiType == typeof(DefaultJobUI))
-					JobUITypeParameters[nameof(JobDetail)] = JobDetail;
-				else
-					JobUITypeParameters[nameof(JobDetail.JobDataMap)] = JobDetail.JobDataMap;
-				JobUIType = jobUiType;
-			}
-		}
+            //if (IsReadOnly)
+            //{
+            //    Logger.LogDebug("Skip checking of job name uniqueness if in readonly mode");
+            //    return null;
+            //}
+        }
+
+        private async Task OnJobClassValueChanged(string jobTypeName)
+        {
+            var jobType = AvailableJobTypes.FirstOrDefault(w => w.FullName == jobTypeName);
+            JobDetail.JobClass = jobType;
+            if (jobType != null)
+            {
+                // clear previous changes
+                if (_jobUIComponent?.Instance is IJobUI jobUi)
+                    await jobUi.ClearChanges();
+
+                var jobUiType = JobUIProvider.GetJobUIType(jobType!.FullName);
+                JobUITypeParameters.Clear();
+                JobUITypeParameters[nameof(IsReadOnly)] = IsReadOnly;
+                if (jobUiType == typeof(DefaultJobUI))
+                    JobUITypeParameters[nameof(JobDetail)] = JobDetail;
+                else
+                    JobUITypeParameters[nameof(JobDetail.JobDataMap)] = JobDetail.JobDataMap;
+                JobUIType = jobUiType;
+            }
+        }
 
         protected override void Dispose(bool disposing)
         {

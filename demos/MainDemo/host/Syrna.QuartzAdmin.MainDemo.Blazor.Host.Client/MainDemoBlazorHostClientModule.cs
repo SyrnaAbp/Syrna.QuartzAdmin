@@ -4,6 +4,8 @@ using Blazorise.Icons.FontAwesome;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Syrna.QuartzAdmin.Blazor.Components;
+using Syrna.QuartzAdmin.Blazor.Services;
 using Syrna.QuartzAdmin.MainDemo.Blazor.Host.Client.Menus;
 using Syrna.QuartzAdmin.MainDemo.Blazor.WebAssembly;
 using System;
@@ -42,6 +44,7 @@ public class MainDemoBlazorHostClientModule : AbpModule
         ConfigureRouter(context);
         ConfigureMenu(context);
         ConfigureAutoMapper(context);
+        ConfigureQuartzAdmin(context);
     }
 
     private void ConfigureRouter(ServiceConfigurationContext context)
@@ -65,6 +68,12 @@ public class MainDemoBlazorHostClientModule : AbpModule
         context.Services
             .AddBootstrap5Providers()
             .AddFontAwesomeIcons();
+    }
+
+    private void ConfigureQuartzAdmin(ServiceConfigurationContext context)
+    {
+        context.Services.AddTransient<ITriggerDetailModelValidator, TriggerDetailModelValidator>();
+        context.Services.AddSingleton<IJobUIProvider, JobUIProvider>();
     }
 
     private static void ConfigureAuthentication(WebAssemblyHostBuilder builder)

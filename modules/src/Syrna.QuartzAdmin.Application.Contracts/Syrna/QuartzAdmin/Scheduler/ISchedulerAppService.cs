@@ -24,7 +24,7 @@ namespace Syrna.QuartzAdmin.Scheduler
         Task<ApiResponse> StartSchedulerExt(int? delayMilliseconds = null);
 
         Task<ScheduleModel> GetScheduleModelAsync(ITrigger trigger);
-        IAsyncEnumerable<ScheduleModel> GetAllJobsAsync(ScheduleJobFilter filter = null);
+        Task<List<ScheduleModel>> GetAllJobsAsync(ScheduleJobFilter filter);
         Task CreateSchedule(JobDetailModel jobDetailModel, TriggerDetailModel triggerDetailModel);
         Task<IReadOnlyCollection<string>> GetJobGroups();
         Task<IReadOnlyCollection<string>> GetTriggerGroups();

@@ -427,6 +427,7 @@ public class MainDemoHttpApiHostModule : AbpModule
 
     private void ConfigureJson(IServiceCollection services)
     {
+        //services.AddControllers().AddNewtonsoftJson();
         //services.AddControllersWithViews().AddJsonOptions(options =>
         //    options.JsonSerializerOptions.PropertyNamingPolicy = null
         //);
