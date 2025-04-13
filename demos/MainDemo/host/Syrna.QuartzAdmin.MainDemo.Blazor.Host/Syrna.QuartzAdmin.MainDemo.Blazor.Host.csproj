@@ -18,7 +18,7 @@
 
 		<PackageReference Include="Volo.Abp.Autofac" />
 		<PackageReference Include="Volo.Abp.AspNetCore.Mvc.UI.Bundling" />
-		<PackageReference Include="Volo.Abp.AspNetCore.Components.WebAssembly.BasicTheme.Bundling" />
+		<PackageReference Include="Volo.Abp.AspNetCore.Components.WebAssembly.LeptonXLiteTheme.Bundling" />
 		
 	</ItemGroup>
 

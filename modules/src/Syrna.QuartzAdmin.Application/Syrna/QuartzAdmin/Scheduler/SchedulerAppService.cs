@@ -371,8 +371,10 @@ namespace Syrna.QuartzAdmin.Scheduler
                 if (existingJob != null)
                 {
                     //await scheduler.GetTriggersOfJob(job.Key)
-                    var jobTriggers = new List<ITrigger>(1);
-                    jobTriggers.Add(trigger);
+                    var jobTriggers = new List<ITrigger>(1)
+                    {
+                        trigger
+                    };
 
                     await Scheduler.ScheduleJob(existingJob, jobTriggers.AsReadOnly(), true);
                     return;

@@ -31,7 +31,7 @@
 		<PackageReference Include="Volo.Abp.SettingManagement.Application.Contracts" />
 		
 		<PackageReference Include="Volo.Abp.AspNetCore.Components.WebAssembly" />
-		<PackageReference Include="Volo.Abp.AspNetCore.Components.WebAssembly.BasicTheme" />
+		<PackageReference Include="Volo.Abp.AspNetCore.Components.WebAssembly.LeptonXLiteTheme" />
 		<PackageReference Include="Volo.Abp.Identity.Blazor.WebAssembly" />
 		<PackageReference Include="Volo.Abp.TenantManagement.Blazor.WebAssembly" />
 		<PackageReference Include="Volo.Abp.SettingManagement.Blazor.WebAssembly" />

@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Syrna.QuartzAdmin.MainDemo.Blazor.Host.Client;
 using Volo.Abp;
-using Volo.Abp.AspNetCore.Components.WebAssembly.Theming.Bundling;
+using Volo.Abp.AspNetCore.Components.WebAssembly.LeptonXLiteTheme.Bundling;
 using Volo.Abp.AspNetCore.Components.WebAssembly.WebApp;
 using Volo.Abp.AspNetCore.Mvc.UI.Bundling;
 using Volo.Abp.Autofac;
@@ -12,11 +12,10 @@ using Volo.Abp.Modularity;
 
 namespace Syrna.QuartzAdmin.MainDemo.Blazor.Host;
 
-[DependsOn(
-    typeof(AbpAutofacModule),
-    typeof(AbpAspNetCoreMvcUiBundlingModule),
-    typeof(AbpAspNetCoreComponentsWebAssemblyThemingBundlingModule)
-)]
+[DependsOn(typeof(AbpAutofacModule))]
+[DependsOn(typeof(AbpAspNetCoreMvcUiBundlingModule))]
+//[DependsOn(typeof(AbpAspNetCoreComponentsWebAssemblyThemingBundlingModule))]
+[DependsOn(typeof(AbpAspNetCoreComponentsWebAssemblyLeptonXLiteThemeBundlingModule))]
 public class MainDemoBlazorHostModule : AbpModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)

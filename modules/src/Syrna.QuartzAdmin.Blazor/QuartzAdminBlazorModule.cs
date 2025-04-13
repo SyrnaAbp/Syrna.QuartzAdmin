@@ -9,12 +9,10 @@ using Volo.Abp.UI.Navigation;
 
 namespace Syrna.QuartzAdmin.Blazor
 {
-    [DependsOn(
-        typeof(QuartzAdminApplicationContractsModule),
-        typeof(AbpAspNetCoreComponentsWebThemingModule),
-        typeof(AbpAutoMapperModule),
-        typeof(AbpBlazoriseUIModule)
-        )]
+    [DependsOn(typeof(QuartzAdminApplicationContractsModule))]
+    [DependsOn(typeof(AbpAspNetCoreComponentsWebThemingModule))]
+    [DependsOn(typeof(AbpAutoMapperModule))]
+    [DependsOn(typeof(AbpBlazoriseUIModule))]
     public class QuartzAdminBlazorModule : AbpModule
     {
         public override void ConfigureServices(ServiceConfigurationContext context)
@@ -36,11 +34,11 @@ namespace Syrna.QuartzAdmin.Blazor
             {
                 options.AddMaps<QuartzAdminBlazorModule>(validate: true);
             });
-            
-            //Configure<AbpNavigationOptions>(options =>
-            //{
-            //    options.MenuContributors.Add(new QuartzAdminMenuContributor());
-            //});
+
+            Configure<AbpNavigationOptions>(options =>
+            {
+                options.MenuContributors.Add(new QuartzAdminMenuContributor());
+            });
 
             Configure<AbpRouterOptions>(options =>
             {

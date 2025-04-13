@@ -12,7 +12,8 @@ using System;
 using System.Net.Http;
 using Volo.Abp.Account;
 using Volo.Abp.AspNetCore.Components.Web.Theming.Routing;
-using Volo.Abp.AspNetCore.Components.WebAssembly.BasicTheme;
+using Volo.Abp.AspNetCore.Components.WebAssembly.LeptonXLiteTheme;
+using Volo.Abp.AspNetCore.Components.WebAssembly.LeptonXLiteTheme.Bundling;
 using Volo.Abp.Autofac.WebAssembly;
 using Volo.Abp.AutoMapper;
 using Volo.Abp.Identity.Blazor.WebAssembly;
@@ -24,7 +25,8 @@ using Volo.Abp.UI.Navigation;
 namespace Syrna.QuartzAdmin.MainDemo.Blazor.Host.Client;
 
 [DependsOn(typeof(AbpAutofacWebAssemblyModule))]
-[DependsOn(typeof(AbpAspNetCoreComponentsWebAssemblyBasicThemeModule))]
+//[DependsOn(typeof(AbpAspNetCoreComponentsWebAssemblyBasicThemeModule))]
+[DependsOn(typeof(AbpAspNetCoreComponentsWebAssemblyLeptonXLiteThemeModule))]
 [DependsOn(typeof(AbpAccountApplicationContractsModule))]
 [DependsOn(typeof(AbpIdentityBlazorWebAssemblyModule))]
 [DependsOn(typeof(AbpTenantManagementBlazorWebAssemblyModule))]

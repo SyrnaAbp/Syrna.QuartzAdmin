@@ -33,27 +33,9 @@ public class MainDemoBlazorHostClientMenuContributor(IConfiguration configuratio
                 MainDemoBlazorHostClientMenus.Home,
                 l["Menu:Home"],
                 "/",
-                icon: "fa-home"
+                icon: "fa fa-house"
             )
         );
-
-        var groupMenuItem = new ApplicationMenuItem(MainDemoBlazorHostClientMenus.Prefix, l["Menu:QuartzAdmin"], icon: IconName.Clock.ToString());
-        context.Menu.AddItem(groupMenuItem);
-
-        groupMenuItem.AddItem(new ApplicationMenuItem(
-            MainDemoBlazorHostClientMenus.Overview,
-            l["Menu:Overview"],
-            url: "~/overview").RequirePermissions(QuartzAdminPermissions.Overview.Default));
-
-        groupMenuItem.AddItem(new ApplicationMenuItem(
-            MainDemoBlazorHostClientMenus.Schedules,
-            l["Menu:Schedules"],
-            url: "~/schedules").RequirePermissions(QuartzAdminPermissions.Schedules.Default));
-
-        groupMenuItem.AddItem(new ApplicationMenuItem(
-            MainDemoBlazorHostClientMenus.History,
-            l["Menu:History"],
-            url: "~/history").RequirePermissions(QuartzAdminPermissions.History.Default));
 
         return Task.CompletedTask;
     }
@@ -66,9 +48,9 @@ public class MainDemoBlazorHostClientMenuContributor(IConfiguration configuratio
 
         context.Menu.AddItem(new ApplicationMenuItem(
             "Account.Manage",
-            accountStringLocalizer["MyAccount"],
+            accountStringLocalizer["MyAccount"]??"My Account",
             $"{identityServerUrl.EnsureEndsWith('/')}Account/Manage?returnUrl={configuration["App:SelfUrl"]}",
-            icon: "fa fa-cog",
+            icon: "fa-cog",
             order: 1000,
             null).RequireAuthenticated());
 

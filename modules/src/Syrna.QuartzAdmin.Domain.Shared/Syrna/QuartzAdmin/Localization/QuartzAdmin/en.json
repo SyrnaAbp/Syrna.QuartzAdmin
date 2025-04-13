@@ -1,6 +1,7 @@
 {
   "culture": "en",
   "texts": {
+    "MyAccount": "My Account",
     "Back": "Back",
     "Cancel": "Cancel",
     "Next": "Next",

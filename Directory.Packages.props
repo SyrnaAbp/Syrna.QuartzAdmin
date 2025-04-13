@@ -208,7 +208,11 @@
 		<PackageVersion Include="Google.Apis.Keep.v1" Version="1.68.0.2637" />
 		<PackageVersion Include="Google.Apis.Tasks.v1" Version="1.68.0.3468" />
 		<PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.3.0" />
+		
 		<PackageVersion Include="Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite" Version="4.1.1" />
+		<PackageVersion Include="Volo.Abp.AspNetCore.Components.WebAssembly.LeptonXLiteTheme" Version="4.1.1" />
+		<PackageVersion Include="Volo.Abp.AspNetCore.Components.Server.LeptonXLiteTheme" Version="4.1.1" />
+		<PackageVersion Include="Volo.Abp.AspNetCore.Components.WebAssembly.LeptonXLiteTheme.Bundling" Version="4.1.1" />
 	</ItemGroup>
 	<!-- .NET Blazor-->
 	<ItemGroup>
@@ -320,13 +324,6 @@
 	<ItemGroup>
 		<PackageVersion Include="ConfigureAwait.Fody" Version="3.3.2" />
 		<PackageVersion Include="Fody" Version="6.8.2" />
-	</ItemGroup>
-	<!-- BasicTheme -->
-	<ItemGroup>
-		<PackageVersion Include="Syrna.Alpha.AspNetCore.Components.Server.BasicTheme" Version="$(SyrnaAlphaPackageVersion)" />
-		<PackageVersion Include="Syrna.Alpha.AspNetCore.Components.Web.BasicTheme" Version="$(SyrnaAlphaPackageVersion)" />
-		<PackageVersion Include="Syrna.Alpha.AspNetCore.Components.WebAssembly.BasicTheme" Version="$(SyrnaAlphaPackageVersion)" />
-		<PackageVersion Include="Syrna.Alpha.AspNetCore.Mvc.UI.Theme.Basic" Version="$(SyrnaAlphaPackageVersion)" />
 	</ItemGroup>
 	<!-- ApiDescription -->
 	<ItemGroup>

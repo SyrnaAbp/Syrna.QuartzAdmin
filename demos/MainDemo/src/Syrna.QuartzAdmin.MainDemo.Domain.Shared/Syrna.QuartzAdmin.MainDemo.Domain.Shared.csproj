@@ -23,13 +23,9 @@
 
 	<ItemGroup>
 		<EmbeddedResource Include="Localization\MainDemo\*.json" />
-		<Compile Remove="Settings\**" />
 		<Content Remove="Localization\MainDemo\*.json" />
-		<Content Remove="Settings\**" />
-		<EmbeddedResource Remove="Settings\**" />
-		<None Remove="Settings\**" />
 	</ItemGroup>
-
+	
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" />
 	</ItemGroup>
