@@ -1,0 +1,220 @@
+@page "/overview"
+@using Blazorise.Charts
+@using Blazorise.DataGrid
+@using Syrna.QuartzAdmin.Blazor.Components
+@using Syrna.QuartzAdmin.Blazor.Services
+@using Syrna.QuartzAdmin.ExecutionLog.Dtos
+@using Syrna.QuartzAdmin.Localization
+@inject AbpBlazorMessageLocalizerHelper<QuartzAdminResource> LH
+@inherits Volo.Abp.AspNetCore.Components.AbpComponentBase
+<PageTitle>@L["Title:Overview"]</PageTitle>
+<div>
+    <Bar Breakpoint="Breakpoint.Desktop" Background="Background.Light" Shadow="Shadow.Remove" ThemeContrast="ThemeContrast.Light">
+        <BarBrand>
+            <Heading Size="HeadingSize.Is4">@L["Title:Overview"]</Heading>
+        </BarBrand>
+        <BarStart>
+        </BarStart>
+        <BarEnd>
+            <Switch Checked="AutoRefresh"
+                    TValue="bool"
+                    CheckedChanged="OnCheckAutoRefresh"
+                    Color="Color.Primary">
+                @L["AutoRefresh"]
+            </Switch>
+        </BarEnd>
+    </Bar>
+    <Grid>
+        <Column ColumnSize="ColumnSize.Is3" Margin="Margin.Is1" Height="Height.Is100">
+            <Paper Elevation="2" Margin="Margin.Is1" Padding="Padding.Is1" Height="Height.Is100">
+                <Heading Size="HeadingSize.Is5" Class="title">@L["Today"]</Heading>
+                <Chart @ref="todaysChart" TItem="double" Type="ChartType.Doughnut" Options="chartOptions" />
+            </Paper>
+        </Column>
+        <Column ColumnSize="ColumnSize.Is3" Margin="Margin.Is1" Height="Height.Is100">
+            <Paper Elevation="2" Margin="Margin.Is1" Padding="Padding.Is1" Height="Height.Is100">
+                <Heading Size="HeadingSize.Is5" Class="title">@L["Yesterday"]</Heading>
+                <Chart @ref="yesterdaysChart" TItem="double" Type="ChartType.Doughnut" Options="chartOptions" />
+            </Paper>
+        </Column>
+        @* show all time logs if more than 1 day*@
+        @if (TotalLogDays > 1)
+        {
+            <Column ColumnSize="ColumnSize.Is3" Margin="Margin.Is1" Height="Height.Is100">
+                <Paper Elevation="2" Margin="Margin.Is1" Padding="Padding.Is1" Height="Height.Is100">
+                    <Heading Size="HeadingSize.Is5" Class="title">@string.Format(L["LastDaysTemplate"],TotalLogDays)</Heading>
+                    <Chart @ref="allTimeChart" TItem="double" Type="ChartType.Doughnut" Options="chartOptions" />
+                </Paper>
+            </Column>
+        }
+        @* Actions & Schedules *@
+        <Column ColumnSize="ColumnSize.Is3" Margin="Margin.Is1" Height="Height.Is100">
+            <Paper Elevation="2" Margin="Margin.Is1" Padding="Padding.Is1">
+                <Heading Size="HeadingSize.Is5" Margin="Margin.Is1" Class="title">@L["Overview:Actions"]</Heading>
+                <Div Class="actionsform">
+                    @if (IsStartButtonVisible)
+                    {
+                        <Button Disabled="@IsStartStandbyDisabled" Margin="Margin.Is0"
+                                Clicked="OnStartScheduler"
+                                Color="Color.Primary">
+                            <Icon Name="@IconName.Play"></Icon>@L["Actions:Start"]
+                        </Button>
+                    }
+                    else
+                    {
+                        <Button Disabled="@IsStartStandbyDisabled" Margin="Margin.Is0"
+                                Clicked="OnStandbyScheduler"
+                                Color="Color.Dark">
+                            <Icon Name="@IconName.Stop"></Icon>
+                            @L["Actions:Standby"]
+                        </Button>
+                    }
+                    <Button Clicked="OnShutdownScheduler" Margin="Margin.Is0"
+                            Color="Color.Danger">
+                        <Icon Name="@("fa-power-off")"></Icon>
+                        @L["Actions:Shutdown"]
+                    </Button>
+                    <Button Disabled="@IsPauseResumeDisabled" Margin="Margin.Is0"
+                            Clicked="OnPauseAllSchedules"
+                            Color="Color.Secondary">
+                        <Icon Name="@IconName.Pause"></Icon>
+                        @L["Actions:PauseAll"]
+                    </Button>
+                    <Button Disabled="@IsPauseResumeDisabled" Margin="Margin.Is0"
+                            Clicked="OnResumeAllSchedules"
+                            Color="Color.Secondary">
+                        <Icon Name="@IconName.Play"></Icon>
+                        @L["Actions:ResumeAll"]
+                    </Button>
+                    <Div Border="Border.Secondary.OnAll.Rounded.Is1" Background="Background.Info" Margin="Margin.Is0" Padding="Padding.Is1" TextAlignment="TextAlignment.Center" VerticalAlignment="VerticalAlignment.Middle">
+                        <Heading Size="HeadingSize.Is6">@Uptime.ToString(@"d\.hh\:mm\:ss")</Heading>
+                    </Div>
+                    <Div Border="Border.Secondary.OnAll.Rounded.Is1" Background="GetStatusColor(Status)" Margin="Margin.Is0" Padding="Padding.Is1" TextAlignment="TextAlignment.Center" VerticalAlignment="VerticalAlignment.Middle">
+                        <Heading Size="HeadingSize.Is6">@L[$"Status:{Status}"]</Heading>
+                    </Div>
+                </Div>
+            </Paper>
+        </Column>
+        <Column ColumnSize="ColumnSize.Is12" Margin="Margin.Is1" VerticalAlignment="VerticalAlignment.Middle" TextAlignment="TextAlignment.Start">
+            <Paper Elevation="2" Margin="Margin.Is1" Padding="Padding.Is1">
+                <Grid>
+                    <Column ColumnSize="ColumnSize.Is2">
+                        <Heading Size="HeadingSize.Is5" Margin="Margin.Is1">@L["Overview:Summary"]</Heading>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is2">
+                        <Div><Span Margin="Margin.Is1" TextSize="TextSize.Small" TextWeight="TextWeight.Bold">@JobCount</Span><Span Margin="Margin.Is1" TextSize="TextSize.Small">@L["Summary:Jobs"]</Span></Div>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is2">
+                        <Div><Span Margin="Margin.Is1" TextSize="TextSize.Small" TextWeight="TextWeight.Bold">@TriggerCount</Span><Span Margin="Margin.Is1" TextSize="TextSize.Small">@L["Summary:Triggers"]</Span></Div>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is2">
+                        <Div><Span Margin="Margin.Is1" TextSize="TextSize.Small" TextWeight="TextWeight.Bold">@ExecutingCount</Span><Span Margin="Margin.Is1" TextSize="TextSize.Small">@L["Summary:Executing"]</Span></Div>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is2">
+                    </Column>
+                </Grid>
+            </Paper>
+        </Column>
+        <Column ColumnSize="ColumnSize.Is6" Margin="Margin.Is1">
+            <Paper Elevation="2" Margin="Margin.Is1" Padding="Padding.Is1">
+                <Heading Size="HeadingSize.Is5" Margin="Margin.Is1" Class="title">@L["Overview:Information"]</Heading>
+                <Table Hoverable="true"
+                       Bordered="true">
+                    <TableBody>
+                        @foreach (var item in SchedulerInfo.Keys)
+                        {
+                            <TableRow>
+                                <TableRowCell>@L[$"SchedulerInfo:{item}"]</TableRowCell>
+                                <TableRowCell>
+                                    @if (item.Equals(UptimeKey) && RunningSince.HasValue)
+                                    {
+                                        <Tooltip Text="@($"Running since {RunningSince?.ToLocalTime()}")">
+                                            @SchedulerInfo[item]
+                                        </Tooltip>
+                                    }
+                                    else
+                                    {
+                                        @L[SchedulerInfo[item].ToString()]
+                                    }
+                                </TableRowCell>
+                            </TableRow>
+                        }
+                    </TableBody>
+                </Table>
+            </Paper>
+        </Column>
+        <Column ColumnSize="ColumnSize.Is6" Margin="Margin.Is1">
+            <Paper Elevation="2" Margin="Margin.Is1" Padding="Padding.Is1">
+                <Heading Size="HeadingSize.Is5" Margin="Margin.Is1">@L["Overview:FailedExecutions"]</Heading>
+                <DataGrid @ref="table"
+                          TItem="ExecutionLogDto"
+                          Data="@ErrorLogPagedList"
+                          ReadData="@RefreshErrorLogs"
+                          TotalItems="@ErrorLogTotalItems"
+                          PageSize="@PageSize"
+                          Editable="false"
+                          ShowPager
+                          FixedHeader
+                          Hoverable
+                          Responsive
+                          Striped>
+                    <LoadingTemplate>
+                        <Row TextAlignment="TextAlignment.Center" VerticalAlignment="VerticalAlignment.Middle" Style="height: 150px;">
+                            <Column>
+                                <RadarSpinner />
+                            </Column>
+                        </Row>
+                    </LoadingTemplate>
+                    <EmptyTemplate>
+                        <Row TextAlignment="TextAlignment.Center" VerticalAlignment="VerticalAlignment.Middle" Style="height: 150px;">
+                            <Column>
+                                <Heading Size="HeadingSize.Is4" TextAlignment="TextAlignment.Center">No data available</Heading>
+                            </Column>
+                        </Row>
+                    </EmptyTemplate>
+                    <DataGridColumns>
+                        <DataGridDateColumn Field="@nameof(ExecutionLogDto.FireTimeUtc)" Caption="@L["ExecutionLog:FireTimeUtc"]" Width="120px">
+                            <DisplayTemplate>
+                                @(context.FireTimeUtc.HasValue ? context.FireTimeUtc!.Value.ToLocalTime().ToString("G") : "")
+                            </DisplayTemplate>
+                        </DataGridDateColumn>
+                        <DataGridColumn Field="@nameof(ExecutionLogDto.JobName)" Caption="@L["ExecutionLog:JobName"]"></DataGridColumn>
+                        <DataGridColumn Field="@nameof(ExecutionLogDto.JobGroup)" Caption="@L["ExecutionLog:JobGroup"]"></DataGridColumn>
+                        <DataGridColumn Field="@nameof(ExecutionLogDto.TriggerName)" Caption="@L["ExecutionLog:TriggerName"]"></DataGridColumn>
+                        <DataGridColumn Field="@nameof(ExecutionLogDto.ErrorMessage)" Caption="@L["ExecutionLog:ErrorMessage"]" Width="30%">
+                            <DisplayTemplate>
+                                <Text TextColor="TextColor.Dark">
+                                    @if (context.IsException ?? false)
+                                    {
+                                        @context.GetShortExceptionMessage()
+                                    }
+                                    else
+                                    {
+                                        @context.GetShortResultMessage()
+                                    }
+                                </Text>
+                                @if (context.IsException ?? false)
+                                {
+                                    <Button Size="Size.Small"
+                                            Clicked="@(async () => await OnMoreDetails(context, "ErrorDetails"))"
+                                            Color="Color.Link">
+                                        @L["ExecutionLog:ErrorDetails"]
+                                    </Button>
+                                }
+                                else if (context.ShowExecutionDetailButton())
+                                {
+                                    <Button Size="Size.Small"
+                                            Clicked="@(async () => await OnMoreDetails(context, "ExecutionDetails"))"
+                                            Color="Color.Link">
+                                        @L["ExecutionLog:ExecutionDetails"]
+                                    </Button>
+                                }
+                            </DisplayTemplate>
+                        </DataGridColumn>
+                    </DataGridColumns>
+                </DataGrid>
+            </Paper>
+        </Column>
+    </Grid>
+</div>
+<ExecutionDetailsDialog @ref="ExecutionDetailsDialogRef"></ExecutionDetailsDialog>
