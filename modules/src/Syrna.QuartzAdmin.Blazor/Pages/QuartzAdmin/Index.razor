@@ -22,7 +22,7 @@
     SchedulerDetails schedulerDetails { get; set; }
     async Task Shutdown()
     {
-        await SchedulerAppService.ShutDownScheduler();
+        await SchedulerAppService.ShutdownScheduler();
     }
     async Task Start()
     {

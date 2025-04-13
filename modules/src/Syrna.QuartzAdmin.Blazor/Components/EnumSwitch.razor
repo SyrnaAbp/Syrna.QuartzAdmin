@@ -1,0 +1,16 @@
+﻿@typeparam T where T : Enum
+
+@using Syrna.QuartzAdmin.Localization
+@inject AbpBlazorMessageLocalizerHelper<QuartzAdminResource> LH
+@inherits Volo.Abp.AspNetCore.Components.AbpComponentBase
+<Column ColumnSize="ColumnSize.Is12" Margin="Margin.Is0" Background="Background.Light">
+    @foreach (int value in Enum.GetValues(Type))
+    {
+        if (ExcludedValues.Contains((T)Enum.ToObject(Type, value)))
+            continue;
+        <Button Color="@(value == Convert.ToInt32(Value)?Color.Secondary:Color.Default)" Size="Size" Shadow="Shadow.None"                   
+                Clicked="() => OnSelected(value)">
+            <Icon Margin="Margin.Is1" Name="@GetIcon(value)" />@L[$"TriggerType:{@Enum.GetName(Type, value)}"]
+        </Button>
+     }
+</Column>

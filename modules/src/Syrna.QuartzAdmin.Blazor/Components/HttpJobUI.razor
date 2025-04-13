@@ -1,0 +1,86 @@
+@using Syrna.QuartzAdmin.Localization
+@inject AbpBlazorMessageLocalizerHelper<QuartzAdminResource> LH
+@inherits Volo.Abp.AspNetCore.Components.AbpComponentBase
+<div class="httpjobform">
+    <Validations>
+        <Validation Validator="@ValidationRule.IsSelected">
+            <Field>
+                <FieldLabel RequiredIndicator>@L["HttpJobUI:RequestMethod"]</FieldLabel>
+                <Select TValue="string"
+                        ReadOnly="IsReadOnly"
+                        @bind-SelectedValue="HttpAction"
+                        Margin="Margin.Is0">
+                    <ChildContent>
+                        <SelectItem TValue="string" Value="@("Get")">GET</SelectItem>
+                        <SelectItem TValue="string" Value="@("Post")">POST</SelectItem>
+                        <SelectItem TValue="string" Value="@("Put")">PUT</SelectItem>
+                        <SelectItem TValue="string" Value="@("Delete")">DELETE</SelectItem>
+                    </ChildContent>
+                    <Feedback>
+                        <ValidationError>@L["Error:SelectOneValue"]</ValidationError>
+                    </Feedback>
+                </Select>
+            </Field>
+        </Validation>
+
+        <Validation Validator="@ValidationRule.IsNotEmpty">
+            <Field>
+                <FieldLabel RequiredIndicator>@L["HttpJobUI:RequestUrl"]</FieldLabel>
+                <FieldBody>
+                    <TextEdit @bind-Text="DataMapUrl.Value"
+                              ReadOnly="IsReadOnly">
+                        <Feedback>
+                            <ValidationError>@L["Error:RequestUrlRequired"]</ValidationError>
+                        </Feedback>
+                    </TextEdit>
+                </FieldBody>
+            </Field>
+        </Validation>
+    </Validations>
+
+    <Accordion>
+        <AccordionItem>
+            <AccordionHeader>
+                <Heading Size="HeadingSize.Is5">
+                    <AccordionToggle>@L["HttpJobUI:SettingsTitle"]</AccordionToggle>
+                </Heading>
+            </AccordionHeader>
+            <AccordionBody>
+                <Field>
+                    <FieldLabel>@L["HttpJobUI:Headers"]</FieldLabel>
+                    <FieldBody>
+                        <MemoEdit @bind-Value="DataMapHeaders.Value"
+                                  Rows="3"
+                                  Immediate="true"
+                                  ReadOnly="IsReadOnly" />
+                    </FieldBody>
+                </Field>
+
+                <Field>
+                    <FieldLabel>@L["HttpJobUI:Parameters"]</FieldLabel>
+                    <FieldBody>
+                        <MemoEdit @bind-Text="DataMapParameters.Value"
+                                  Rows="3"
+                                  Immediate="true"
+                                  ReadOnly="IsReadOnly" />
+                    </FieldBody>
+                </Field>
+                <Field>
+                    <FieldLabel>@L["HttpJobUI:TimeoutInSec"]</FieldLabel>
+                    <FieldBody>
+                        <NumericEdit @bind-Value="@TimeoutInSec"
+                                     ReadOnly="IsReadOnly"
+                                     Min="-1"
+                                     Step="1"
+                                     TValue="int?" />
+                    </FieldBody>
+                    <FieldHelp>@L["HttpJobUI:TimeoutInSec:Help"]</FieldHelp>
+                </Field>
+
+                <Tooltip Text="@L["HttpJobUI:IgnoreSsl:Tooltip"]">
+                    <Check TValue="bool" @bind-Checked="IgnoreSsl" ReadOnly="IsReadOnly">@L["HttpJobUI:IgnoreSsl"]</Check>
+                </Tooltip>
+            </AccordionBody>
+        </AccordionItem>
+    </Accordion>
+</div>

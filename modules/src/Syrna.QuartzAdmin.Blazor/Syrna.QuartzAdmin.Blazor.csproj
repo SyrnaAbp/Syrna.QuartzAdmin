@@ -11,14 +11,12 @@
 	<ItemGroup>
 		<PackageReference Include="Volo.Abp.AutoMapper" />
 		<PackageReference Include="Volo.Abp.AspNetCore.Components.Web.Theming" />
+		<PackageReference Include="DartSassBuilder" />
+		<PackageReference Include="Blazorise.Charts" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\Syrna.QuartzAdmin.Application.Contracts\Syrna.QuartzAdmin.Application.Contracts.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Components\" />
 	</ItemGroup>
 
 </Project>

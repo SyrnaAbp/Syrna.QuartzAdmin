@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Syrna.BlazoriseQuartz.ExecutionLog.Dtos
+namespace Syrna.QuartzAdmin.ExecutionLog.Dtos
 {
     public class ExecutionLogDetailDto
     {

@@ -10,9 +10,14 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Syrna\QuartzAdmin\Triggers\TriggerType.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="Quartz" />
 		<PackageReference Include="Volo.Abp.Ddd.Application.Contracts" />
 		<PackageReference Include="Volo.Abp.Authorization" />
+		<PackageReference Include="CronExpressionDescriptor" />
 	</ItemGroup>
 
 	<ItemGroup>

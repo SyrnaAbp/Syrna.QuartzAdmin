@@ -59,7 +59,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Quartz" />
-		<PackageReference Include="Quartz.AspNetCore" />
+		<!--<PackageReference Include="Quartz.AspNetCore" />-->
 		<PackageReference Include="Quartz.Serialization.Json" />
 
 		<PackageReference Include="Volo.Abp.Quartz" />

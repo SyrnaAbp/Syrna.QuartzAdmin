@@ -13,8 +13,7 @@ namespace Syrna.QuartzAdmin.Web
                 return;
             }
 
-            if (await context.IsGrantedAsync(
-                QuartzAdminPermissions.PrivateMessageNotifications.Default))
+            if (await context.IsGrantedAsync(QuartzAdminPermissions.Schedules.Default))
             {
                 //context.Toolbar.Items.Insert(0, new ToolbarItem(typeof(PmNotificationViewComponent)));
             }

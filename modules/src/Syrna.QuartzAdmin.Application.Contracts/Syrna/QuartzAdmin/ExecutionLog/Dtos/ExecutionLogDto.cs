@@ -4,12 +4,12 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Volo.Abp.Application.Dtos;
 
-namespace Syrna.BlazoriseQuartz.ExecutionLog.Dtos
+namespace Syrna.QuartzAdmin.ExecutionLog.Dtos
 {
     public class ExecutionLogDto : EntityDto<long>
     {
         [MaxLength(256)]
-        public string RunInstanceId { get; set; }
+        public string FireInstanceId { get; set; }
         [Column(TypeName = "varchar(20)")]
         public LogType LogType { get; set; }
         [MaxLength(256)]

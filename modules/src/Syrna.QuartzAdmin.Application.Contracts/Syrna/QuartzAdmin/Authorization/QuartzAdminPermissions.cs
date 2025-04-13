@@ -5,22 +5,27 @@ namespace Syrna.QuartzAdmin.Authorization
     public class QuartzAdminPermissions
     {
         public const string GroupName = "Syrna.QuartzAdmin";
-        
-        public class PrivateMessages
+
+        public class Schedules
         {
-            public const string Default = GroupName + ".PrivateMessage";
-            
+            public const string Default = GroupName + ".Schedules";
+
             public const string Create = Default + ".Create";
-            
-            public const string SetRead = Default + ".SetRead";
-            
+
+            public const string Update = Default + ".Update";
+
             public const string Delete = Default + ".Delete";
         }
-        
-        public class PrivateMessageNotifications
+
+        public class Overview
         {
-            public const string Default = GroupName + ".PrivateMessageNotification";
-            
+            public const string Default = GroupName + ".Overview";
+        }
+
+        public class History
+        {
+            public const string Default = GroupName + ".History";
+
             public const string Delete = Default + ".Delete";
         }
 

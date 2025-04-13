@@ -1,0 +1,63 @@
+@using Syrna.QuartzAdmin.Localization
+@inject AbpBlazorMessageLocalizerHelper<QuartzAdminResource> LH
+@inherits Volo.Abp.AspNetCore.Components.AbpComponentBase
+<Modal @ref="modalRef">
+    <ModalContent Size="ModalSize.Default">
+        <ModalHeader>
+            <ModalTitle>@(IsEditMode ? L["JobDataMapDialogEdit"] : L["JobDataMapDialogNew"])</ModalTitle>
+            <CloseButton Clicked="OnCancel" />
+        </ModalHeader>
+        <Form>
+            <ModalBody>
+                <Validations @ref="_validations">
+                    <Validation Validator="@ValidateKey">
+                        <Field>
+                            <FieldLabel RequiredIndicator="true">@L["JobDataMap:Key"]</FieldLabel>
+                            <TextEdit @bind-Text="DataMapItem.Key" Autofocus="true"
+                                      ReadOnly="IsEditMode"
+                                      Margin="Margin.Is0">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+
+                    <Validation Validator="ValidationRule.IsSelected">
+                        <Field>
+                            <FieldLabel RequiredIndicator="true">@L["JobDataMap:Type"]</FieldLabel>
+                            <Select TValue="DataMapType?"
+                                    @bind-SelectedValue="DataMapItem.Type"
+                                    Margin="Margin.Is0">
+                                <ChildContent>
+                                    @foreach (var typ in AvailableDataMapTypes)
+                                    {
+                                        <SelectItem TValue="DataMapType?" Value="typ.Key">@L[$"DataMapType:{typ.Value}"]</SelectItem>
+                                    }
+                                </ChildContent>
+                                <Feedback>
+                                    <ValidationError>@L["Error:SelectOneValue"]</ValidationError>
+                                </Feedback>
+                            </Select>
+                        </Field>
+                    </Validation>
+
+                    <Validation Validator="ValidationRule.IsNotEmpty">
+                        <Field>
+                            <FieldLabel RequiredIndicator="true">@L["JobDataMap:Value"]</FieldLabel>
+                            <MemoEdit @bind-Text="Value" Autofocus="true" Rows="3">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </MemoEdit>
+                        </Field>
+                    </Validation>
+                </Validations>
+            </ModalBody>
+            <ModalFooter>
+                <Button Clicked="OnCancel">@L["Cancel"]</Button>
+                <SubmitButton Color="Color.Primary" Clicked="OnSave">@L["Save"]</SubmitButton>
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>

@@ -1,0 +1,91 @@
+﻿@using Blazorise.Components
+@using Syrna.QuartzAdmin.Localization
+@inject AbpBlazorMessageLocalizerHelper<QuartzAdminResource> LH
+@inherits Volo.Abp.AspNetCore.Components.AbpComponentBase
+<div class="jobform">
+    <Form>
+        <Validations @ref="_validations" Mode="ValidationMode.Auto" Model="@JobDetail" StatusChanged="OnSetIsValid">
+            <div class="jobform__2col">
+                <Validation AsyncValidator="ValidateJobName">
+                    <Field>
+                        <FieldLabel RequiredIndicator="true" For="JobDetail.Name">@L["JobDetail:Name"]</FieldLabel>
+                        <FieldBody>
+                            <TextEdit @bind-Text="JobDetail.Name"
+                                      Immediate="true"
+                                      Margin="Margin.Is0"
+                                      ReadOnly="IsReadOnly">
+                                <Feedback>
+                                    <ValidationError>@L["Error:JobNameAlreadyInUsed"]</ValidationError>
+                                </Feedback>
+                            </TextEdit>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+
+                <Field>
+                    <FieldLabel RequiredIndicator="true">@L["JobDetail:Group"]</FieldLabel>
+                    <FieldBody>
+                        <Autocomplete TItem="SelectListItem"
+                                      TValue="string"
+                                      SelectedValue="@JobDetail.Group"
+                                      Data="ExistingJobGroups"
+                                      TextField="@((item) => item.Text)"
+                                      ValueField="@((item) => item.Value)"
+                                      ReadData="GetJobGroups"
+                                      Placeholder="@L["SearchPlaceHolder"]"
+                                      Filter="AutocompleteFilter.Contains"
+                                      FreeTyping>
+                            <NotFoundContent>@string.Format(L["NotFoundContent"], context)</NotFoundContent>
+                            <ItemContent>
+                                <Paragraph Margin="Margin.Is2.FromBottom">@context.Text</Paragraph>
+                            </ItemContent>
+                        </Autocomplete>
+                    </FieldBody>
+                </Field>
+            </div>
+
+            <Validation Validator="@ValidationRule.IsSelected">
+                <Field>
+                    <FieldLabel RequiredIndicator="true">@L["JobDetail:Class"]</FieldLabel>
+                    <FieldBody>
+                        <Select TValue="string"
+                                ReadOnly="IsReadOnly"
+                                SelectedValue="@JobDetail.JobClass?.FullName"
+                                SelectedValueChanged="@OnJobClassValueChanged"
+                                Margin="Margin.Is0">
+                            <ChildContent>
+                                @foreach (var cls in @AvailableJobTypes)
+                                {
+                                    <SelectItem TValue="string" Value="cls.FullName">@cls.FullName</SelectItem>
+                                }
+                            </ChildContent>
+                            <Feedback>
+                                <ValidationError>@L["Error:SelectOneValue"]</ValidationError>
+                            </Feedback>
+                        </Select>
+                    </FieldBody>
+                </Field>
+            </Validation>
+
+            <Field>
+                <FieldLabel For="JobDetail.Description">@L["JobDetail:Description"]</FieldLabel>
+                <FieldBody>
+                    <MemoEdit @bind-Text="JobDetail.Description"
+                              Rows="2"
+                              Immediate="true"
+                              Margin="Margin.Is0"
+                              ReadOnly="IsReadOnly" />
+                </FieldBody>
+            </Field>
+
+            @if (JobUIType != null)
+            {
+                <DynamicComponent Type="@JobUIType" Parameters="@JobUITypeParameters" @ref="_jobUIComponent" />
+            }
+
+            <Tooltip Text="@L["JobDetail:IsDurable:Tooltip"]">
+                <Check TValue="bool" @bind-Checked="JobDetail.IsDurable" ReadOnly="IsReadOnly">@L["JobDetail:IsDurable"]</Check>
+            </Tooltip>
+        </Validations>
+    </Form>
+</div>

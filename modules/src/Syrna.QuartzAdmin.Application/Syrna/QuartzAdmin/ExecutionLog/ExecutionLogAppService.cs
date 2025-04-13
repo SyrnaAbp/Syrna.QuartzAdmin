@@ -1,5 +1,5 @@
-﻿using Syrna.BlazoriseQuartz.ExecutionLog.Dtos;
-using Syrna.QuartzAdmin.ExecutionHistory;
+﻿using Syrna.QuartzAdmin.ExecutionHistory;
+using Syrna.QuartzAdmin.ExecutionLog.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,22 +9,21 @@ namespace Syrna.QuartzAdmin.ExecutionLog
 {
     public class ExecutionLogAppService(IQuartzExecutionHistoryRepository executionLogRepository) : QuartzAdminAppService, IExecutionLogAppService
     {
-        public async Task<PagedList<ExecutionLogDto>> GetLatestExecutionLog(string jobName, string jobGroup, string triggerName, string triggerGroup, PageMetadata pageMetadata = null, long firstLogId = 0, HashSet<LogType> logTypes = null)
+        public async Task<DataEnvelope<ExecutionLogDto>> GetLatestExecutionLog(string jobName, string jobGroup, string triggerName, string triggerGroup, PageMetadata pageMetadata = null, long firstLogId = 0, HashSet<LogType> logTypes = null)
         {
             var query = await executionLogRepository.GetLatestExecutionLog(jobName, jobGroup, triggerName, triggerGroup, firstLogId, logTypes);
+            var totalRecords = query.Count();
             if (pageMetadata == null)
             {
                 var list = ObjectMapper.Map<List<QuartzExecutionHistory>, List<ExecutionLogDto>>([.. query]);
-                return new PagedList<ExecutionLogDto>(list);
+                return new DataEnvelope<ExecutionLogDto>() { Items = list, TotalCount = 0 };
             }
             else
             {
                 PageMetadata newPageMetadata = pageMetadata;
                 if (pageMetadata.Page == 0)
                 {
-                    // if first page, get the total records
-                    var totalRecords = query.Count();
-                    newPageMetadata = pageMetadata with { TotalCount = totalRecords };
+                    newPageMetadata = new PageMetadata { TotalCount = totalRecords };
                 }
 
                 var result = query
@@ -32,17 +31,18 @@ namespace Syrna.QuartzAdmin.ExecutionLog
                     .Take(pageMetadata.PageSize)
                     .ToList();
                 var list = ObjectMapper.Map<List<QuartzExecutionHistory>, List<ExecutionLogDto>>([.. result]);
-                return new PagedList<ExecutionLogDto>(list, newPageMetadata);
+                return new DataEnvelope<ExecutionLogDto>() { Items = list, TotalCount = totalRecords };
             }
         }
 
-        public async Task<PagedList<ExecutionLogDto>> GetExecutionLogs(ExecutionLogFilter filter = null, PageMetadata pageMetadata = null, long firstLogId = 0)
+        public async Task<DataEnvelope<ExecutionLogDto>> GetExecutionLogs(ExecutionLogFilter filter = null, PageMetadata pageMetadata = null, long firstLogId = 0)
         {
             var query = await executionLogRepository.GetExecutionLogs(filter, firstLogId);
+            var totalRecords = query.Count();
             if (pageMetadata == null)
             {
                 var list = ObjectMapper.Map<List<QuartzExecutionHistory>, List<ExecutionLogDto>>([.. query]);
-                return new PagedList<ExecutionLogDto>(list);
+                return new DataEnvelope<ExecutionLogDto>() { Items = list, TotalCount = totalRecords };
             }
             else
             {
@@ -50,8 +50,7 @@ namespace Syrna.QuartzAdmin.ExecutionLog
                 if (pageMetadata.Page == 0)
                 {
                     // if first page, get the total records
-                    var totalRecords = query.Count();
-                    newPageMetadata = pageMetadata with { TotalCount = totalRecords };
+                    newPageMetadata = new PageMetadata { TotalCount = totalRecords };
                 }
 
                 var result = query
@@ -59,7 +58,7 @@ namespace Syrna.QuartzAdmin.ExecutionLog
                     .Take(pageMetadata.PageSize)
                     .ToList();
                 var list = ObjectMapper.Map<List<QuartzExecutionHistory>, List<ExecutionLogDto>>([.. result]);
-                return new PagedList<ExecutionLogDto>(list, newPageMetadata);
+                return new DataEnvelope<ExecutionLogDto>() { Items = list, TotalCount = totalRecords };
             }
         }
 

@@ -1,6 +1,9 @@
-﻿namespace Syrna.QuartzAdmin
+﻿using System;
+
+namespace Syrna.QuartzAdmin
 {
-    public record PageMetadata
+    [Serializable]
+    public class PageMetadata
     {
         /// <summary>
         /// Page number. Start at 0
@@ -15,10 +18,13 @@
         /// </summary>
         public int PageSize { get; init; } = 500;
 
-        public PageMetadata(int Page, int PageSize)
+        public static PageMetadata New(int Page, int PageSize)
         {
-            this.Page = Page;
-            this.PageSize = PageSize;
+            return new PageMetadata
+            {
+                Page = Page,
+                PageSize = PageSize
+            };
         }
     }
 }

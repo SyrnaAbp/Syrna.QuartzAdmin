@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 namespace Syrna.QuartzAdmin
 {
+    [Serializable]
     public class PagedList<T> : List<T>
     {
         public PageMetadata PageMetadata { get; set; }

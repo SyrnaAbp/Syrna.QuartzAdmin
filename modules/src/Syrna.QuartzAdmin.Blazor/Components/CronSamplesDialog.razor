@@ -1,0 +1,33 @@
+@using Syrna.QuartzAdmin.Localization
+@inject AbpBlazorMessageLocalizerHelper<QuartzAdminResource> LH
+@inherits Volo.Abp.AspNetCore.Components.AbpComponentBase
+<Modal @ref="modalRef">
+    <ModalContent>
+        <ModalHeader>
+            <ModalTitle>@L["CronSamplesDialog"]</ModalTitle>
+            <CloseButton Clicked="Close" />
+        </ModalHeader>
+        <ModalBody>
+            <Div>
+                @foreach (var cron in _cronSamples)
+                {
+                    <Addons>
+                        <Addon AddonType="AddonType.Body">
+                            <TextEdit Text="@GetCronDescription(cron)"
+                                      ReadOnly="true"
+                                      Margin="Margin.Is1" />
+                        </Addon>
+                        <Addon AddonType="AddonType.End">
+                            <Button Clicked="@(() => OnSelectExpression(cron))">
+                                <Icon Name="IconName.Save"></Icon>
+                            </Button>
+                        </Addon>
+                    </Addons>
+                }
+            </Div>
+        </ModalBody>
+        <ModalFooter>
+            <Button Color="Color.Primary" Clicked="Close">@L["Close"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>

@@ -1,0 +1,50 @@
+﻿@using Syrna.QuartzAdmin.Localization
+@inject AbpBlazorMessageLocalizerHelper<QuartzAdminResource> LH
+@inherits Volo.Abp.AspNetCore.Components.AbpComponentBase
+<Modal @ref="modalRef">
+    <ModalContent Size="ModalSize.Large">
+        <ModalHeader>
+            <ModalTitle>@(IsNew ? L["ScheduleDialogNew"] : L["ScheduleDialogEdit"])</ModalTitle>
+            <CloseButton Clicked="OnCancel" />
+        </ModalHeader>
+        <ModalBody>
+            <Grid Gap="Gap.Is0.OnY">
+                <Column ColumnSize="ColumnSize.Is12" Margin="Margin.Is1.FromBottom" Background="Background.Light" Shadow="Shadow.Small">
+                    <Button Color="@(SelectedTab == ScheduleDialogTab.Job?Color.Primary:Color.Default)" Size="Size.Large" Shadow="Shadow.None"
+                            Clicked="() => OnSelectedTabChanged(ScheduleDialogTab.Job)">
+                        @L["JobDetail"]
+                    </Button>
+                    <Button Color="@(SelectedTab == ScheduleDialogTab.Trigger?Color.Primary:Color.Default)" Size="Size.Large" Shadow="Shadow.None"
+                            Clicked="() => OnSelectedTabChanged(ScheduleDialogTab.Trigger)">
+                        @L["TriggerDetail"]
+                    </Button>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12" Margin="Margin.Is0">
+                    @if (SelectedTab == ScheduleDialogTab.Job)
+                    {
+                        <BlazoriseJob @ref="_jobPanel" JobDetail="JobDetail" @bind-IsValid="_jobDetailIsValid" IsReadOnly="IsReadOnlyJobDetail" />
+                    }
+                    else
+                    {
+                        <BlazoriseTrigger @ref="_triggerPanel" TriggerDetail="TriggerDetail" @bind-IsValid="_triggerDetailIsValid" />
+                    }
+                </Column>
+            </Grid>
+        </ModalBody>
+        <ModalFooter>
+            <Grid>
+                <Column ColumnSize="ColumnSize.Is1" Margin="Margin.Is0">
+                    <Button Color="Color.Light" Clicked="OnCancel">@L["Cancel"]</Button>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is11" TextAlignment="TextAlignment.End" Margin="Margin.Is0">
+                    <Button Disabled="@(SelectedTab == ScheduleDialogTab.Job)"
+                            Color="Color.Secondary"
+                            Clicked="OnBack">
+                        <Icon Name="@IconName.ArrowLeft" />@L["Back"]
+                    </Button>
+                    <Button Color="Color.Primary" Clicked="OnSubmit">@_nextText<Icon Name="@_nextIcon" /></Button>
+                </Column>
+            </Grid>
+        </ModalFooter>
+    </ModalContent>
+</Modal>

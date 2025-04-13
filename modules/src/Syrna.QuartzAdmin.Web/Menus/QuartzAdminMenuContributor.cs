@@ -20,10 +20,10 @@ public class QuartzAdminMenuContributor : IMenuContributor
         var l = context.GetLocalizer<QuartzAdminResource>();
         //Add main menu items.
 
-        if (await context.IsGrantedAsync(QuartzAdminPermissions.PrivateMessages.Default))
+        if (await context.IsGrantedAsync(QuartzAdminPermissions.Schedules.Default))
         {
             context.Menu.GetAdministration().AddItem(new ApplicationMenuItem(QuartzAdminMenus.Prefix,
-                displayName: l["Menu:PrivateMessage"], "~/QuartzAdmin/PrivateMessages/PrivateMessage", icon: "fa fa-messages"));
+                displayName: l["Menu:Schedules"], "~/QuartzAdmin/Schedules/Schedules", icon: "fa fa-clock"));
         }
     }
 }

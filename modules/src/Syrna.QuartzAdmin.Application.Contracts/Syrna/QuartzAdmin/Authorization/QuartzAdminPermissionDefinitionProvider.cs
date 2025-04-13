@@ -9,14 +9,16 @@ namespace Syrna.QuartzAdmin.Authorization
         public override void Define(IPermissionDefinitionContext context)
         {
             var moduleGroup = context.AddGroup(QuartzAdminPermissions.GroupName, L("Permission:QuartzAdmin"));
-            
-            var privateMessages = moduleGroup.AddPermission(QuartzAdminPermissions.PrivateMessages.Default, L("Permission:PrivateMessage"));
-            privateMessages.AddChild(QuartzAdminPermissions.PrivateMessages.Create, L("Permission:Create"));
-            privateMessages.AddChild(QuartzAdminPermissions.PrivateMessages.SetRead, L("Permission:SetRead"));
-            privateMessages.AddChild(QuartzAdminPermissions.PrivateMessages.Delete, L("Permission:Delete"));
-            
-            var privateMessageNotifications = moduleGroup.AddPermission(QuartzAdminPermissions.PrivateMessageNotifications.Default, L("Permission:PrivateMessageNotification"));
-            privateMessageNotifications.AddChild(QuartzAdminPermissions.PrivateMessageNotifications.Delete, L("Permission:Delete"));
+
+            var schedulePermissions = moduleGroup.AddPermission(QuartzAdminPermissions.Schedules.Default, L("Permission:Schedules"));
+            schedulePermissions.AddChild(QuartzAdminPermissions.Schedules.Create, L("Permission:Schedules.Create"));
+            schedulePermissions.AddChild(QuartzAdminPermissions.Schedules.Update, L("Permission:Schedules.Update"));
+            schedulePermissions.AddChild(QuartzAdminPermissions.Schedules.Delete, L("Permission:Schedules.Delete"));
+
+            var historyPermissions = moduleGroup.AddPermission(QuartzAdminPermissions.History.Default, L("Permission:History"));
+            historyPermissions.AddChild(QuartzAdminPermissions.History.Delete, L("Permission:History.Delete"));
+
+            var overviewPermissions = moduleGroup.AddPermission(QuartzAdminPermissions.Overview.Default, L("Permission:Overview"));
         }
 
         private static LocalizableString L(string name)

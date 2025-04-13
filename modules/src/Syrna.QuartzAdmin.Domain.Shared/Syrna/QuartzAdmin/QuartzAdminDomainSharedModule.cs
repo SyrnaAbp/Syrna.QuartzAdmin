@@ -27,7 +27,7 @@ namespace Syrna.QuartzAdmin
                 options.Resources
                     .Add<QuartzAdminResource>("en")
                     .AddBaseTypes(typeof(AbpValidationResource))
-                    .AddVirtualJson("/Syrna/QuartzAdmin/Localization");
+                    .AddVirtualJson("/Syrna/QuartzAdmin/Localization/QuartzAdmin");
             });
 
             Configure<AbpExceptionLocalizationOptions>(options =>
