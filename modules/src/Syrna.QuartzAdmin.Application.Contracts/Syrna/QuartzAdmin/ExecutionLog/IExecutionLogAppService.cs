@@ -9,7 +9,7 @@ namespace Syrna.QuartzAdmin.ExecutionLog
     public interface IExecutionLogAppService : IApplicationService
     {
         Task<DataEnvelope<ExecutionLogDto>> GetLatestExecutionLog(string jobName, string jobGroup, string triggerName, string triggerGroup, PageMetadata pageMetadata = null, long firstLogId = 0, HashSet<LogType> logTypes = null);
-        Task<DataEnvelope<ExecutionLogDto>> GetExecutionLogs(ExecutionLogFilter filter = null, PageMetadata pageMetadata = null, long firstLogId = 0);
+        Task<DataEnvelope<ExecutionLogDto>> GetExecutionLogs(ExecutionLogReadArgs args);
         Task<IList<string>> GetJobNames();
         Task<IList<string>> GetJobGroups();
         Task<IList<string>> GetTriggerNames();
@@ -23,5 +23,11 @@ namespace Syrna.QuartzAdmin.ExecutionLog
         /// <returns></returns>
         Task<JobExecutionStatusSummaryModel> GetJobExecutionStatusSummary(
             DateTimeOffset? startTimeUtc, DateTimeOffset? endTimeUtc = null);
+    }
+    public class ExecutionLogReadArgs
+    {
+        public ExecutionLogFilter Filter { get; set; }  = null;
+        public PageMetadata PageMetadata { get; set; } = null;
+        public long FirstLogId { get; set; } = 0;
     }
 }

@@ -22,7 +22,7 @@ public static class QuartzExecutionHistoryExtensions
         entity.IsSuccess = entry.IsSuccess;
         entity.IsException = entry.IsException;
         entity.JobRunTime = entry.JobRunTime;
-        entity.ExecutionHistoryDetail = entry.ExecutionHistoryDetail;
+        entity.ExecutionLogDetail = entry.ExecutionHistoryDetail;
         entity.ReturnCode = entry.ReturnCode;
         return entity;
     }
@@ -50,7 +50,7 @@ public static class QuartzExecutionHistoryExtensions
             IsSuccess = entity.IsSuccess,
             IsException = entity.IsException,
             JobRunTime = entity.JobRunTime,
-            ExecutionHistoryDetail = entity.ExecutionHistoryDetail,
+            ExecutionHistoryDetail = entity.ExecutionLogDetail,
             ReturnCode = entity.ReturnCode
         };
     }

@@ -47,8 +47,13 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.History
             {
                 pageMeta = new PageMetadata { Page = state.CurrentPage - 1, PageSize = state.PageSize };
             }
-
-            var data = await LogSvc.GetExecutionLogs(_filter, pageMeta, _firstLogId);
+            var args = new ExecutionLogReadArgs
+            {
+                Filter = _filter,
+                PageMetadata = pageMeta,
+                FirstLogId = _firstLogId
+            };
+            var data = await LogSvc.GetExecutionLogs(args);
 
             if (pageMeta.Page == 0)
             {

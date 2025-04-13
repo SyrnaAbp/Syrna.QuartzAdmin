@@ -198,9 +198,9 @@ public class AbpExecutionHistoryStore : IExecutionHistoryStore, ISingletonDepend
 
         if (entry != null)
         {
-            entry.ExecutionHistoryDetail = log.ExecutionHistoryDetail;
+            entry.ExecutionLogDetail = log.ExecutionLogDetail;
             entry.ErrorMessage = log.ErrorMessage;
-            entry.ExecutionHistoryDetail = log.ExecutionHistoryDetail;
+            entry.ExecutionLogDetail = log.ExecutionLogDetail;
             entry.IsVetoed = log.IsVetoed;
             entry.JobRunTime = log.JobRunTime;
             entry.Result = log.Result;

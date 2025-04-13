@@ -36,7 +36,7 @@ public class QuartzExecutionHistory : BasicAggregateRoot<long>
     public bool? IsSuccess { get; set; }
     public bool? IsException { get; set; }
     public TimeSpan? JobRunTime { get; set; }
-    public ExecutionHistoryDetail ExecutionHistoryDetail { get; set; }
+    public ExecutionHistoryDetail ExecutionLogDetail { get; set; }
     public string ReturnCode { get; set; }
 
     protected QuartzExecutionHistory()

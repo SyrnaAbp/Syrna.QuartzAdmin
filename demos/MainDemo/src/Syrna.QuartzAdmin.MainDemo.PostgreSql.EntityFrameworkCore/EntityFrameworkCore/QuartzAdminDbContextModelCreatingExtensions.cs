@@ -27,7 +27,7 @@ namespace Syrna.QuartzAdmin.MainDemo.PostgreSql.EntityFrameworkCore
                 x.ConfigureByConvention();
                 x.ToTable($"{options.TablePrefix}ExecutionHistories", options.Schema);
 
-                x.OwnsOne(l => l.ExecutionHistoryDetail, e =>
+                x.OwnsOne(l => l.ExecutionLogDetail, e =>
                 {
                     e.ToTable($"{options.TablePrefix}ExecutionHistoryDetail", options.Schema);
                     e.WithOwner().HasForeignKey(x => x.LogId);

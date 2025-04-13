@@ -148,11 +148,11 @@ internal class QuartzExecutionHistoryRepository
                     || EF.Functions.Like(l.TriggerName ?? string.Empty, likeStr)
                     || EF.Functions.Like(l.Result ?? string.Empty, likeStr)
                     || EF.Functions.Like(l.ErrorMessage ?? string.Empty, likeStr)
-                    || l.ExecutionHistoryDetail != null
+                    || l.ExecutionLogDetail != null
                         && (EF.Functions.Like(
-                            l.ExecutionHistoryDetail.ExecutionDetails ?? string.Empty, likeStr)
-                            || EF.Functions.Like(l.ExecutionHistoryDetail.ErrorStackTrace ?? string.Empty, likeStr)
-                            || l.ExecutionHistoryDetail.ErrorCode != null && l.ExecutionHistoryDetail.ErrorCode.Value.ToString() == filter.MessageContains));
+                            l.ExecutionLogDetail.ExecutionDetails ?? string.Empty, likeStr)
+                            || EF.Functions.Like(l.ExecutionLogDetail.ErrorStackTrace ?? string.Empty, likeStr)
+                            || l.ExecutionLogDetail.ErrorCode != null && l.ExecutionLogDetail.ErrorCode.Value.ToString() == filter.MessageContains));
             }
 
             if (!filter.IncludeSystemJobs)
