@@ -1,5 +1,6 @@
 ﻿using Blazorise;
 using Syrna.Alpha.AccountingDef.Blazor;
+using Syrna.QuartzAdmin.Authorization;
 using Syrna.QuartzAdmin.Localization;
 using System.Threading.Tasks;
 using Volo.Abp.Authorization.Permissions;
@@ -18,23 +19,26 @@ public class QuartzAdminMenuContributor : IMenuContributor
 
         var l = context.GetLocalizer<QuartzAdminResource>();
        
-        var groupMenuItem = new ApplicationMenuItem(QuartzAdminMenuNames.GroupName, l["Menu:QuartzAdmin"], icon: IconName.Clock.ToString());
+        var groupMenuItem = new ApplicationMenuItem(QuartzAdminMenuNames.GroupName, l["Menu:QuartzAdmin"], icon: "fa fa-clock");
         context.Menu.AddItem(groupMenuItem);
 
         groupMenuItem.AddItem(new ApplicationMenuItem(
             QuartzAdminMenuNames.Overview,
             l["Menu:Overview"],
-            url: "~/overview")/*.RequirePermissions(QuartzAdminPermissions.Overview.Default)*/);
+            icon: "fa fa-magnifying-glass-chart",
+            url: "~/QuartzAdmin/Overview").RequirePermissions(QuartzAdminPermissions.Overview.Default));
 
         groupMenuItem.AddItem(new ApplicationMenuItem(
             QuartzAdminMenuNames.Schedules,
             l["Menu:Schedules"],
-            url: "~/schedules")/*.RequirePermissions(QuartzAdminPermissions.Schedules.Default)*/);
+            icon:"fa fa-bell",
+            url: "~/QuartzAdmin/Schedules").RequirePermissions(QuartzAdminPermissions.Schedules.Default));
 
         groupMenuItem.AddItem(new ApplicationMenuItem(
             QuartzAdminMenuNames.History,
             l["Menu:History"],
-            url: "~/history")/*.RequirePermissions(QuartzAdminPermissions.History.Default)*/);
+            icon:"fa fa-timeline",
+            url: "~/QuartzAdmin/History").RequirePermissions(QuartzAdminPermissions.History.Default));
 
         return Task.CompletedTask;
     }

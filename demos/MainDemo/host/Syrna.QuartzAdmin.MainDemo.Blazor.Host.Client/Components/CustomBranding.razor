@@ -5,8 +5,9 @@
 @attribute [ExposeServices(typeof(Branding))]
 @attribute [Dependency(ReplaceServices = true)]
 
-@Name
-
+<Image Source="@LogoUrl" Width="Width.Px(32)" />
+<Heading Size="HeadingSize.Is4" Style="display:inline; margin-left:4px">@Name</Heading>
 @code {
     string Name = "Quartz Admin";
+    string LogoUrl => "logo.svg";
 }
