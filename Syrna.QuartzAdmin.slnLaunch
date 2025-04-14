@@ -1,0 +1,19 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "demos\\MainDemo\\host\\Syrna.QuartzAdmin.MainDemo.HttpApi.Host\\Syrna.QuartzAdmin.MainDemo.HttpApi.Host.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "demos\\MainDemo\\host\\Syrna.QuartzAdmin.MainDemo.AuthServer\\Syrna.QuartzAdmin.MainDemo.AuthServer.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "demos\\MainDemo\\host\\Syrna.QuartzAdmin.MainDemo.Blazor.Host\\Syrna.QuartzAdmin.MainDemo.Blazor.Host.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

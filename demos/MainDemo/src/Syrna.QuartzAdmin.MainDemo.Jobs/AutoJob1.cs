@@ -16,9 +16,6 @@ namespace Syrna.QuartzAdmin.MainDemo.Jobs
             context.SetExecutionDetails("Executed successfully");
 
             context.Result = $"Hello from Auto Job1 {DateTime.Now}";
-            //context.JobDetail.JobDataMap[JobDataMapKeys.IsSuccess] = true;
-            //context.JobDetail.JobDataMap[JobDataMapKeys.ReturnCode] = 0;
-            //context.JobDetail.JobDataMap[JobDataMapKeys.ExecutionDetails] = "Executed successfully";
             return Task.CompletedTask;
         }
     }

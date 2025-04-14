@@ -15,14 +15,14 @@ namespace Syrna.QuartzAdmin.Blazor.Services
     public class JobUIProvider : IJobUIProvider
     {
         private readonly ISchedulerDefinitionService _schDefSvc;
-        private readonly BlazoriseQuartzUIOptions _options;
+        private readonly QuartzAdminUIOptions _options;
         private readonly ILogger<JobUIProvider> _logger;
 
         private Dictionary<string, Type> _availableJobUITypes;
 
         public JobUIProvider(ILogger<JobUIProvider> logger,
             ISchedulerDefinitionService schDefSvc,
-            IOptions<BlazoriseQuartzUIOptions> options)
+            IOptions<QuartzAdminUIOptions> options)
         {
             _logger = logger;
             _schDefSvc = schDefSvc;
@@ -69,7 +69,7 @@ namespace Syrna.QuartzAdmin.Blazor.Services
                             typeof(IJobUI).IsAssignableFrom(x)));
 
             int systemJobUICount = jobUITypes.Count;
-            _logger.LogInformation("Detected {count} IJobUI implementations under BlazoriseQuartz assembly", systemJobUICount);
+            _logger.LogInformation("Detected {count} IJobUI implementations under QuartzAdmin assembly", systemJobUICount);
 
             _logger.LogDebug("Detecting IJobUI implementations specified in AllowedJobAssemblyFiles...");
             var path = Path.GetDirectoryName(Assembly.GetAssembly(typeof(JobUIProvider))!.Location) ?? string.Empty;

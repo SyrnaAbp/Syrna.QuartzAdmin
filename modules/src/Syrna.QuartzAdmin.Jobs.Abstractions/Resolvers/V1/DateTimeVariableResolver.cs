@@ -1,4 +1,4 @@
-﻿using Syrna.BlazoriseQuartz.Jobs.Abstractions;
+﻿using Syrna.QuartzAdmin.Jobs.Abstractions;
 using Syrna.QuartzAdmin.Jobs.Abstractions.Resolvers;
 using System;
 using System.Text.RegularExpressions;

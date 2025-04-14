@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Quartz;
-using Syrna.BlazoriseQuartz.Jobs;
+using Syrna.QuartzAdmin.Jobs;
 using Syrna.QuartzAdmin.Jobs.Abstractions;
 using System.Text;
 using System.Text.Json;
@@ -12,24 +12,14 @@ namespace Syrna.QuartzAdmin.MainDemo.Jobs
 		ILogger<HttpJob> logger,
 		IDataMapValueResolver dmvResolver) : IJob
     {
-        public const string PropertyRequestAction = "requestAction";
-        public const string PropertyRequestUrl = "requestUrl";
-        public const string PropertyRequestParameters = "requestParams";
-        public const string PropertyRequestHeaders = "requestHeaders";
-        public const string PropertyIgnoreVerifySsl = "ignoreSsl";
-        /// <summary>
-        /// HTTP request timeout. Negative value to indicate infinite timeout.
-        /// </summary>
-        public const string PropertyRequestTimeoutInSec = "requestTimeout";
-
 		public async Task Execute(IJobExecutionContext context)
         {
             try
             {
                 var data = context.MergedJobDataMap;
 
-                int? timeoutInSec = data.TryGetInt(PropertyRequestTimeoutInSec, out var x) ? x : null;
-                var dmvUrl = data.GetDataMapValue(PropertyRequestUrl);
+                int? timeoutInSec = data.TryGetInt(HttpJobKeys.PropertyRequestTimeoutInSec, out var x) ? x : null;
+                var dmvUrl = data.GetDataMapValue(HttpJobKeys.PropertyRequestUrl);
                 var url = dmvResolver.Resolve(dmvUrl);
                 if (string.IsNullOrEmpty(url))
                 {
@@ -39,12 +29,12 @@ namespace Syrna.QuartzAdmin.MainDemo.Jobs
                 }
                 url = url.StartsWith("http") ? url : "http://" + url;
 
-                var parameters = dmvResolver.Resolve(data.GetDataMapValue(PropertyRequestParameters));
-                var strHeaders = dmvResolver.Resolve(data.GetDataMapValue(PropertyRequestHeaders));
+                var parameters = dmvResolver.Resolve(data.GetDataMapValue(HttpJobKeys.PropertyRequestParameters));
+                var strHeaders = dmvResolver.Resolve(data.GetDataMapValue(HttpJobKeys.PropertyRequestHeaders));
                 var headers = string.IsNullOrEmpty(strHeaders) ? null :
                     JsonSerializer.Deserialize<Dictionary<string, string>>(strHeaders.Trim());
 
-                var strAction = data.GetString(PropertyRequestAction);
+                var strAction = data.GetString(HttpJobKeys.PropertyRequestAction);
                 HttpAction action;
                 if (strAction == null)
                 {
@@ -56,7 +46,7 @@ namespace Syrna.QuartzAdmin.MainDemo.Jobs
 
                 logger.LogDebug("[{runInstanceId}]. Creating HttpClient...", context.FireInstanceId);
                 HttpClient httpClient;
-                if (data.TryGetBoolean(PropertyIgnoreVerifySsl, out var IgnoreVerifySsl) && IgnoreVerifySsl)
+                if (data.TryGetBoolean(HttpJobKeys.PropertyIgnoreVerifySsl, out var IgnoreVerifySsl) && IgnoreVerifySsl)
                 {
                     httpClient = httpClientFactory.CreateClient(Constants.HttpClientIgnoreVerifySsl);
                     logger.LogInformation("[{runInstanceId}]. Created ignore SSL validation HttpClient.",

@@ -64,7 +64,7 @@ namespace Syrna.QuartzAdmin
 			return Enum.Parse<Quartz.IntervalUnit>(value.ToString());
         }
 
-		public static IntervalUnit ToBlazoriseQuartzIntervalUnit(this Quartz.IntervalUnit value)
+		public static IntervalUnit ToQuartzAdminIntervalUnit(this Quartz.IntervalUnit value)
         {
 			return Enum.Parse<IntervalUnit>(value.ToString());
 		}

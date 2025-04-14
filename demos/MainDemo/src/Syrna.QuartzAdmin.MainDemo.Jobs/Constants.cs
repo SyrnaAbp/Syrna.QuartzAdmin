@@ -1,5 +1,5 @@
 ﻿using System;
-namespace Syrna.BlazoriseQuartz.Jobs
+namespace Syrna.QuartzAdmin.Jobs
 {
     public abstract class Constants
     {

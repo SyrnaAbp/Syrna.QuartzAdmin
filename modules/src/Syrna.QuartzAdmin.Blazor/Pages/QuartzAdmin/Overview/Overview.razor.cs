@@ -27,7 +27,7 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Overview
         const string STANDBY = "Standby";
         const string SHUTDOWN = "Shutdown";
 
-        static double[] EmptyData = { 0 };
+        static double[] EmptyData = { 0, 0, 0, 0 };
 
         [Inject] IExecutionLogAppService LogSvc { get; set; } = null!;
         [Inject] ISchedulerAppService SchSvc { get; set; } = null!;
@@ -64,16 +64,16 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Overview
         private List<string> borderColors = [
             ChartColor.FromRgba(75, 255, 192, 0.2f),
             ChartColor.FromRgba(255, 75, 132, 0.2f),
-            ChartColor.FromRgba(255, 206, 86, 0.2f),
             ChartColor.FromRgba(54, 162, 235, 0.2f),
+            ChartColor.FromRgba(255, 206, 86, 0.2f),
             ChartColor.FromRgba(153, 102, 255, 0.2f),
             ChartColor.FromRgba(255, 159, 64, 0.2f)
         ];
         private List<string> backgroundColors = [
             ChartColor.FromRgba(75, 255, 192, 1f),
             ChartColor.FromRgba(255, 75, 132, 1f),
-            ChartColor.FromRgba(255, 206, 86, 1f),
             ChartColor.FromRgba(54, 162, 235, 1f),
+            ChartColor.FromRgba(255, 206, 86, 1f),
             ChartColor.FromRgba(153, 102, 255, 1f),
             ChartColor.FromRgba(255, 159, 64, 1f) ];
 
@@ -109,7 +109,7 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Overview
             return new()
             {
                 Label = "# All Times",
-                Data = [.. AllTimeLogData],
+                Data = AllTimeLogData.ToList(),
                 BackgroundColor = backgroundColors,
                 BorderColor = borderColors,
                 BorderWidth = 1
@@ -156,13 +156,12 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Overview
             };
         }
 
-        private double[] TodaysLogData = EmptyData;
+        protected double[] TodaysLogData { get; set; } = EmptyData;
 
-        private double[] YesterdaysLogData = EmptyData;
+        protected double[] YesterdaysLogData { get; set; } = EmptyData;
 
-        private double[] AllTimeLogData = EmptyData;
+        protected double[] AllTimeLogData { get; set; } = EmptyData;
 
-        private DateTimeOffset lastCaptureDate = DateTimeOffset.Now.Date;
         #endregion charts
 
         private Timer _refreshTimer;
@@ -183,7 +182,7 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Overview
         {
             if (firstRender)
             {
-                Labels = [L["Success"], L["Failed"], L["Working"]];
+                Labels = [L["Success"], L["Failed"], L["Working"], L["Vetoed"]];
                 await LoadInfo();
                 await Task.WhenAll(RefreshErrorLogs(),
                 RefreshSchedulesCount(),
@@ -266,9 +265,9 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Overview
         private async Task RefreshLogSummary()
         {
             var todayDateUtc = DateTime.Now.Date.ToUniversalTime();
-            var today = await LogSvc.GetJobExecutionStatusSummary(new JobExecutionStatusSummaryReadArgs { EndTimeUtc = todayDateUtc });
+            var today = await LogSvc.GetJobExecutionStatusSummary(new JobExecutionStatusSummaryReadArgs { StartTimeUtc = todayDateUtc });
             var allTime = await LogSvc.GetJobExecutionStatusSummary(new JobExecutionStatusSummaryReadArgs { EndTimeUtc = null });
-            var nowDate = DateTimeOffset.Now.Date;
+            var nowDate = DateTimeOffset.Now.Date.ToUniversalTime();
 
             if (today.Data.Count == 0)
             {
@@ -280,7 +279,7 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Overview
                 TodaysLogData = chartData.Item1;
             }
 
-            if (nowDate != lastCaptureDate)
+            if (nowDate != allTime.StartDateTimeUtc.Date)
             {
                 await LoadYesterdaysLogSummary();
             }
@@ -301,7 +300,6 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Overview
 
             await InvokeAsync(StateHasChanged);
 
-            lastCaptureDate = nowDate;
             await HandleTodaysChartRedraw();
             if (TotalLogDays > 1)
                 await HandleAllTimeChartRedraw();
@@ -316,7 +314,7 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Overview
         {
             var todayDateUtc = DateTime.Now.Date.ToUniversalTime();
             var yesterdayDateUtc = DateTime.Now.Date.AddDays(-1).ToUniversalTime();
-            var yesterday = await LogSvc.GetJobExecutionStatusSummary(new JobExecutionStatusSummaryReadArgs { EndTimeUtc = yesterdayDateUtc, StartTimeUtc = todayDateUtc.AddMilliseconds(-1) });
+            var yesterday = await LogSvc.GetJobExecutionStatusSummary(new JobExecutionStatusSummaryReadArgs { StartTimeUtc = yesterdayDateUtc, EndTimeUtc = todayDateUtc.AddMilliseconds(-1) });
             if (!yesterday.Data.Any())
             {
                 YesterdaysLogData = EmptyData;
@@ -329,16 +327,24 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Overview
             await HandleYesterdaysChartRedraw();
         }
 
-        private static (double[], string[]) ConvertToChartData(List<KeyValuePair<JobExecutionStatus, int>> data)
+        private static (double[], string[]) ConvertToChartData(List<KeyValue<JobExecutionStatus, int>> data)
         {
-            var values = new double[data.Count];
-            var labels = new string[data.Count];
-
-            for (var i = 0; i < data.Count; i++)
+            var values = new double[4];
+            var labels = new string[4];
+            var dict = data.ToDictionary(x => (int)x.Key, x => x.Value);
+            //var names = Enum.GetNames<JobExecutionStatus>().ToList();
+            for (var i = 0; i < 4; i++)
             {
-                var entry = data[i];
-                values[i] = entry.Value;
-                labels[i] = $"{entry.Key} ({entry.Value})";
+                var name = Enum.GetName(typeof(JobExecutionStatus), i);
+                if (!dict.ContainsKey(i))
+                {
+                    values[i] = 0;
+                    labels[i] = $"{name} (0)";
+                    continue;
+                }
+                var entry = dict[i];
+                values[i] = entry;
+                labels[i] = $"{name} ({entry})";
             }
 
             return (values, labels);
@@ -481,7 +487,7 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Overview
 
             RunningSince = metadata.RunningSince;
             SchedulerInfo.Add("QuartzVersion", metadata.Version);
-            SchedulerInfo.Add("BlazoriseQuartzVersion", typeof(Overview).Assembly.GetName().Version);
+            SchedulerInfo.Add("QuartzAdminVersion", typeof(Overview).Assembly.GetName().Version);
             SchedulerInfo.Add(StatusKey, Status);
             SchedulerInfo.Add(UptimeKey, RunningSince.HasValue ?
                 DateTimeOffset.UtcNow.Subtract(RunningSince.Value).ToHumanTimeString() : "--");

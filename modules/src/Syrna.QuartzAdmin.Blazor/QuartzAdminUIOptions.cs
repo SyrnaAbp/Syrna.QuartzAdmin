@@ -1,6 +1,6 @@
 ﻿namespace Syrna.QuartzAdmin.Blazor
 {
-    public class BlazoriseQuartzUIOptions : QuartzAdminCoreOptions
+    public class QuartzAdminUIOptions : QuartzAdminCoreOptions
     {
     }
 }

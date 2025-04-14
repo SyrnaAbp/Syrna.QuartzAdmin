@@ -1,4 +1,6 @@
-﻿namespace Syrna.QuartzAdmin
+﻿using System.Runtime.InteropServices;
+
+namespace Syrna.QuartzAdmin
 {
     public class ApiResponse<T> : ApiResponse
     {

@@ -289,8 +289,7 @@ internal class QuartzExecutionHistoryRepository
         return new JobExecutionStatusSummaryModel
         {
             StartDateTimeUtc = statusGroup.Min(s => s.EarliestDateAdded).DateTime,
-            Data = statusGroup.Select(s => new KeyValuePair<JobExecutionStatus, int>(s.ExecutionStatus, s.Count))
-                    .ToList()
+            Data = [.. statusGroup.Select(s => KeyValue<JobExecutionStatus, int>.Create(s.ExecutionStatus, s.Count))]
         };
     }
 

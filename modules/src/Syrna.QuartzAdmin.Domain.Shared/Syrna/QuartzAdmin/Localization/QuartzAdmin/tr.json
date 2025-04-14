@@ -226,6 +226,7 @@
     "Success": "Başarılı",
     "Failed": "Başarısız",
     "Working": "Çalışıyor",
+    "Vetoed": "Veto",
 
     "ScheduleModel:JobGroup": "İş grubu",
     "ScheduleModel:JobStatus": "Durum",

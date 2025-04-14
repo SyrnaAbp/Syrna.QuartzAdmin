@@ -1,13 +1,13 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Syrna.BlazoriseQuartz.Jobs
+namespace Syrna.QuartzAdmin.Jobs
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddBlazoriseQuartzJobs(this IServiceCollection services)
+        public static IServiceCollection AddQuartzAdminJobs(this IServiceCollection services)
         {
-            // require to run BlazoriseQuartz.Jobs.HttpJob
+            // require to run QuartzAdmin.Jobs.HttpJob
             services.AddHttpClient();
             services.AddHttpClient(Constants.HttpClientIgnoreVerifySsl)
                 .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
@@ -15,7 +15,7 @@ namespace Syrna.BlazoriseQuartz.Jobs
                     ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
                 });
 
-            return Abstractions.ServiceCollectionExtensions.AddBlazoriseQuartzJobs(services);
+            return Abstractions.ServiceCollectionExtensions.AddQuartzAdminJobs(services);
         }
     }
 }

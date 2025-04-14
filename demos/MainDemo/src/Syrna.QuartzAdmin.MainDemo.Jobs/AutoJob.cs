@@ -3,7 +3,7 @@ using Syrna.QuartzAdmin.Jobs.Abstractions;
 
 namespace Syrna.QuartzAdmin.MainDemo.Jobs
 {
-    [QuartzTrigger(5, "this e sq test", "_hellojobauto")]
+    [QuartzTrigger(5, "this is an job test", "_jobauto")]
     public class AutoJob : IJob
     {
         public async Task CanFireIt()

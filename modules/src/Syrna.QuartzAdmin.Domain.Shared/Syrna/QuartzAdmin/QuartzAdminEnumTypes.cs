@@ -10,7 +10,7 @@ namespace Syrna.QuartzAdmin
     }
     public static class Constants
     {
-        public const string SYSTEM_GROUP = "BlazoriseQuartz";
+        public const string SYSTEM_GROUP = "QuartzAdmin";
         public const string DEFAULT_GROUP = "No Group";
     }
 

@@ -743,7 +743,7 @@ namespace Syrna.QuartzAdmin.Scheduler
                     }
                     model.RepeatCount = daily.RepeatCount;
                     model.TriggerInterval = daily.RepeatInterval;
-                    model.TriggerIntervalUnit = daily.RepeatIntervalUnit.ToBlazoriseQuartzIntervalUnit();
+                    model.TriggerIntervalUnit = daily.RepeatIntervalUnit.ToQuartzAdminIntervalUnit();
                     model.InTimeZoneId = daily.TimeZone.Id;
                     model.StartDailyTime = new TimeSpan(daily.StartTimeOfDay.Hour, daily.StartTimeOfDay.Minute, daily.StartTimeOfDay.Second);
                     model.EndDailyTime = new TimeSpan(daily.EndTimeOfDay.Hour, daily.EndTimeOfDay.Minute, daily.EndTimeOfDay.Second);
@@ -764,7 +764,7 @@ namespace Syrna.QuartzAdmin.Scheduler
                             break;
                     }
                     model.TriggerInterval = calTrigger.RepeatInterval;
-                    model.TriggerIntervalUnit = calTrigger.RepeatIntervalUnit.ToBlazoriseQuartzIntervalUnit();
+                    model.TriggerIntervalUnit = calTrigger.RepeatIntervalUnit.ToQuartzAdminIntervalUnit();
                     model.InTimeZoneId = calTrigger.TimeZone.Id;
                     break;
             }

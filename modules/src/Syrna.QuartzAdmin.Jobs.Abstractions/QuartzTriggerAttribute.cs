@@ -22,6 +22,12 @@ namespace Syrna.QuartzAdmin.Jobs.Abstractions
         {
         }
 
+        /// <summary>
+        /// Trigger every x seconds
+        /// </summary>
+        /// <param name="seconds"></param>
+        /// <param name="_identity"></param>
+        /// <param name="_desciption"></param>
         public QuartzTriggerAttribute(double seconds, string _identity, string _desciption) : this(0, 0, 0, seconds, 0, 0, _identity, _desciption)
         {
         }

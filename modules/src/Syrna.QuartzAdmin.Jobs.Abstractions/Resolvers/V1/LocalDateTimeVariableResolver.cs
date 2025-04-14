@@ -1,4 +1,4 @@
-﻿using Syrna.BlazoriseQuartz.Jobs.Abstractions;
+﻿using Syrna.QuartzAdmin.Jobs.Abstractions;
 using System;
 namespace Syrna.QuartzAdmin.Jobs.Abstractions.Resolvers.V1
 {

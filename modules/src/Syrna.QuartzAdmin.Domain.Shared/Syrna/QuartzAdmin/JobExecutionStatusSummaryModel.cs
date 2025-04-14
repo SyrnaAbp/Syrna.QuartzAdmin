@@ -6,7 +6,7 @@ namespace Syrna.QuartzAdmin
     public class JobExecutionStatusSummaryModel
     {
         public DateTime StartDateTimeUtc { get; set; }
-        public List<KeyValuePair<JobExecutionStatus, int>> Data { get; set; } = new();
+        public List<KeyValue<JobExecutionStatus, int>> Data { get; set; } = new();
     }
 }
 

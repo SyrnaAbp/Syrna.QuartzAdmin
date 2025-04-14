@@ -226,6 +226,7 @@
     "Success": "Success",
     "Failed": "Failed",
     "Working": "Working",
+    "Vetoed": "Vetoed",
 
     "ScheduleModel:JobGroup": "Job Group",
     "ScheduleModel:JobStatus": "Status",

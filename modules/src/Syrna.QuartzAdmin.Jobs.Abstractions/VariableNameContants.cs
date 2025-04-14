@@ -1,5 +1,5 @@
 ﻿using System;
-namespace Syrna.BlazoriseQuartz.Jobs.Abstractions
+namespace Syrna.QuartzAdmin.Jobs.Abstractions
 {
     public static class VariableNameContants
     {
