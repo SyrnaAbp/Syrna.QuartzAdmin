@@ -39,8 +39,8 @@ public partial class HistoryDialog
     {
         JobKey = jobKey;
         TriggerKey = triggerKey;
-        await modalRef.Show();
         await OnRefreshHistory();
+        await modalRef.Show();
     }
 
     protected async Task Close()
@@ -70,6 +70,8 @@ public partial class HistoryDialog
         };
         var result = await LogSvc.GetLatestExecutionLog(latestExecutionLogReadArgs);
         var items = result.Items.ToList();
+        _lastPageMeta = new PageMetadata { Page = pageMeta.Page, PageSize = pageMeta.PageSize, TotalCount = (int)result.TotalCount };
+
         if (pageMeta.Page == 0)
         {
             _firstLogId = items.FirstOrDefault()?.Id ?? 0;
@@ -77,7 +79,8 @@ public partial class HistoryDialog
 
         items.ForEach(ExecutionLogs.Add);
 
-        HasMore = result.TotalCount == pageMeta.PageSize;
+        HasMore = items.Count == pageMeta.PageSize;
+        StateHasChanged();
     }
 
     private async Task OnRefreshHistory()
