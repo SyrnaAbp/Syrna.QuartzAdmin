@@ -81,13 +81,28 @@ public class MainDemoHttpApiHostModule : AbpModule
         {
             builder.AddValidation(options =>
             {
-                //options.SetIssuer("https://syrnaids.syrna.net/");
-                options.SetIssuer(configuration["AuthServer:Authority"]);
-                options.AddAudiences("QuartzAdmin");
+                //options.SetIssuer("https://csbsids.saglik.gov.tr/");
+                options.SetIssuer(configuration["AuthServer:Authority"]!);
+                options.AddAudiences("QuartzAdmin", "QuartzAdmin API");
                 //options.UseLocalServer();
                 options.UseAspNetCore();
                 options.UseSystemNetHttp();
             });
+        });
+
+        PreConfigure<OpenIddictServerBuilder>(x =>
+        {
+            //scope: 'offline_access openid profile role email phone QuartzAdmin',
+            x.RegisterScopes(
+                OpenIddictConstants.Scopes.OfflineAccess,
+                OpenIddictConstants.Scopes.OpenId,
+                OpenIddictConstants.Scopes.Profile,
+                OpenIddictConstants.Scopes.Roles,
+                OpenIddictConstants.Scopes.Email,
+                OpenIddictConstants.Scopes.Phone,
+                "QuartzAdmin"
+            );
+            x.AllowAuthorizationCodeFlow().AllowRefreshTokenFlow().AllowPasswordFlow();
         });
 
         if (!hostingEnvironment.IsDevelopment())
@@ -99,20 +114,11 @@ public class MainDemoHttpApiHostModule : AbpModule
 
             PreConfigure<OpenIddictServerBuilder>(x =>
             {
-                x.AddSigningCertificate(GetSigningCertificate(hostingEnvironment, configuration));
-                x.AddEncryptionCertificate(GetSigningCertificate(hostingEnvironment, configuration));
-
-                //scope: 'offline_access openid profile role email phone QuartzAdmin',
-                x.RegisterScopes(
-                    OpenIddictConstants.Scopes.OfflineAccess,
-                    OpenIddictConstants.Scopes.OpenId,
-                    OpenIddictConstants.Scopes.Profile,
-                    OpenIddictConstants.Scopes.Roles,
-                    OpenIddictConstants.Scopes.Email,
-                    OpenIddictConstants.Scopes.Phone,
-                    "QuartzAdmin"
-                    );
-                x.AllowAuthorizationCodeFlow().AllowRefreshTokenFlow();
+                //var pfxFile = Path.Combine(hostingEnvironment.ContentRootPath, "openiddict.pfx");
+                //x.AddProductionEncryptionAndSigningCertificate($"{pfxFile}", "266657b3-2d03-4888-b9ee-b3f0939e9e24");
+                x.AddSigningCertificate(GetSigningCertificate(hostingEnvironment));
+                x.AddEncryptionCertificate(GetSigningCertificate(hostingEnvironment));
+                //x.AddProductionEncryptionAndSigningCertificate("openiddict.pfx", "266657b3-2d03-4888-b9ee-b3f0939e9e24");
             });
         }
 
@@ -179,10 +185,10 @@ public class MainDemoHttpApiHostModule : AbpModule
         });
     }
 
-    private static X509Certificate2 GetSigningCertificate(IWebHostEnvironment hostingEnv, IConfiguration configuration)
+    private static X509Certificate2 GetSigningCertificate(IWebHostEnvironment hostingEnv)
     {
-        var fileName = "openiddict.pfx";
-        var passPhrase = "ceae6457-5634-4e9f-8ea2-0be3ad54001a";
+        const string fileName = "openiddict.pfx";
+        const string passPhrase = "ceae6457-5634-4e9f-8ea2-0be3ad54001a";
         var file = Path.Combine(hostingEnv.ContentRootPath, fileName);
 
         if (!File.Exists(file))
@@ -192,7 +198,7 @@ public class MainDemoHttpApiHostModule : AbpModule
 
         try
         {
-            var c = new X509Certificate2(file, passPhrase, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.Exportable);
+            var c = new X509Certificate2(file, passPhrase);
             return c;
         }
         catch (Exception e)
@@ -219,7 +225,7 @@ public class MainDemoHttpApiHostModule : AbpModule
         });
 
         ConfigureAuthentication(context);
-        //ConfigureAuthentication(context, configuration);
+        ConfigureAuthentication(context, configuration);
         //ConfigureBundles();
         ConfigureUrls(configuration);
         ConfigureConventionalControllers();
@@ -249,6 +255,7 @@ public class MainDemoHttpApiHostModule : AbpModule
     private void ConfigureAuthentication(ServiceConfigurationContext context)
     {
         context.Services.ForwardIdentityAuthenticationForBearer(OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme);
+        //context.Services.AddAuthentication(OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme);
         context.Services.Configure<AbpClaimsPrincipalFactoryOptions>(options =>
         {
             options.IsDynamicClaimsEnabled = true;
@@ -263,17 +270,24 @@ public class MainDemoHttpApiHostModule : AbpModule
                 //options.TokenValidationParameters.ValidateIssuer = false;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
+                    //NameClaimType = "sub",
+                    //RoleClaimType = System.Security.Claims.ClaimTypes.Role,
                     ValidateIssuer = true,
                     ValidateAudience = true,
-                    ValidateIssuerSigningKey = true,
+                    ValidateLifetime = true,
+                    //ValidateIssuerSigningKey = true,
                     ValidAudience = "QuartzAdmin",
-                    ValidIssuer = configuration["AuthServer:Authority"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["AuthServer:SwaggerClientSecret"]))
+                    ValidAudiences = new[] { "QuartzAdmin", "QuartzAdmin API" },
+                    ValidIssuer = configuration["AuthServer:Authority"]
+                    //ValidTypes = ["at+jwt"],
+                    //ValidAlgorithms = ["RS256"]
+                    //IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["AuthServer:SwaggerClientSecret"]))
                 };
                 options.UseSecurityTokenValidators = true;
                 options.Authority = configuration["AuthServer:Authority"];
                 options.RequireHttpsMetadata = Convert.ToBoolean(configuration["AuthServer:RequireHttpsMetadata"]);
                 options.Audience = "QuartzAdmin";
+                options.MapInboundClaims = false;
 #if DEBUG
                 options.IncludeErrorDetails = true;
 #endif

@@ -1,0 +1,42 @@
+﻿@using Microsoft.Extensions.Localization
+@using Volo.Abp.AspNetCore.Components.WebAssembly.LeptonXLiteTheme.Themes.LeptonXLite.Toolbar
+@using Volo.Abp.DependencyInjection
+
+@inherits UserMenuComponent
+@attribute [ExposeServices(typeof(UserMenuComponent))]
+@attribute [Dependency(ReplaceServices = true)]
+
+<AuthorizeView>
+    <Authorized>
+        <Dropdown>
+            <DropdownToggle Color="Color.Default" aria-label="@CurrentUser.Name">
+                @if (CurrentTenant.Name != null)
+                {
+                    <span><i>@CurrentTenant.Name</i>\@CurrentUser.UserName</span>
+                }
+                else
+                {
+                    <span>@CurrentUser.UserName</span>
+                }
+            </DropdownToggle>
+            <DropdownMenu>
+                @if (Menu != null)
+                {
+                    @foreach (var menuItem in Menu.Items)
+                    {
+                        <DropdownItem Disabled="@menuItem.IsDisabled" Clicked="@(() => NavigateToAsync(menuItem.Url, menuItem.Target))">
+                            <Icon Name="@menuItem.Icon" aria-label="@menuItem.DisplayName"
+                                  IconSize="IconSize.Default" />@menuItem.DisplayName
+                        </DropdownItem>
+                    }
+                }
+                <DropdownItem Clicked="@BeginSignOut">
+                    @L["Logout"]
+                </DropdownItem>
+            </DropdownMenu>
+        </Dropdown>
+    </Authorized>
+    <NotAuthorized>
+        <Button Color="Color.Link" Clicked="@(() => NavigateToAsync(AuthenticationOptions.Value.LoginUrl))">@L["Login"]</Button>
+    </NotAuthorized>
+</AuthorizeView>

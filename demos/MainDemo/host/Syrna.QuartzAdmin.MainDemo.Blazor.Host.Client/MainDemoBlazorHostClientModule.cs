@@ -1,9 +1,10 @@
-﻿using Autofac.Core;
-using Blazorise.Bootstrap5;
+﻿using Blazorise.Bootstrap5;
 using Blazorise.Icons.FontAwesome;
+using IdentityModel;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using OpenIddict.Abstractions;
 using Syrna.QuartzAdmin.Blazor.Components;
 using Syrna.QuartzAdmin.Blazor.Services;
 using Syrna.QuartzAdmin.MainDemo.Blazor.Host.Client.Menus;
@@ -13,7 +14,6 @@ using System.Net.Http;
 using Volo.Abp.Account;
 using Volo.Abp.AspNetCore.Components.Web.Theming.Routing;
 using Volo.Abp.AspNetCore.Components.WebAssembly.LeptonXLiteTheme;
-using Volo.Abp.AspNetCore.Components.WebAssembly.LeptonXLiteTheme.Bundling;
 using Volo.Abp.Autofac.WebAssembly;
 using Volo.Abp.AutoMapper;
 using Volo.Abp.Identity.Blazor.WebAssembly;
@@ -31,8 +31,8 @@ namespace Syrna.QuartzAdmin.MainDemo.Blazor.Host.Client;
 [DependsOn(typeof(AbpIdentityBlazorWebAssemblyModule))]
 [DependsOn(typeof(AbpTenantManagementBlazorWebAssemblyModule))]
 [DependsOn(typeof(AbpSettingManagementBlazorWebAssemblyModule))]
-[DependsOn(typeof(MainDemoBlazorWebAssemblyModule)
-)]
+//
+[DependsOn(typeof(MainDemoBlazorWebAssemblyModule))]
 public class MainDemoBlazorHostClientModule : AbpModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
@@ -83,6 +83,13 @@ public class MainDemoBlazorHostClientModule : AbpModule
         builder.Services.AddOidcAuthentication(options =>
         {
             builder.Configuration.Bind("AuthServer", options.ProviderOptions);
+            options.UserOptions.RoleClaim = JwtClaimTypes.Role;
+            //options.ProviderOptions.DefaultScopes.Add(OpenIddictConstants.Scopes.OfflineAccess);
+            options.ProviderOptions.DefaultScopes.Add(OpenIddictConstants.Scopes.OpenId);
+            options.ProviderOptions.DefaultScopes.Add(OpenIddictConstants.Scopes.Profile);
+            options.ProviderOptions.DefaultScopes.Add(OpenIddictConstants.Scopes.Roles);
+            options.ProviderOptions.DefaultScopes.Add(OpenIddictConstants.Scopes.Email);
+            options.ProviderOptions.DefaultScopes.Add(OpenIddictConstants.Scopes.Phone);
             options.ProviderOptions.DefaultScopes.Add("QuartzAdmin");
         });
     }

@@ -5,6 +5,8 @@ using Volo.Abp.Threading;
 using Volo.Abp.AspNetCore.Components.Web.Theming.Routing;
 using Syrna.QuartzAdmin.Blazor;
 using Volo.Abp.AspNetCore.Components.Web.Theming;
+using Volo.Abp.UI.Navigation;
+using Syrna.QuartzAdmin.MainDemo.Blazor.Menus;
 
 namespace Syrna.QuartzAdmin.MainDemo.Blazor;
 
@@ -27,10 +29,10 @@ public class MainDemoBlazorModule : AbpModule
             options.AddProfile<MainDemoBlazorAutoMapperProfile>(validate: true);
         });
 
-        //Configure<AbpNavigationOptions>(options =>
-        //{
-        //    options.MenuContributors.Add(new DemoMenuContributor());
-        //});
+        Configure<AbpNavigationOptions>(options =>
+        {
+            options.MenuContributors.Add(new MainDemoMenuContributor());
+        });
 
         Configure<AbpRouterOptions>(options =>
         {

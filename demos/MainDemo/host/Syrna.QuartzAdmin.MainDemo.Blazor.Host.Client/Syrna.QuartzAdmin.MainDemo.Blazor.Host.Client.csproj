@@ -10,8 +10,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Components\CustomUserMenu.razor.cs" />
 	  <Compile Remove="RemoteExternalLocalizationStore.cs" />
 	  <Compile Remove="UserExceptionInformer.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Remove="Components\CustomUserMenu.razor" />
 	</ItemGroup>
 
 	<ItemGroup>

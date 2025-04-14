@@ -50,7 +50,7 @@ public class MainDemoBlazorHostClientMenuContributor(IConfiguration configuratio
             "Account.Manage",
             accountStringLocalizer["MyAccount"]??"My Account",
             $"{identityServerUrl.EnsureEndsWith('/')}Account/Manage?returnUrl={configuration["App:SelfUrl"]}",
-            icon: "fa-cog",
+            icon: "fa fa-cog",
             order: 1000,
             null).RequireAuthenticated());
 
