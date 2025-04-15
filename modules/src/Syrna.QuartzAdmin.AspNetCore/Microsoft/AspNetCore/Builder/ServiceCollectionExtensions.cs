@@ -1,10 +1,9 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Quartz;
+﻿using Microsoft.Extensions.Configuration;
 using Quartz.Spi;
+using Syrna.QuartzAdmin.AspNetCore;
 using Syrna.QuartzAdmin.Jobs.Abstractions;
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Reflection;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -13,48 +12,15 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static IServiceCollection AddQuartzAdmin(
             this IServiceCollection services,
-            //Action<QuartzAdminOptions> configureOptions = null,
-            //Action<QuartzAdminAuthenticationOptions> configureAuthenticationOptions = null,
-            Action<NameValueCollection> stdSchedulerFactoryOptions = null,
+            IConfiguration quartzAdminUIConfiguration,
             Func<List<Assembly>> jobsasmlist = null)
         {
-            //var options = new QuartzAdminOptions();
-            //configureOptions?.Invoke(options);
-            //services.AddSingleton(options);
+            services.Configure<QuartzAdminUIOptions>(quartzAdminUIConfiguration);
 
-            //var authenticationOptions = new QuartzAdminAuthenticationOptions();
-            //configureAuthenticationOptions?.Invoke(authenticationOptions);
+            var uiOptions = quartzAdminUIConfiguration.Get<QuartzAdminUIOptions>();
 
-
-
-
-            //services.AddSingleton(authenticationOptions);
-            //if (authenticationOptions.AccessRequirement != QuartzAdminAuthenticationOptions.SimpleAccessRequirement.AllowAnonymous)
-            //{
-            //    services
-            //        .AddAuthentication(authenticationOptions.AuthScheme)
-            //        .AddCookie(authenticationOptions.AuthScheme, cfg =>
-            //        {
-            //            cfg.Cookie.Name = $"sq_authenticationOptions.AuthScheme";
-            //            cfg.LoginPath = $"{options.VirtualPathRoot}/Authenticate/Login";
-            //            cfg.AccessDeniedPath = $"{options.VirtualPathRoot}/Authenticate/Login";
-            //            cfg.ExpireTimeSpan = TimeSpan.FromDays(7);
-            //            cfg.SlidingExpiration = true;
-            //        });
-            //}
-            //services.AddAuthorization(opts =>
-            //    {
-            //        opts.AddPolicy(QuartzAdminAuthenticationOptions.AuthorizationPolicyName, builder =>
-            //        {
-            //            builder.AddRequirements(new QuartzAdminDefaultAuthorizationRequirement(authenticationOptions.AccessRequirement));
-            //        });
-            //    });
-            //services.AddScoped<IAuthorizationHandler, QuartzAdminDefaultAuthorizationHandler>();
-
-
-            //services.UseQuartzHostedService(stdSchedulerFactoryOptions);
             services.AddSingleton<IJobFactory, ServiceCollectionJobFactory>();
-            var bb=new JobRegistrator(services);
+            var bb = new JobRegistrator(services);
             var types = JobsListHelper.GetQuartzAdminJobs(jobsasmlist?.Invoke());
             types.ForEach(t =>
             {

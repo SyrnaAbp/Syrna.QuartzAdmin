@@ -15,6 +15,10 @@
         <RootNamespace />
     </PropertyGroup>
 
+	<ItemGroup>
+	  <Compile Remove="Microsoft\AspNetCore\Builder\ServiceCollectionExtensions.cs" />
+	</ItemGroup>
+
     <ItemGroup>
 		<PackageReference Include="Volo.Abp.AspNetCore" />
 		<PackageReference Include="Volo.Abp.MultiTenancy" />
@@ -25,6 +29,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Syrna.QuartzAdmin.Domain.Shared\Syrna.QuartzAdmin.Domain.Shared.csproj" />
       <ProjectReference Include="..\Syrna.QuartzAdmin.Jobs.Abstractions\Syrna.QuartzAdmin.Jobs.Abstractions.csproj" />
     </ItemGroup>
 

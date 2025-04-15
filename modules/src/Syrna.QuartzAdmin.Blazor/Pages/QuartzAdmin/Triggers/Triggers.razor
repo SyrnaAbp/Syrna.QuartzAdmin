@@ -1,5 +1,57 @@
 @page "/QuartzAdmin/Triggers"
+@using Blazorise.DataGrid
+@using Syrna.QuartzAdmin.Triggers
+@using Syrna.QuartzAdmin.Blazor.Components
+@using Syrna.QuartzAdmin.Blazor.Services
+@using Syrna.QuartzAdmin.Localization
 
-<PageTitle>Triggers</PageTitle>
+@inject AbpBlazorMessageLocalizerHelper<QuartzAdminResource> LH
+@inherits Volo.Abp.AspNetCore.Components.AbpComponentBase
+<PageTitle>@L["Title:Triggers"]</PageTitle>
 
-Coming Soon
+<DataGrid @ref="table"
+          TItem="TriggerListItem"
+          Data="@pagedData"
+          ReadData="@OnReadData"
+          TotalItems="@totalItems"
+          PageSize="@pageSize"
+          Editable="false"
+          ShowPager
+          FixedHeader
+          Hoverable
+          Responsive
+          Striped>
+    <LoadingTemplate>
+        <Row Class="w-100 align-items-center" Style="height: 250px;">
+            <Column>
+                <RadarSpinner />
+            </Column>
+        </Row>
+    </LoadingTemplate>
+    <EmptyTemplate>
+        <Row Class="w-100 align-items-center" Style="height: 250px;">
+            <Column>
+                <Heading Size="HeadingSize.Is4" TextAlignment="TextAlignment.Center">No data available</Heading>
+            </Column>
+        </Row>
+    </EmptyTemplate>
+    <DataGridColumns>
+        <DataGridColumn Field="@nameof(TriggerListItem.TriggerName)" Caption="@L["TriggerListItem:TriggerName"]"></DataGridColumn>
+        <DataGridColumn Field="@nameof(TriggerListItem.TriggerGroup)" Caption="@L["TriggerListItem:TriggerGroup"]"></DataGridColumn>
+        <DataGridColumn Field="@nameof(TriggerListItem.Type)" Caption="@L["TriggerListItem:Type"]" Width="160px">
+            <DisplayTemplate>
+                <Div Margin="Margin.Is1" VerticalAlignment="VerticalAlignment.Middle" TextAlignment="TextAlignment.Center">
+                    <Icon Name="@context.Type.GetTriggerTypeIcon()"
+                          aria-label="@(context.Type.ToString())" IconSize="IconSize.Default" />
+                    @(context.Type == TriggerType.Unknown ?
+                        context.TypeString ?? L["TriggerType:Unknown"] :
+                        L[$"TriggerType:{context.Type}"])
+                </Div>
+            </DisplayTemplate>
+        </DataGridColumn>
+        <DataGridDateColumn Field="@nameof(TriggerListItem.StartTimeUtc)" Caption="@L["TriggerListItem:StartTimeUtc"]" Width="160px"></DataGridDateColumn>
+        <DataGridDateColumn Field="@nameof(TriggerListItem.EndTimeUtc)" Caption="@L["TriggerListItem:EndTimeUtc"]" Width="160px"></DataGridDateColumn>
+        <DataGridDateColumn Field="@nameof(TriggerListItem.LastFireTimeUtc)" Caption="@L["TriggerListItem:LastFireTimeUtc"]" Width="160px"></DataGridDateColumn>
+        <DataGridDateColumn Field="@nameof(TriggerListItem.NextFireTimeUtc)" Caption="@L["TriggerListItem:NextFireTimeUtc"]" Width="160px"></DataGridDateColumn>
+    </DataGridColumns>
+</DataGrid>

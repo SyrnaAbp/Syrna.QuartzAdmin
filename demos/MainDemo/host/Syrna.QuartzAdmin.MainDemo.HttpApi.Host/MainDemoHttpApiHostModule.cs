@@ -15,13 +15,11 @@ using Quartz.Impl.AdoJobStore;
 using Quartz.Util;
 using Serilog;
 using StackExchange.Redis;
-using Syrna.Alpha.SilkierQuartz.PostgreSql.EntityFrameworkCore;
 using Syrna.QuartzAdmin.ExecutionHistory;
 using Syrna.QuartzAdmin.MainDemo.EntityFrameworkCore;
 using Syrna.QuartzAdmin.MainDemo.Jobs;
 using Syrna.QuartzAdmin.MainDemo.MultiTenancy;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using Volo.Abp;
 using Volo.Abp.Account;
 using Volo.Abp.Account.Web;
@@ -153,7 +151,7 @@ public class MainDemoHttpApiHostModule : AbpModule
                     //configure.AddSchedulerListener<SampleSchedulerListener>();
                 };
             });
-            context.Services.AddQuartzAdmin();
+            context.Services.AddQuartzAdminMain(configuration.GetSection("QuartzAdmin"));
         }
     }
 

@@ -12,6 +12,7 @@
 	<ItemGroup>
 	  <Compile Remove="Components\CustomUserMenu.razor.cs" />
 	  <Compile Remove="RemoteExternalLocalizationStore.cs" />
+	  <Compile Remove="ServiceCollectionExtensions.cs" />
 	  <Compile Remove="UserExceptionInformer.cs" />
 	</ItemGroup>
 
@@ -45,6 +46,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\src\Syrna.QuartzAdmin.MainDemo.Blazor.WebAssembly\Syrna.QuartzAdmin.MainDemo.Blazor.WebAssembly.csproj" />
 		<ProjectReference Include="..\..\src\Syrna.QuartzAdmin.MainDemo.HttpApi.Client\Syrna.QuartzAdmin.MainDemo.HttpApi.Client.csproj" />
+		<ProjectReference Include="..\..\src\Syrna.QuartzAdmin.MainDemo.Jobs\Syrna.QuartzAdmin.MainDemo.Jobs.csproj" />
 	</ItemGroup>
 
 </Project>

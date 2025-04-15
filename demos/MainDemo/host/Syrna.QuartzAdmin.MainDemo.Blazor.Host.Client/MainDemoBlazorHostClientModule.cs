@@ -9,6 +9,7 @@ using Syrna.QuartzAdmin.Blazor.Components;
 using Syrna.QuartzAdmin.Blazor.Services;
 using Syrna.QuartzAdmin.MainDemo.Blazor.Host.Client.Menus;
 using Syrna.QuartzAdmin.MainDemo.Blazor.WebAssembly;
+using Syrna.QuartzAdmin.MainDemo.Jobs;
 using System;
 using System.Net.Http;
 using Volo.Abp.Account;
@@ -33,6 +34,7 @@ namespace Syrna.QuartzAdmin.MainDemo.Blazor.Host.Client;
 [DependsOn(typeof(AbpSettingManagementBlazorWebAssemblyModule))]
 //
 [DependsOn(typeof(MainDemoBlazorWebAssemblyModule))]
+[DependsOn(typeof(MainDemoJobsModule))]
 public class MainDemoBlazorHostClientModule : AbpModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)

@@ -15,6 +15,11 @@ namespace Syrna.QuartzAdmin.Authorization
             schedulePermissions.AddChild(QuartzAdminPermissions.Schedules.Update, L("Permission:Schedules.Update"));
             schedulePermissions.AddChild(QuartzAdminPermissions.Schedules.Delete, L("Permission:Schedules.Delete"));
 
+            var triggersPermissions = moduleGroup.AddPermission(QuartzAdminPermissions.Triggers.Default, L("Permission:Triggers"));
+            triggersPermissions.AddChild(QuartzAdminPermissions.Triggers.Create, L("Permission:Triggers.Create"));
+            triggersPermissions.AddChild(QuartzAdminPermissions.Triggers.Update, L("Permission:Triggers.Update"));
+            triggersPermissions.AddChild(QuartzAdminPermissions.Triggers.Delete, L("Permission:Triggers.Delete"));
+
             var historyPermissions = moduleGroup.AddPermission(QuartzAdminPermissions.History.Default, L("Permission:History"));
             historyPermissions.AddChild(QuartzAdminPermissions.History.Delete, L("Permission:History.Delete"));
 

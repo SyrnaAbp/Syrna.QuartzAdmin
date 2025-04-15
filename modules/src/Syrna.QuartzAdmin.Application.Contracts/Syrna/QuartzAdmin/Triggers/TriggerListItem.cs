@@ -1,4 +1,6 @@
-﻿using Quartz;
+﻿using Microsoft.VisualBasic;
+using Quartz;
+using System;
 
 namespace Syrna.QuartzAdmin.Triggers
 {
@@ -23,6 +25,8 @@ namespace Syrna.QuartzAdmin.Triggers
         /// The <see cref="TriggerType"/> type of trigger.
         /// </summary>
         public TriggerType Type { get; set; }
+        public string ClrType { get; set; }
+
         /// <summary>
         /// Short description of the <see cref="ITrigger"/>
         /// </summary>
@@ -30,22 +34,33 @@ namespace Syrna.QuartzAdmin.Triggers
         /// <summary>
         /// The time when the trigger fired first time.
         /// </summary>
-        public string StartTimeUtc { get; set; }
+        public DateTimeOffset StartTimeUtc { get; set; }
         /// <summary>
         /// The time when a trigger will stop triggering,
         /// </summary>
-        public string EndTimeUtc { get; set; }
+        public DateTimeOffset? EndTimeUtc { get; set; }
         /// <summary>
         /// The last time the trigger was fired.
         /// </summary>
-        public string LastFireTimeUtc { get; set; }
+        public DateTimeOffset? LastFireTimeUtc { get; set; }
         /// <summary>
         /// The next time the trigger fires.
         /// </summary>
-        public string NextFireTimeUtc { get; set; }
+        public DateTimeOffset? NextFireTimeUtc { get; set; }
         /// <summary>
         /// Human readable description of the <see cref="ITrigger"/> scheduling settings.
         /// </summary>
         public string ScheduleDescription { get; set; }
+
+        public string TypeString
+        {
+            get
+            {
+                if (Type == TriggerType.Unknown)
+                    return ClrType;
+                else
+                    return Type.ToString();
+            }
+        }
     }
 }

@@ -40,6 +40,12 @@ public class QuartzAdminMenuContributor : IMenuContributor
             icon:"fa fa-timeline",
             url: "~/QuartzAdmin/History").RequirePermissions(QuartzAdminPermissions.History.Default));
 
+        groupMenuItem.AddItem(new ApplicationMenuItem(
+            QuartzAdminMenuNames.Triggers,
+            l["Menu:Triggers"],
+            icon:"fa fa-clock",
+            url: "~/QuartzAdmin/Triggers").RequirePermissions(QuartzAdminPermissions.Triggers.Default));
+
         return Task.CompletedTask;
     }
 }
