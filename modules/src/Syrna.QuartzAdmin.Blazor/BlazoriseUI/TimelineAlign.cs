@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace Syrna.QuartzAdmin.Blazor.Components;
+namespace Syrna.QuartzAdmin.Blazor.BlazoriseUI;
 
 /// <summary>
 /// Specifies the alignment of each item's dot relative to its text in a <see cref="Timeline"/>.

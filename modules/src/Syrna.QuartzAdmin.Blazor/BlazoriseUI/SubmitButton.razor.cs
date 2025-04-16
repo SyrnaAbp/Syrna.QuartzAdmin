@@ -4,7 +4,7 @@ using Microsoft.Extensions.Localization;
 using System;
 using System.Threading.Tasks;
 
-namespace Syrna.QuartzAdmin.Blazor.Components;
+namespace Syrna.QuartzAdmin.Blazor.BlazoriseUI;
 
 public partial class SubmitButton : ComponentBase
 {

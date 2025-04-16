@@ -1,4 +1,4 @@
-﻿namespace Syrna.QuartzAdmin.Blazor.Components;
+﻿namespace Syrna.QuartzAdmin.Blazor.BlazoriseUI;
 
 /// <summary>
 /// Represents the optgroup HTML element and its attributes.

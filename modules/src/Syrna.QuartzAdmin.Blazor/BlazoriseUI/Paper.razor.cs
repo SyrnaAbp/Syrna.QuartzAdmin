@@ -2,7 +2,7 @@
 using Blazorise.Utilities;
 using Microsoft.AspNetCore.Components;
 
-namespace Syrna.QuartzAdmin.Blazor.Components;
+namespace Syrna.QuartzAdmin.Blazor.BlazoriseUI;
 
 /// <summary>
 /// A surface for grouping other components.

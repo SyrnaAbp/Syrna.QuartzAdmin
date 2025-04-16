@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace Syrna.QuartzAdmin.Blazor.Components;
+namespace Syrna.QuartzAdmin.Blazor.BlazoriseUI;
 
 /// <summary>
 /// Specifies how items are drawn in a <see cref="Timeline" />.

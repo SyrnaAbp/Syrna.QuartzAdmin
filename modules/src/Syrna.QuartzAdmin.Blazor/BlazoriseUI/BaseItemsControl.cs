@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Syrna.QuartzAdmin.Blazor.Components;
+namespace Syrna.QuartzAdmin.Blazor.BlazoriseUI;
 
 /// <summary>
 /// Represents a base class for designing components which contain items.

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace Syrna.QuartzAdmin.Blazor.Components;
+namespace Syrna.QuartzAdmin.Blazor.BlazoriseUI;
 
 /// <summary>
 /// Specifies the orientation of items in a <see cref="Timeline"/>

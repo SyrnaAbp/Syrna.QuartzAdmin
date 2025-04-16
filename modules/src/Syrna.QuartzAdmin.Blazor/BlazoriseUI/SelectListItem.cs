@@ -1,4 +1,4 @@
-﻿namespace Syrna.QuartzAdmin.Blazor.Components;
+﻿namespace Syrna.QuartzAdmin.Blazor.BlazoriseUI;
 
 /// <summary>
 /// Represents an item in a <see cref="SelectList"/> or <see cref="MultiSelectList"/>.

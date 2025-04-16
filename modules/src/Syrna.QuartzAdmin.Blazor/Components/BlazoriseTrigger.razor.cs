@@ -1,6 +1,7 @@
 ﻿using Blazorise;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
+using Syrna.QuartzAdmin.Blazor.BlazoriseUI;
 using Syrna.QuartzAdmin.Localization;
 using Syrna.QuartzAdmin.Scheduler;
 using Syrna.QuartzAdmin.Triggers;

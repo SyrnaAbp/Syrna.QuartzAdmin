@@ -5,7 +5,7 @@ using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
 
-namespace Syrna.QuartzAdmin.Blazor.Components
+namespace Syrna.QuartzAdmin.Blazor.BlazoriseUI
 {
 
     /// <summary>

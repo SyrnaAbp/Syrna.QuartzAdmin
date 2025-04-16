@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Syrna.QuartzAdmin.Blazor.BlazoriseUI;
 using Syrna.QuartzAdmin.Blazor.Services;
 using Syrna.QuartzAdmin.Jobs;
 using Syrna.QuartzAdmin.Jobs.Abstractions;
