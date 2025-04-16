@@ -50,13 +50,13 @@
                     <FieldBody>
                         <Select TValue="string"
                                 ReadOnly="IsReadOnly"
-                                SelectedValue="@JobDetail.JobClass?.FullName"
-                                SelectedValueChanged="@OnJobClassValueChanged"
+                                SelectedValue="@JobDetail.JobClassName"
+                                SelectedValueChanged="OnJobClassValueChanged"
                                 Margin="Margin.Is0">
                             <ChildContent>
-                                @foreach (var cls in @AvailableJobTypes)
+                                @foreach (var cls in AvailableJobTypeNames)
                                 {
-                                    <SelectItem TValue="string" Value="cls.FullName">@cls.FullName</SelectItem>
+                                    <SelectItem TValue="string" Value="@cls">@cls</SelectItem>
                                 }
                             </ChildContent>
                             <Feedback>

@@ -20,49 +20,35 @@
         <Table Hoverable="true"
                Striped="true" Borderless="true"
                FixedHeader="true" Style="max-height: 280px; overflow: auto;">
-            <colgroup>
-                <col />
-                <col />
-                <col style="width: 200px;" />
-                <col style="width: 120px;" />
-            </colgroup>
-            <thead>
-                <tr>
-                    <th>@L["JobDataMap:Key"]</th>
-                    <th>@L["JobDataMap:Value"]</th>
-                    <th>@L["JobDataMap:Type"]</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
+            <TableHeader>
+                <TableRow>
+                    <TableHeaderCell>@L["JobDataMap:Key"]</TableHeaderCell>
+                    <TableHeaderCell>@L["JobDataMap:Value"]</TableHeaderCell>
+                    <TableHeaderCell Style="width: 200px;">@L["JobDataMap:Type"]</TableHeaderCell>
+                    <TableHeaderCell Style="width: 120px;"></TableHeaderCell>
+                </TableRow>
+            </TableHeader>
+            <TableBody>
                 @foreach (var row in JobDetail.JobDataMap)
                 {
-                    <tr>
-                        <td>@row.Key</td>
-                        <td>@row.Value.ToString()</td>
-                        <td>@GetDataMapTypeDescription(row)</td>
-                        <td>
-                            <Button Size="Size.Small"
-                                    Clicked="() => OnEditDataMap(row)"
-                                    Disabled="@IsReadOnly"
-                                    title="Edit">
+                    <TableRow>
+                        <TableRowCell>@row.Key</TableRowCell>
+                        <TableRowCell>@row.Value.ToString()</TableRowCell>
+                        <TableRowCell>@GetDataMapTypeDescription(row)</TableRowCell>
+                        <TableRowCell>
+                            <Button Size="Size.Small" Clicked="() => OnEditDataMap(row)" Disabled="@IsReadOnly" title="Edit">
                                 <Icon Name="@IconName.Edit"></Icon>
                             </Button>
-                            <Button Size="Size.Small"
-                                    Clicked="() => OnCloneDataMap(row)"
-                                    Disabled="@IsReadOnly"
-                                    title="Copy">
+                            <Button Size="Size.Small" Clicked="() => OnCloneDataMap(row)" Disabled="@IsReadOnly" title="Copy">
                                 <Icon Name="@IconName.Paste"></Icon>
                             </Button>
-                            <Button Size="Size.Small"
-                                    Clicked="() => OnDeleteDataMap(row)"
-                                    Disabled="@IsReadOnly" title="Delete">
+                            <Button Size="Size.Small" Clicked="() => OnDeleteDataMap(row)" Disabled="@IsReadOnly" title="Delete">
                                 <Icon Name="@IconName.Delete"></Icon>
                             </Button>
-                        </td>
-                    </tr>
+                        </TableRowCell>
+                    </TableRow>
                 }
-            </tbody>
+            </TableBody>
         </Table>
     </CardBody>
 </Card>

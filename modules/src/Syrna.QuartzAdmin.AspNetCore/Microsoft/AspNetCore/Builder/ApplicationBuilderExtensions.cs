@@ -88,7 +88,7 @@ public static class ApplicationBuilderExtensions
         //});
 
         var type = typeof(IJob);
-        var types = JobsListHelper.GetQuartzAdminJobs();
+        var types = AutoJobsListHelper.GetQuartzAdminJobs();
         types.ForEach(t =>
         {
             var so = t.GetCustomAttribute<QuartzTriggerAttribute>();
@@ -143,7 +143,7 @@ public static class ApplicationBuilderExtensions
     public static IServiceCollection UseQuartzAdmin(this IServiceCollection app/*, Action<Services> configure = null*/)
     {
         var type = typeof(IJob);
-        var types = JobsListHelper.GetQuartzAdminJobs();
+        var types = AutoJobsListHelper.GetQuartzAdminJobs();
         types.ForEach(t =>
         {
             var so = t.GetCustomAttribute<QuartzTriggerAttribute>();

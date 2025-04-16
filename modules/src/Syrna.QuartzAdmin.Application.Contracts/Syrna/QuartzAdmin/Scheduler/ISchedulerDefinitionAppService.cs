@@ -5,7 +5,7 @@ using Volo.Abp.Application.Services;
 
 namespace Syrna.QuartzAdmin.Scheduler
 {
-    public interface ISchedulerDefinitionService
+    public interface ISchedulerDefinitionAppService : IApplicationService
     {
         Task<List<IntervalUnit>> GetTriggerIntervalUnits(TriggerType triggerType);
 
@@ -17,10 +17,6 @@ namespace Syrna.QuartzAdmin.Scheduler
         /// <param name="reload"></param>
         /// <returns></returns>
         Task<List<string>> GetJobTypeNames(bool reload);
-
-        Task<IEnumerable<Type>> GetJobTypes(bool reload);
-
-        Type FindType(string typeName);
     }
 }
 

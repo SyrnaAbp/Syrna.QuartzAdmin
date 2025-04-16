@@ -33,7 +33,7 @@ public class SampleSchedulerListener : SchedulerListenerBase
     public async Task UseQuartzAdmin()
     {
         var type = typeof(IJob);
-        var types = JobsListHelper.GetQuartzAdminJobs();
+        var types = AutoJobsListHelper.GetQuartzAdminJobs();
         foreach (var t in types)
         {
             var so = t.GetCustomAttribute<QuartzTriggerAttribute>();

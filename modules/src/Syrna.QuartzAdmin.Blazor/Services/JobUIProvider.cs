@@ -9,19 +9,20 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Syrna.QuartzAdmin.Blazor.Services
 {
     public class JobUIProvider : IJobUIProvider
     {
-        private readonly ISchedulerDefinitionService _schDefSvc;
+        private readonly ISchedulerDefinitionAppService _schDefSvc;
         private readonly QuartzAdminUIOptions _options;
         private readonly ILogger<JobUIProvider> _logger;
 
         private Dictionary<string, Type> _availableJobUITypes;
 
         public JobUIProvider(ILogger<JobUIProvider> logger,
-            ISchedulerDefinitionService schDefSvc,
+            ISchedulerDefinitionAppService schDefSvc,
             IOptions<QuartzAdminUIOptions> options)
         {
             _logger = logger;
@@ -29,11 +30,11 @@ namespace Syrna.QuartzAdmin.Blazor.Services
             _options = options.Value;
         }
 
-        public Type GetJobUIType(string jobTypeFullName)
+        public async Task<Type> GetJobUIType(string jobTypeFullName)
         {
             if (_availableJobUITypes == null)
             {
-                LoadAvailableJobUITypes();
+                await LoadAvailableJobUITypes();
             }
 
             if (jobTypeFullName != null && _availableJobUITypes.ContainsKey(jobTypeFullName))
@@ -47,7 +48,7 @@ namespace Syrna.QuartzAdmin.Blazor.Services
         }
 
         [MemberNotNull(nameof(_availableJobUITypes))]
-        private void LoadAvailableJobUITypes()
+        private async Task LoadAvailableJobUITypes()
         {
             if (_options.AllowedJobAssemblyFiles == null)
             {
@@ -109,17 +110,21 @@ namespace Syrna.QuartzAdmin.Blazor.Services
                 return;
             }
 
-            var jobTypes = _schDefSvc.GetJobTypeNames(false).Result;//.Select(j => j.FullName).ToHashSet();
+            var jobTypes = await _schDefSvc.GetJobTypeNames(false);//.Select(j => j.FullName).ToHashSet();
             foreach (var jobUIType in jobUITypes)
             {
                 var jobClass = GetJobClass(jobUIType);
                 if (jobClass != null && jobTypes.Contains(jobClass))
                 {
-                    jobUIMapping.Add(jobClass, jobUIType);
+                    if (!jobUIMapping.ContainsKey(jobClass))
+                    {
+                        jobUIMapping.Add(jobClass, jobUIType);
+                    }
                 }
             }
 
             _availableJobUITypes = jobUIMapping;
+            await Task.CompletedTask;
         }
 
         private string GetJobClass(Type jobUIType)

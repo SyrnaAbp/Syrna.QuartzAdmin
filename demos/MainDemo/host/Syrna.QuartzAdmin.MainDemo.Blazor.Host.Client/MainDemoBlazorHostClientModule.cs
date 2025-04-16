@@ -76,6 +76,8 @@ public class MainDemoBlazorHostClientModule : AbpModule
 
     private void ConfigureQuartzAdmin(ServiceConfigurationContext context)
     {
+        var configuration = context.Services.GetConfiguration();
+        context.Services.AddQuartzAdminMain(configuration.GetSection("QuartzAdmin"));
         context.Services.AddTransient<ITriggerDetailModelValidator, TriggerDetailModelValidator>();
         context.Services.AddSingleton<IJobUIProvider, JobUIProvider>();
     }

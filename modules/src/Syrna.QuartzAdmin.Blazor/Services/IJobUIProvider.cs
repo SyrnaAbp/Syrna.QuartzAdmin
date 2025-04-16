@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace Syrna.QuartzAdmin.Blazor.Services
 {
     public interface IJobUIProvider
     {
-        Type GetJobUIType(string jobTypeFullName);
+        Task<Type> GetJobUIType(string jobTypeFullName);
     }
 }

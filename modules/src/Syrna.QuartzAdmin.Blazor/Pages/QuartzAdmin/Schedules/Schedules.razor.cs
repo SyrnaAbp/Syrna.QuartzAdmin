@@ -368,41 +368,12 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Schedules
             }
         }
 
-        private async Task NewSchedule(JobDetailModel JobDetail, TriggerDetailModel TriggerDetail)
-        {
-            // create schedule
-            try
-            {
-                await SchedulerSvc.CreateSchedule(JobDetail, TriggerDetail);
-            }
-            catch (Exception ex)
-            {
-                await Notify.Error($"Failed to create new schedule. {ex.Message}");
-                Logger.LogError(ex, "Failed to create new schedule.");
-                // TODO show schedule dialog again?
-            }
-        }
-
         ScheduleDialog ScheduleDialogRef;
         private async Task OnNewSchedule()
         {
             JobDetailModel jobDetail = new JobDetailModel();
             TriggerDetailModel triggerDetail = new TriggerDetailModel();
             await ScheduleDialogRef.OpenModalAsync(jobDetail, triggerDetail, true);
-        }
-
-        private async Task UpdateSchedule(JobDetailModel JobDetail, TriggerDetailModel TriggerDetail, Key JobKey, Key TriggerKey)
-        {
-            try
-            {
-                await SchedulerSvc.UpdateSchedule(JobKey, TriggerKey, JobDetail, TriggerDetail);
-            }
-            catch (Exception ex)
-            {
-                await Notify.Error($"Failed to update schedule. {ex.Message}");
-                Logger.LogError(ex, "Failed to update schedule.");
-                // TODO display the dialog again?
-            }
         }
 
         private async Task OnEditScheduleJob(ScheduleModel model)

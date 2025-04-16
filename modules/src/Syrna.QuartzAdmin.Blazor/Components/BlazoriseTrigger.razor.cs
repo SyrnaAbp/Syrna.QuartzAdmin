@@ -17,7 +17,7 @@ namespace Syrna.QuartzAdmin.Blazor.Components
     public partial class BlazoriseTrigger
     {
         [Inject] protected new IStringLocalizer<QuartzAdminResource> L { get; set; }
-        [Inject] private ISchedulerDefinitionService SchedulerDefSvc { get; set; } = null!;
+        [Inject] private ISchedulerDefinitionAppService SchedulerDefSvc { get; set; } = null!;
         [Inject] private ISchedulerAppService SchedulerSvc { get; set; } = null!;
         [Inject] private ITriggerDetailModelValidator Validator { get; set; } = null!;
         [Inject] protected IUiMessageService UiMessageService { get; set; } = default!;
@@ -119,6 +119,16 @@ namespace Syrna.QuartzAdmin.Blazor.Components
             await OnCronExpressionInputElapsed(cronExpression);
             await InvokeAsync(StateHasChanged);
             await Task.CompletedTask;
+        }
+        
+        List<IntervalUnit> TriggerIntervalUnits;
+        List<MisfireAction> MisfireActions;
+        private async Task TriggerTypeChanged(TriggerType triggerType)
+        {
+            TriggerDetail.TriggerType = triggerType;
+            TriggerIntervalUnits = await SchedulerDefSvc.GetTriggerIntervalUnits(triggerType);
+            MisfireActions=await SchedulerDefSvc.GetMisfireActions(triggerType);
+            await InvokeAsync(StateHasChanged);
         }
 
         private async Task GetTriggerGroups()

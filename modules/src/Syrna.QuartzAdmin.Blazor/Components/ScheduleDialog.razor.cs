@@ -110,7 +110,12 @@ public partial class ScheduleDialog
             // create schedule
             try
             {
-                await SchedulerSvc.CreateSchedule(JobDetail, TriggerDetail);
+                CreateScheduleArgs createScheduleArgs = new()
+                {
+                    JobDetailModel = JobDetail,
+                    TriggerDetailModel = TriggerDetail
+                };  
+                await SchedulerSvc.CreateSchedule(createScheduleArgs);
             }
             catch (Exception ex)
             {

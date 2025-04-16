@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Quartz;
+using Quartz.Impl.AdoJobStore;
 using Quartz.Impl.Matchers;
-using Quartz.Logging;
 using Syrna.QuartzAdmin.Jobs;
 using Syrna.QuartzAdmin.Triggers;
 using System;
@@ -18,6 +17,7 @@ namespace Syrna.QuartzAdmin.Scheduler
     public class SchedulerAppService : QuartzAdminAppService, ISchedulerAppService
     {
         protected IScheduler Scheduler => LazyServiceProvider.LazyGetRequiredService<IScheduler>();
+        protected ISchedulerDefinitionService SchedulerDefinitionService => LazyServiceProvider.LazyGetRequiredService<ISchedulerDefinitionService>();
 
         /// <summary>
         /// Getting meta data for a Scheduler.
@@ -303,7 +303,7 @@ namespace Syrna.QuartzAdmin.Scheduler
                 {
                     foreach (var job in await GetScheduleModelsAsync(jobKey))
                     {
-                        list.Add( job);
+                        list.Add(job);
                     }
                 }
             }
@@ -360,14 +360,19 @@ namespace Syrna.QuartzAdmin.Scheduler
         }
 
         [HttpPost]
-        public async Task CreateSchedule(JobDetailModel jobDetailModel, TriggerDetailModel triggerDetailModel)
+        public async Task CreateSchedule(CreateScheduleArgs createScheduleArgs)
         {
-            var trigger = BuildTrigger(triggerDetailModel);
+            var trigger = BuildTrigger(createScheduleArgs.TriggerDetailModel);
+            if (createScheduleArgs.JobDetailModel.Group != createScheduleArgs.TriggerDetailModel.Group)
+            {
+                //important
+                createScheduleArgs.JobDetailModel.Group = createScheduleArgs.TriggerDetailModel.Group;
+            }
 
             // Determine if job already exists
-            if (await ContainsJobKey(jobDetailModel.Name, jobDetailModel.Group))
+            if (await ContainsJobKey(createScheduleArgs.JobDetailModel.Name, createScheduleArgs.JobDetailModel.Group))
             {
-                var existingJob = await Scheduler.GetJobDetail(new JobKey(jobDetailModel.Name, jobDetailModel.Group));
+                var existingJob = await Scheduler.GetJobDetail(new JobKey(createScheduleArgs.JobDetailModel.Name, createScheduleArgs.JobDetailModel.Group));
                 if (existingJob != null)
                 {
                     //await scheduler.GetTriggersOfJob(job.Key)
@@ -381,7 +386,7 @@ namespace Syrna.QuartzAdmin.Scheduler
                 }
             }
 
-            var job = CreateJobDetail(jobDetailModel);
+            var job = CreateJobDetail(createScheduleArgs.JobDetailModel);
 
             await Scheduler.ScheduleJob(job, trigger);
         }
@@ -434,7 +439,7 @@ namespace Syrna.QuartzAdmin.Scheduler
                 Group = jd.Key.Group,
                 Description = jd.Description,
                 JobDataMap = jd.JobDataMap,
-                JobClass = jd.JobType,
+                JobClassName = jd.JobType.FullName,
                 IsDurable = jd.Durable
             };
         }
@@ -656,7 +661,7 @@ namespace Syrna.QuartzAdmin.Scheduler
             }
             else if (jobTriggers == null || !jobTriggers.Any())
             {
-                var sm= new ScheduleModel
+                var sm = new ScheduleModel
                 {
                     JobName = jobkey.Name,
                     JobGroup = jobkey.Group,
@@ -669,7 +674,7 @@ namespace Syrna.QuartzAdmin.Scheduler
             {
                 foreach (var trigger in jobTriggers)
                 {
-                    list.Add( await CreateScheduleModel(jobDetail, trigger));
+                    list.Add(await CreateScheduleModel(jobDetail, trigger));
                 }
             }
             return list;
@@ -774,9 +779,9 @@ namespace Syrna.QuartzAdmin.Scheduler
 
         private IJobDetail CreateJobDetail(JobDetailModel jobDetailModel)
         {
-            ArgumentNullException.ThrowIfNull(jobDetailModel.JobClass);
-
-            return JobBuilder.Create(jobDetailModel.JobClass)
+            ArgumentNullException.ThrowIfNull(jobDetailModel.JobClassName);
+            var type = SchedulerDefinitionService.FindType(jobDetailModel.JobClassName);
+            return JobBuilder.Create(type)
                 .WithIdentity(jobDetailModel.Name, jobDetailModel.Group)
                 .WithDescription(jobDetailModel.Description)
                 .UsingJobData(new JobDataMap(jobDetailModel.JobDataMap))

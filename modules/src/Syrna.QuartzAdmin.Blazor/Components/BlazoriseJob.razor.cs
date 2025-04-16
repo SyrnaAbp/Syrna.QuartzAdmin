@@ -1,6 +1,7 @@
 ﻿using Blazorise;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Syrna.QuartzAdmin.Blazor.Services;
 using Syrna.QuartzAdmin.Jobs;
 using Syrna.QuartzAdmin.Jobs.Abstractions;
@@ -18,7 +19,7 @@ namespace Syrna.QuartzAdmin.Blazor.Components
     public partial class BlazoriseJob
     {
         [Inject] protected new IStringLocalizer<QuartzAdminResource> L { get; set; }
-        [Inject] private ISchedulerDefinitionService SchedulerDefSvc { get; set; } = null!;
+        [Inject] private ISchedulerDefinitionAppService SchedulerDefSvc { get; set; } = null!;
         [Inject] private ISchedulerAppService SchedulerSvc { get; set; } = null!;
         [Inject] private IJobUIProvider JobUIProvider { get; set; } = null!;
 
@@ -31,9 +32,9 @@ namespace Syrna.QuartzAdmin.Blazor.Components
 
         [Parameter] public EventCallback<bool> IsValidChanged { get; set; }
 
-        private Key OriginalJobKey = new(string.Empty, "No Group");
+        private Key OriginalJobKey = new(string.Empty, "DEFAULT");
 
-        private IEnumerable<Type> AvailableJobTypes = Enumerable.Empty<Type>();
+        private IEnumerable<string> AvailableJobTypeNames = Enumerable.Empty<string>();
         private IEnumerable<SelectListItem> ExistingJobGroups;
         private Validations _validations = null!;
         private Type JobUIType = null;
@@ -48,19 +49,18 @@ namespace Syrna.QuartzAdmin.Blazor.Components
         protected override async Task OnInitializedAsync()
         {
             var typeNames = await SchedulerDefSvc.GetJobTypeNames(false);
-            var typeList = new HashSet<Type>();
+            var typeList = new HashSet<string>();
             foreach (var typeName in typeNames)
             {
-                var type = TypeInfo.GetType(typeName);
-                typeList.Add(type);
+                typeList.Add(typeName);
             }
 
-            if (JobDetail.JobClass != null)
+            if (!string.IsNullOrEmpty(JobDetail.JobClassName))
             {
-                typeList.Add(JobDetail.JobClass);
+                typeList.Add(JobDetail.JobClassName);
             }
-            AvailableJobTypes = typeList;
-            await OnJobClassValueChanged(JobDetail.JobClass?.FullName);
+            AvailableJobTypeNames = typeList;
+            await OnJobClassValueChanged(JobDetail.JobClassName);
 
             OriginalJobKey = new(JobDetail.Name, JobDetail.Group);
             await GetJobGroups();
@@ -136,23 +136,28 @@ namespace Syrna.QuartzAdmin.Blazor.Components
 
         private async Task OnJobClassValueChanged(string jobTypeName)
         {
-            var jobType = AvailableJobTypes.FirstOrDefault(w => w.FullName == jobTypeName);
-            JobDetail.JobClass = jobType;
-            if (jobType != null)
+            if (string.IsNullOrEmpty(jobTypeName))
             {
-                // clear previous changes
-                if (_jobUIComponent?.Instance is IJobUI jobUi)
-                    await jobUi.ClearChanges();
-
-                var jobUiType = JobUIProvider.GetJobUIType(jobType!.FullName);
-                JobUITypeParameters.Clear();
-                JobUITypeParameters[nameof(IsReadOnly)] = IsReadOnly;
-                if (jobUiType == typeof(DefaultJobUI))
-                    JobUITypeParameters[nameof(JobDetail)] = JobDetail;
-                else
-                    JobUITypeParameters[nameof(JobDetail.JobDataMap)] = JobDetail.JobDataMap;
-                JobUIType = jobUiType;
+                JobDetail.JobClassName = string.Empty;
+                await Task.CompletedTask;
             }
+            JobDetail.JobClassName = jobTypeName;
+            // clear previous changes
+            if (_jobUIComponent?.Instance is IJobUI jobUi)
+                await jobUi.ClearChanges();
+
+            var jobUiType = await JobUIProvider.GetJobUIType(jobTypeName);
+            var jobUITypeName = jobUiType.FullName;
+            JobUITypeParameters.Clear();
+            JobUITypeParameters[nameof(IsReadOnly)] = IsReadOnly;
+            if (jobUiType == typeof(DefaultJobUI))
+                JobUITypeParameters[nameof(JobDetail)] = JobDetail;
+            else
+                JobUITypeParameters[nameof(JobDetail.JobDataMap)] = JobDetail.JobDataMap;
+            JobUIType = jobUiType;
+            Logger.LogInformation("Setting jobuitype {jobUITypeName}", jobUITypeName);
+            await InvokeAsync(StateHasChanged);
+            await Task.CompletedTask;
         }
 
         protected override void Dispose(bool disposing)

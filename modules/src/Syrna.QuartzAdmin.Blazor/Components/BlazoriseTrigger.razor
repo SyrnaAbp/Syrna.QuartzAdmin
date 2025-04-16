@@ -3,8 +3,8 @@
 @inject AbpBlazorMessageLocalizerHelper<QuartzAdminResource> LH
 @inherits Volo.Abp.AspNetCore.Components.AbpComponentBase
 <EnumSwitch T="TriggerType" ExcludedValues="ExcludedTriggerTypeChoices"
-            @bind-Value="TriggerDetail.TriggerType"
-            ValueIcons="TriggerTypeIcons" />
+            Value="TriggerDetail.TriggerType"
+            ValueIcons="TriggerTypeIcons" ValueChanged="TriggerTypeChanged" />
 <Form Class="triggerForm">
     <Validations @ref="_validations" Mode="ValidationMode.Auto" Model="@TriggerDetail" StatusChanged="@OnSetValidationStatusChanged">
         <Card>
@@ -229,10 +229,9 @@
                                         <Select TValue="IntervalUnit?"
                                                 @bind-SelectedValue="@TriggerDetail.TriggerIntervalUnit">
                                             <ChildContent>
-                                                @foreach (var unit in SchedulerDefSvc.GetTriggerIntervalUnits(TriggerDetail.TriggerType).Result)
-                                                {
-                                                    <SelectItem TValue="IntervalUnit?" Value="unit">@L[$"IntervalUnit:{unit.ToString()}"]</SelectItem>
-                                                }
+                                                <Repeater Items="TriggerIntervalUnits">
+                                                    <SelectItem TValue="IntervalUnit?" Value="@context">@L[$"IntervalUnit:{context.ToString()}"]</SelectItem>
+                                                </Repeater>
                                             </ChildContent>
                                             <Feedback>
                                                 <ValidationError>@L["Error:SelectOneValue"]</ValidationError>
@@ -376,10 +375,9 @@
                                     <Select TValue="MisfireAction"
                                             @bind-SelectedValue="@TriggerDetail.MisfireAction">
                                         <ChildContent>
-                                            @foreach (var action in SchedulerDefSvc.GetMisfireActions(TriggerDetail.TriggerType).Result)
-                                            {
-                                                <SelectItem TValue="MisfireAction" Value="action">@L[$"MisfireAction:{@action.ToString()}"]</SelectItem>
-                                            }
+                                            <Repeater Items="MisfireActions">
+                                                <SelectItem TValue="MisfireAction" Value="@context">@L[$"MisfireAction:{context.ToString()}"]</SelectItem>
+                                            </Repeater>
                                         </ChildContent>
                                         <Feedback>
                                             <ValidationError>@L["Error:SelectOneValue"]</ValidationError>
@@ -421,28 +419,22 @@
                         <Table Hoverable="true" Narrow="true"
                                Striped="true" Borderless="true"
                                FixedHeader="true" Style="max-height: 180px; overflow: auto;">
-                            <colgroup>
-                                <col />
-                                <col />
-                                <col style="width: 200px;" />
-                                <col style="width: 120px;" />
-                            </colgroup>
-                            <thead>
-                                <tr>
-                                    <th>@L["JobDataMap:Key"]</th>
-                                    <th>@L["JobDataMap:Value"]</th>
-                                    <th>@L["JobDataMap:Type"]</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHeaderCell>@L["JobDataMap:Key"]</TableHeaderCell>
+                                    <TableHeaderCell>@L["JobDataMap:Value"]</TableHeaderCell>
+                                    <TableHeaderCell Style="width: 200px;">@L["JobDataMap:Type"]</TableHeaderCell>
+                                    <TableHeaderCell Style="width: 120px;"></TableHeaderCell>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
                                 @foreach (var row in TriggerDetail.TriggerDataMap)
                                 {
-                                    <tr>
-                                        <td>@row.Key</td>
-                                        <td>@row.Value.ToString()</td>
-                                        <td>@GetDataMapTypeDescription(row)</td>
-                                        <td class="d-flex">
+                                    <TableRow>
+                                        <TableRowCell>@row.Key</TableRowCell>
+                                        <TableRowCell>@row.Value.ToString()</TableRowCell>
+                                        <TableRowCell>@GetDataMapTypeDescription(row)</TableRowCell>
+                                        <TableRowCell>
                                             <Button Size="Size.Small" Clicked="() => OnEditDataMap(row)" title="Edit">
                                                 <Icon Name="@IconName.Edit" />
                                             </Button>
@@ -452,10 +444,10 @@
                                             <Button Size="Size.Small" Clicked="() => OnDeleteDataMap(row)" title="Delete">
                                                 <Icon Name="@IconName.Delete" />
                                             </Button>
-                                        </td>
-                                    </tr>
+                                        </TableRowCell>
+                                    </TableRow>
                                 }
-                            </tbody>
+                            </TableBody>
                         </Table>
                     </CardBody>
                 </Card>

@@ -1,18 +1,17 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Quartz;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Quartz;
 
 namespace Syrna.QuartzAdmin.Scheduler
 {
-    public class SchedulerDefinitionService : QuartzAdminAppService, ISchedulerDefinitionService
+    public class SchedulerDefinitionService : ISchedulerDefinitionService
     {
         private List<IntervalUnit> _calendarIntervalUnits;
         private List<IntervalUnit> _simpleIntervalUnits;
@@ -29,6 +28,13 @@ namespace Syrna.QuartzAdmin.Scheduler
             _logger = logger;
             _options = options.Value;
             Init();
+        }
+
+        public Type FindType(string typeName)
+        {
+            if (_allowedJobTypes == null)
+                return null;
+            return _allowedJobTypes.FirstOrDefault(x => x.FullName == typeName);
         }
 
         [MemberNotNull(nameof(_calendarIntervalUnits))]
@@ -53,7 +59,6 @@ namespace Syrna.QuartzAdmin.Scheduler
             };
         }
 
-        [HttpGet]
         public Task<List<IntervalUnit>> GetTriggerIntervalUnits(TriggerType triggerType)
         {
             return Task.Run(() =>
@@ -71,7 +76,6 @@ namespace Syrna.QuartzAdmin.Scheduler
             });
         }
 
-        [HttpGet]
         public Task<List<MisfireAction>> GetMisfireActions(TriggerType triggerType)
         {
             return Task.Run(() =>
@@ -113,13 +117,12 @@ namespace Syrna.QuartzAdmin.Scheduler
             });
         }
 
-        [HttpPost]
         public async Task<List<string>> GetJobTypeNames(bool reload)
         {
             return (await GetJobTypes(reload)).Select(x => x.FullName ?? string.Empty).ToList();
         }
 
-        private async Task<IEnumerable<Type>> GetJobTypes(bool reload)
+        public async Task<IEnumerable<Type>> GetJobTypes(bool reload)
         {
             return await Task.Run(() =>
             {

@@ -25,7 +25,7 @@ namespace Syrna.QuartzAdmin.Scheduler
 
         Task<ScheduleModel> GetScheduleModelAsync(ITrigger trigger);
         Task<List<ScheduleModel>> GetAllJobsAsync(ScheduleJobFilter filter);
-        Task CreateSchedule(JobDetailModel jobDetailModel, TriggerDetailModel triggerDetailModel);
+        Task CreateSchedule(CreateScheduleArgs createScheduleArgs);
         Task<IReadOnlyCollection<string>> GetJobGroups();
         Task<IReadOnlyCollection<string>> GetTriggerGroups();
         Task<JobDetailModel> GetJobDetail(string jobName, string groupName);
