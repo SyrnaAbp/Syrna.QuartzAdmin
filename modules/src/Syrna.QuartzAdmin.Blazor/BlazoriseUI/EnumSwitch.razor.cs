@@ -31,7 +31,11 @@ public partial class EnumSwitch<T>
     {
         var preValue = Value;
         Value = (T)Enum.ToObject(Type, value);
-        if (preValue.Equals(Value)) return;
+        if (preValue.Equals(Value))
+        {
+            return;
+        }
+
         await ValueChanged.InvokeAsync(Value);
     }
 

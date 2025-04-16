@@ -45,8 +45,11 @@ namespace Syrna.QuartzAdmin.Blazor.BlazoriseUI
 			set
 			{
 				if (timelineOrientation == value)
-					return;
-				timelineOrientation = value;
+                {
+                    return;
+                }
+
+                timelineOrientation = value;
 				DirtyClasses();
 			}
 		}
@@ -65,8 +68,11 @@ namespace Syrna.QuartzAdmin.Blazor.BlazoriseUI
 			set
 			{
 				if (timelinePosition == value)
-					return;
-				timelinePosition = value;
+                {
+                    return;
+                }
+
+                timelinePosition = value;
 				DirtyClasses();
 			}
 		}
@@ -83,8 +89,11 @@ namespace Syrna.QuartzAdmin.Blazor.BlazoriseUI
 			get => timelineAlign; set
 			{
 				if (timelineAlign == value)
-					return;
-				timelineAlign = value;
+                {
+                    return;
+                }
+
+                timelineAlign = value;
 				DirtyClasses();
 			}
 		}
@@ -100,8 +109,11 @@ namespace Syrna.QuartzAdmin.Blazor.BlazoriseUI
 			get => reverse; set
 			{
 				if (reverse == value)
-					return;
-				reverse = value;
+                {
+                    return;
+                }
+
+                reverse = value;
 				DirtyClasses();
 			}
 		}
@@ -117,8 +129,11 @@ namespace Syrna.QuartzAdmin.Blazor.BlazoriseUI
 			get => modifiers; set
 			{
 				if (modifiers == value)
-					return;
-				modifiers = value;
+                {
+                    return;
+                }
+
+                modifiers = value;
 				DirtyClasses();
 			}
 		}

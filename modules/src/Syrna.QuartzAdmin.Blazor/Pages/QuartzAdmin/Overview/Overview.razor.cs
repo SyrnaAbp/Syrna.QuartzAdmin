@@ -302,7 +302,9 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Overview
 
             await HandleTodaysChartRedraw();
             if (TotalLogDays > 1)
+            {
                 await HandleAllTimeChartRedraw();
+            }
         }
 
         /// <summary>

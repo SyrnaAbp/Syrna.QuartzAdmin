@@ -82,7 +82,9 @@ namespace Syrna.QuartzAdmin.MainDemo.Jobs
 
                 HttpContent reqParam = null;
                 if (!string.IsNullOrEmpty(parameters))
+                {
                     reqParam = new StringContent(parameters, Encoding.UTF8, Application.Json);
+                }
 
                 HttpResponseMessage response = new HttpResponseMessage();
                 logger.LogInformation("[{runInstanceId}]. Sending '{action}' request to specified url '{url}'.",

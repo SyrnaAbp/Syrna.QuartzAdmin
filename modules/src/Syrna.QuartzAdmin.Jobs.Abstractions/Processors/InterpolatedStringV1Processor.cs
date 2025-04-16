@@ -18,10 +18,14 @@ namespace Syrna.QuartzAdmin.Jobs.Abstractions.Processors
         public string Process(DataMapValue interpolatedString)
         {
             if (interpolatedString.Type != DataMapValueType.InterpolatedString)
+            {
                 throw new ArgumentException($"Invalid DataMapValue type {interpolatedString.Type}. Expected type {DataMapValueType.InterpolatedString}.");
+            }
 
             if (string.IsNullOrEmpty(interpolatedString.Value))
+            {
                 return interpolatedString.Value;
+            }
 
             StringBuilder strBldr = new StringBuilder();
             int lastIndex = 0;

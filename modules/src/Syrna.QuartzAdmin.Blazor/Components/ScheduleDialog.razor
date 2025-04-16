@@ -1,7 +1,7 @@
 ﻿@using Syrna.QuartzAdmin.Localization
 @inject AbpBlazorMessageLocalizerHelper<QuartzAdminResource> LH
 @inherits Volo.Abp.AspNetCore.Components.AbpComponentBase
-<Modal @ref="modalRef">
+<Modal @ref="_modalRef">
     <ModalContent Size="ModalSize.Large">
         <ModalHeader>
             <ModalTitle>@(IsNew ? L["ScheduleDialogNew"] : L["ScheduleDialogEdit"])</ModalTitle>
@@ -22,11 +22,11 @@
                 <Column ColumnSize="ColumnSize.Is12" Margin="Margin.Is0">
                     @if (SelectedTab == ScheduleDialogTab.Job)
                     {
-                        <BlazoriseJob @ref="_jobPanel" JobDetail="JobDetail" @bind-IsValid="_jobDetailIsValid" IsReadOnly="IsReadOnlyJobDetail" />
+                        <BlazoriseJob @ref="_jobPanel" JobDetail="JobDetail" @bind-IsValid="_jobDetailIsValid" IsReadOnly="IsReadOnlyJobDetail" OriginalJobKey="@OriginalJobKey" IsNew="@IsNew" />
                     }
                     else
                     {
-                        <BlazoriseTrigger @ref="_triggerPanel" TriggerDetail="TriggerDetail" @bind-IsValid="_triggerDetailIsValid" />
+                        <BlazoriseTrigger @ref="_triggerPanel" TriggerDetail="TriggerDetail" @bind-IsValid="_triggerDetailIsValid" OriginalTriggerKey="@OriginalTriggerKey" />
                     }
                 </Column>
             </Grid>

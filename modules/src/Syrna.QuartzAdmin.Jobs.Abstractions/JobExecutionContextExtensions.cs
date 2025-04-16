@@ -34,7 +34,10 @@ namespace Syrna.QuartzAdmin.Jobs.Abstractions
         {
             var val = context.Get(JobDataMapKeys.ReturnCode);
             if (val != null)
+            {
                 return Convert.ToString(val, CultureInfo.InvariantCulture);
+            }
+
             return null;
         }
 
@@ -42,7 +45,9 @@ namespace Syrna.QuartzAdmin.Jobs.Abstractions
         {
             var val = context.Get(JobDataMapKeys.ExecutionDetails);
             if (val != null)
+            {
                 return Convert.ToString(val, CultureInfo.InvariantCulture);
+            }
 
             return null;
         }
@@ -51,7 +56,10 @@ namespace Syrna.QuartzAdmin.Jobs.Abstractions
         {
             var value = context.Get(JobDataMapKeys.IsSuccess);
             if (value == null)
+            {
                 return null;
+            }
+
             return Convert.ToBoolean(value);
         }
 

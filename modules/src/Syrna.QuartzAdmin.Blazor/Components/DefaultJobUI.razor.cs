@@ -23,7 +23,9 @@ namespace Syrna.QuartzAdmin.Blazor.Components
         public async Task AddDataMap(DataMapItemModel dataMap)
         {
             if (dataMap is { Key: not null, Value: not null })
+            {
                 JobDetail.JobDataMap.Add(dataMap.Key, dataMap.Value);
+            }
             else
             {
                 // TODO print error message. Data map is null

@@ -57,9 +57,13 @@ namespace Syrna.QuartzAdmin.Triggers
             get
             {
                 if (Type == TriggerType.Unknown)
+                {
                     return ClrType;
+                }
                 else
+                {
                     return Type.ToString();
+                }
             }
         }
     }

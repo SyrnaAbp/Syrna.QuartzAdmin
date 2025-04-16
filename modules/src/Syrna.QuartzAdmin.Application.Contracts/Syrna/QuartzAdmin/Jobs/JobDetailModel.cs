@@ -5,7 +5,7 @@ namespace Syrna.QuartzAdmin.Jobs
 {
     public class JobDetailModel
     {
-        [Required(ErrorMessage = "Job Name is required")]
+        //[Required(ErrorMessage = "Job Name is required")]
         public string Name { get; set; } = string.Empty;
 
         public string Group { get; set; } = Constants.DEFAULT_GROUP;

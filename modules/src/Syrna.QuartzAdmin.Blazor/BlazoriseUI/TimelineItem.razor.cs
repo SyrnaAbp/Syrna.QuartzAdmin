@@ -107,7 +107,10 @@ namespace Syrna.QuartzAdmin.Blazor.BlazoriseUI
             set
             {
                 if (color == value)
+                {
                     return;
+                }
+
                 color = value;
 
                 DirtyMyClasses();
@@ -126,7 +129,10 @@ namespace Syrna.QuartzAdmin.Blazor.BlazoriseUI
             get => size; set
             {
                 if (size == value)
+                {
                     return;
+                }
+
                 size = value;
                 DirtyMyClasses();
             }
@@ -144,7 +150,10 @@ namespace Syrna.QuartzAdmin.Blazor.BlazoriseUI
             get => elevation; set
             {
                 if (elevation == value)
+                {
                     return;
+                }
+
                 elevation = value;
                 DirtyMyClasses();
             }
@@ -162,7 +171,10 @@ namespace Syrna.QuartzAdmin.Blazor.BlazoriseUI
             get => timelineAlign; set
             {
                 if (timelineAlign == value)
+                {
                     return;
+                }
+
                 timelineAlign = value;
                 DirtyMyClasses();
             }
@@ -233,7 +245,10 @@ namespace Syrna.QuartzAdmin.Blazor.BlazoriseUI
         protected override void Dispose(bool disposing)
         {
             if (!disposing)
+            {
                 Parent?.Items.Remove(this);
+            }
+
             base.Dispose(disposing);
         }
     }

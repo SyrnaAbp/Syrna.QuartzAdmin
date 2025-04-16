@@ -5,9 +5,9 @@
 @inherits Volo.Abp.AspNetCore.Components.AbpComponentBase
 <div class="jobform">
     <Form>
-        <Validations @ref="_validations" Mode="ValidationMode.Auto" Model="@JobDetail" StatusChanged="OnSetIsValid">
+        <Validations @ref="_validations" ValidateOnLoad="false" Mode="ValidationMode.Auto" Model="@JobDetail" StatusChanged="OnSetIsValid">
             <div class="jobform__2col">
-                <Validation AsyncValidator="ValidateJobName">
+                <Validation AsyncValidator="async (e,c)=>await ValidateJobName(e,c)">
                     <Field>
                         <FieldLabel RequiredIndicator="true" For="JobDetail.Name">@L["JobDetail:Name"]</FieldLabel>
                         <FieldBody>
@@ -23,26 +23,33 @@
                     </Field>
                 </Validation>
 
-                <Field>
-                    <FieldLabel RequiredIndicator="true">@L["JobDetail:Group"]</FieldLabel>
-                    <FieldBody>
-                        <Autocomplete TItem="SelectListItem"
-                                      TValue="string"
-                                      SelectedValue="@JobDetail.Group"
-                                      Data="ExistingJobGroups"
-                                      TextField="@((item) => item.Text)"
-                                      ValueField="@((item) => item.Value)"
-                                      ReadData="GetJobGroups"
-                                      Placeholder="@L["SearchPlaceHolder"]"
-                                      Filter="AutocompleteFilter.Contains"
-                                      FreeTyping>
-                            <NotFoundContent>@string.Format(L["NotFoundContent"], context)</NotFoundContent>
-                            <ItemContent>
-                                <Paragraph Margin="Margin.Is2.FromBottom">@context.Text</Paragraph>
-                            </ItemContent>
-                        </Autocomplete>
-                    </FieldBody>
-                </Field>
+                <Validation AsyncValidator="async (e,c)=>await ValidateJobName(e,c)">
+                    <Field>
+                        <FieldLabel RequiredIndicator="true">@L["JobDetail:Group"]</FieldLabel>
+                        <FieldBody>
+                            <Addons>
+                                <Addon AddonType="AddonType.Body">
+                                    <TextEdit @bind-Text="JobDetail.Group"
+                                              Immediate="true"
+                                              Margin="Margin.Is0"
+                                              ReadOnly="IsReadOnly">
+                                    </TextEdit>
+                                </Addon>
+                                <Addon AddonType="AddonType.End">
+                                    <Dropdown>
+                                        <DropdownToggle Color="Color.Primary"></DropdownToggle>
+                                        <DropdownMenu>
+                                            <Repeater Items="@ExistingJobGroups">
+                                                <DropdownItem Clicked="async (e)=>await JobGroupSelected((string)e)" Value="@context.Value">@context.Text</DropdownItem>
+                                            </Repeater>
+                                        </DropdownMenu>
+                                    </Dropdown>
+                                </Addon>
+                                <ValidationError>@L["Error:JobNameAlreadyInUsed"]</ValidationError>
+                            </Addons>
+                        </FieldBody>
+                    </Field>
+                </Validation>
             </div>
 
             <Validation Validator="@ValidationRule.IsSelected">

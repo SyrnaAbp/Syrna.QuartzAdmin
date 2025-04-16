@@ -15,11 +15,15 @@ namespace Syrna.QuartzAdmin.Jobs.Abstractions
         {
             var result = TriggerBuilder.Create();
             if (Priority.HasValue)
+            {
                 result.WithPriority(Priority.Value);
+            }
 
             if(!string.IsNullOrEmpty(CRONExpression))
+            {
                 result.WithCronSchedule(CRONExpression);
-            
+            }
+
             return result;
         }
     }

@@ -284,7 +284,9 @@ internal class QuartzExecutionHistoryRepository
             }).ToListAsync();
 
         if (!statusGroup.Any())
+        {
             return new();
+        }
 
         return new JobExecutionStatusSummaryModel
         {

@@ -7,12 +7,12 @@
             Value="TriggerDetail.TriggerType"
             ValueIcons="TriggerTypeIcons" ValueChanged="TriggerTypeChanged" />
 <Form Class="triggerForm">
-    <Validations @ref="_validations" Mode="ValidationMode.Auto" Model="@TriggerDetail" StatusChanged="@OnSetValidationStatusChanged">
+    <Validations @ref="_validations" ValidateOnLoad="false" Mode="ValidationMode.Auto" Model="@TriggerDetail" StatusChanged="@OnSetValidationStatusChanged">
         <Card>
             <CardBody>
                 <Grid>
                     <Column ColumnSize="ColumnSize.Is6">
-                        <Validation AsyncValidator="(e,c)=> Validator.ValidateTriggerName(e, TriggerDetail, OriginalTriggerKey)">
+                        <Validation AsyncValidator="async (e,c)=> await Validator.ValidateTriggerName(e, TriggerDetail, OriginalTriggerKey)">
                             <Field>
                                 <FieldLabel RequiredIndicator="true">@L["TriggerDetail:Name"]</FieldLabel>
                                 <FieldBody>
@@ -27,26 +27,18 @@
                     </Column>
 
                     <Column ColumnSize="ColumnSize.Is6">
-                        <Field>
-                            <FieldLabel RequiredIndicator="true">@L["TriggerDetail:Group"]</FieldLabel>
-                            <FieldBody>
-                                <Autocomplete TItem="SelectListItem"
-                                              TValue="string"
-                                              Data="@ExistingTriggerGroups"
-                                              ReadData="@GetTriggerGroups"
-                                              TextField="((item) => item.Text)"
-                                              ValueField="((item) => item.Value)"
-                                              @bind-SelectedValue="@TriggerDetail.Group"
-                                              Placeholder="@L["SearchPlaceHolder"]"
-                                              Filter="AutocompleteFilter.Contains"
-                                              FreeTyping>
-                                    <NotFoundContent>@string.Format(L["NotFoundContent"], context)</NotFoundContent>
-                                    <ItemContent>
-                                        <Paragraph Margin="Margin.Is2.FromBottom">@context.Text</Paragraph>
-                                    </ItemContent>
-                                </Autocomplete>
-                            </FieldBody>
-                        </Field>
+                        <Validation AsyncValidator="async (e,c)=> await Validator.ValidateTriggerName(e, TriggerDetail, OriginalTriggerKey)">
+                            <Field>
+                                <FieldLabel RequiredIndicator="true">@L["TriggerDetail:Group"]</FieldLabel>
+                                <FieldBody>
+                                    <TextEdit @bind-Text="TriggerDetail.Group" Immediate="true">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </TextEdit>
+                                </FieldBody>
+                            </Field>
+                        </Validation>
                     </Column>
 
                     @if (TriggerDetail.TriggerType == TriggerType.Cron)
@@ -173,7 +165,6 @@
                                         <Autocomplete TItem="SelectListItem"
                                                       TValue="string"
                                                       Data="@_calendars"
-                                                      ReadData="@GetCalendars"
                                                       TextField="((item) => item.Text)"
                                                       ValueField="((item) => item.Value)"
                                                       @bind-SelectedValue="@TriggerDetail.ModifiedByCalendar"
@@ -336,7 +327,6 @@
                                     <Autocomplete TItem="SelectListItem"
                                                   TValue="string"
                                                   Data="@_calendars"
-                                                  ReadData="@GetCalendars"
                                                   TextField="((item) => item.Text)"
                                                   ValueField="((item) => item.Value)"
                                                   @bind-SelectedValue="@TriggerDetail.ModifiedByCalendar"
@@ -436,13 +426,13 @@
                                         <TableRowCell>@row.Value.ToString()</TableRowCell>
                                         <TableRowCell>@GetDataMapTypeDescription(row)</TableRowCell>
                                         <TableRowCell>
-                                            <Button Size="Size.Small" Clicked="() => OnEditDataMap(row)" title="Edit">
+                                            <Button Size="Size.Small" Clicked="async () => await OnEditDataMap(row)" title="Edit">
                                                 <Icon Name="@IconName.Edit" />
                                             </Button>
-                                            <Button Size="Size.Small" Clicked="() => OnCloneDataMap(row)" title="Copy">
+                                            <Button Size="Size.Small" Clicked="async () => await OnCloneDataMap(row)" title="Copy">
                                                 <Icon Name="@IconName.Copy" />
                                             </Button>
-                                            <Button Size="Size.Small" Clicked="() => OnDeleteDataMap(row)" title="Delete">
+                                            <Button Size="Size.Small" Clicked="async () => await OnDeleteDataMap(row)" title="Delete">
                                                 <Icon Name="@IconName.Delete" />
                                             </Button>
                                         </TableRowCell>

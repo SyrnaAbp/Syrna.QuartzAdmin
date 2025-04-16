@@ -42,7 +42,7 @@ namespace Syrna.QuartzAdmin.Blazor.Components
         private IReadOnlyCollection<TimeZoneInfo> _timeZones;
         private TimePicker<TimeSpan?> _endDailyTimePicker = null!;
         private DatePicker<DateTime?> _endDatePicker = null!;
-        private Key OriginalTriggerKey { get; set; }
+        [Parameter] public Key OriginalTriggerKey { get; set; }
 
         private Dictionary<TriggerType, string> TriggerTypeIcons = new()
         {
@@ -57,11 +57,14 @@ namespace Syrna.QuartzAdmin.Blazor.Components
             LocalizationResource = typeof(QuartzAdminResource);
         }
 
-        protected override void OnInitialized()
+        protected override async Task OnInitializedAsync()
         {
-            Task.Run(() => OnCronExpressionInputElapsed(TriggerDetail.CronExpression));
-            OriginalTriggerKey = new(TriggerDetail.Name, TriggerDetail.Group);
-            Task.Run(GetTimeZones);
+            await OnCronExpressionInputElapsed(TriggerDetail.CronExpression);
+            await GetTimeZones();
+            await GetTriggerGroups();
+            await GetCalendars();
+            await GetTriggerIntervalUnits(TriggerDetail.TriggerType);
+            await GetMisfireActions(TriggerDetail.TriggerType);
         }
 
         string GetDataMapTypeDescription(KeyValuePair<string, object> kv)
@@ -76,19 +79,15 @@ namespace Syrna.QuartzAdmin.Blazor.Components
 
         public static void DailyDayOfWeekValidation(ValidatorEventArgs e)
         {
-            if (e.Value != null)
+            if (e.Value is bool[] { Length: > 0 } items)
             {
-                var items = e.Value as bool[];
-                if (items != null && items.Length > 0)
+                if (!items.Any())
                 {
-                    if (!items.Any())
-                    {
-                        e.Status = ValidationStatus.Error;
-                        return;
-                    }
-                    e.Status = ValidationStatus.Success;
+                    e.Status = ValidationStatus.Error;
                     return;
                 }
+                e.Status = ValidationStatus.Success;
+                return;
             }
             e.Status = ValidationStatus.None;
         }
@@ -121,20 +120,30 @@ namespace Syrna.QuartzAdmin.Blazor.Components
             await InvokeAsync(StateHasChanged);
             await Task.CompletedTask;
         }
-        
+
         List<IntervalUnit> TriggerIntervalUnits;
         List<MisfireAction> MisfireActions;
         private async Task TriggerTypeChanged(TriggerType triggerType)
         {
             TriggerDetail.TriggerType = triggerType;
-            TriggerIntervalUnits = await SchedulerDefSvc.GetTriggerIntervalUnits(triggerType);
-            MisfireActions=await SchedulerDefSvc.GetMisfireActions(triggerType);
+            await GetTriggerIntervalUnits(triggerType);
+            await GetMisfireActions(triggerType);
             await InvokeAsync(StateHasChanged);
         }
 
         private async Task GetTriggerGroups()
         {
             ExistingTriggerGroups ??= (await SchedulerSvc.GetTriggerGroups()).Select(s => new SelectListItem(s, s));
+        }
+
+        private async Task GetTriggerIntervalUnits(TriggerType triggerType)
+        {
+            TriggerIntervalUnits ??= (await SchedulerDefSvc.GetTriggerIntervalUnits(triggerType));
+        }
+
+        private async Task GetMisfireActions(TriggerType triggerType)
+        {
+            MisfireActions ??= (await SchedulerDefSvc.GetMisfireActions(triggerType));
         }
 
         private async Task OnShowSampleCron()
@@ -152,21 +161,27 @@ namespace Syrna.QuartzAdmin.Blazor.Components
             _calendars ??= (await SchedulerSvc.GetCalendarNames()).Select(s => new SelectListItem(s, s)).ToImmutableList();
         }
 
-        private void OnSetValidationStatusChanged(ValidationsStatusChangedEventArgs eventArgs)
+        private async Task OnSetValidationStatusChanged(ValidationsStatusChangedEventArgs eventArgs)
         {
             var value = eventArgs.Status == ValidationStatus.Success;
             if (IsValid == value)
+            {
                 return;
+            }
+
             IsValid = value;
-            IsValidChanged.InvokeAsync(value).RunSynchronously();
+            await IsValidChanged.InvokeAsync(value);
         }
 
-        private void OnSetIsValid(bool value)
+        private async Task OnSetIsValid(bool value)
         {
             if (IsValid == value)
+            {
                 return;
+            }
+
             IsValid = value;
-            IsValidChanged.InvokeAsync(value).RunSynchronously();
+            await IsValidChanged.InvokeAsync(value);
         }
 
         public async Task Validate()
@@ -175,7 +190,9 @@ namespace Syrna.QuartzAdmin.Blazor.Components
 
             _isDaysOfWeekValid = Validator.ValidateDaysOfWeek(TriggerDetail);
             if (isValid)
-                OnSetIsValid(_isDaysOfWeekValid);
+            {
+                await OnSetIsValid(_isDaysOfWeekValid);
+            }
 
             // if daily trigger does not have end time, assign end time
             if (TriggerDetail is { TriggerType: TriggerType.Daily, EndDailyTime: null })
@@ -184,10 +201,12 @@ namespace Syrna.QuartzAdmin.Blazor.Components
             }
         }
 
-        public async Task AddDataMap(DataMapItemModel dataMap)
+        private async Task AddDataMap(DataMapItemModel dataMap)
         {
             if (dataMap is { Key: not null, Value: not null })
+            {
                 TriggerDetail.TriggerDataMap.Add(dataMap.Key, dataMap.Value);
+            }
             else
             {
                 // TODO print error message. Data map is null
@@ -203,7 +222,7 @@ namespace Syrna.QuartzAdmin.Blazor.Components
             await JobDataMapDialogRef.OpenModalAsync(new Dictionary<string, object>(TriggerDetail.TriggerDataMap, StringComparer.OrdinalIgnoreCase), dataMapItem, AddDataMap);
         }
 
-        public async Task UpdateDataMap(DataMapItemModel dataMap)
+        private async Task UpdateDataMap(DataMapItemModel dataMap)
         {
             if (dataMap is { Key: not null, Value: not null })
             {
@@ -242,13 +261,13 @@ namespace Syrna.QuartzAdmin.Blazor.Components
             var dataMapItem = new DataMapItemModel(clonedItem);
             await JobDataMapDialogRef.OpenModalAsync(new Dictionary<string, object>(TriggerDetail.TriggerDataMap, StringComparer.OrdinalIgnoreCase), dataMapItem, UpdateDataMap);
         }
-        
-        private string DeleteConfirnationMessage(KeyValuePair<string, object> item) => string.Format(L["DeleteConfirmationMessage"], item.Key);
+
+        private string DeleteConfirmationMessage(KeyValuePair<string, object> item) => string.Format(L["DeleteConfirmationMessage"], item.Key);
 
         CronSamplesDialog CronSamplesDialogRef;
         private async Task OnDeleteDataMap(KeyValuePair<string, object> item)
         {
-            bool? yes = await UiMessageService.Confirm(DeleteConfirnationMessage(item));
+            bool? yes = await UiMessageService.Confirm(DeleteConfirmationMessage(item));
 
             if (yes == null || !yes.Value)
             {

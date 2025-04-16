@@ -14,8 +14,10 @@ namespace Syrna.QuartzAdmin.Jobs.Abstractions.Resolvers.V1
             var result = Regex.Match(varBlock, GetVariableRegex());
 
             if (!result.Success || result.Index != 2)
+            {
                 throw new FormatException($"Invalid {GetVariableName()} format. Expected format is " +
-                    "{{$datetime rfc1123|iso8601|'date format'|\"date format\" [integer y|M|w|d|h|m|s|ms]}}.");
+                                          "{{$datetime rfc1123|iso8601|'date format'|\"date format\" [integer y|M|w|d|h|m|s|ms]}}.");
+            }
 
             var dt = GetDateTimeOffset();
 

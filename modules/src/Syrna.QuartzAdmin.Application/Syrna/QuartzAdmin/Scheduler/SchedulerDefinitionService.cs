@@ -33,7 +33,10 @@ namespace Syrna.QuartzAdmin.Scheduler
         public Type FindType(string typeName)
         {
             if (_allowedJobTypes == null)
+            {
                 return null;
+            }
+
             return _allowedJobTypes.FirstOrDefault(x => x.FullName == typeName);
         }
 
@@ -127,17 +130,23 @@ namespace Syrna.QuartzAdmin.Scheduler
             return await Task.Run(() =>
             {
                 if (_options.AllowedJobAssemblyFiles == null)
+                {
                     return Enumerable.Empty<Type>();
+                }
 
                 // use cached job types if already loaded
                 if (_allowedJobTypes != null && !reload)
+                {
                     return _allowedJobTypes;
+                }
 
                 HashSet<string> disallowedJobs = new(_options.DisallowedJobTypes ?? Enumerable.Empty<string>());
 
                 if (_options.DisallowedJobTypes != null)
+                {
                     _logger.LogInformation("{disallowedVar} was set. Will not load following job types {jobTypes}",
                         nameof(_options.DisallowedJobTypes), _options.DisallowedJobTypes);
+                }
 
                 var path = Path.GetDirectoryName(Assembly.GetAssembly(typeof(SchedulerDefinitionService))!.Location) ?? string.Empty;
                 List<Type> jobTypes = new();
@@ -168,7 +177,9 @@ namespace Syrna.QuartzAdmin.Scheduler
                     }
                 }
                 if (!jobTypes.Any())
+                {
                     return jobTypes;
+                }
 
                 _allowedJobTypes = jobTypes;
                 return _allowedJobTypes.AsReadOnly();

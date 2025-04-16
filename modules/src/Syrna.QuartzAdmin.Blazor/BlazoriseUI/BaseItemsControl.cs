@@ -33,7 +33,9 @@ public abstract class BaseItemsControl<TChildComponent> : BaseComponent
         set
         {
             if (SelectedIndex == value)
+            {
                 return;
+            }
 
             _moveNext = value >= _selectedIndexField;
             LastContainer = _selectedIndexField >= 0 ? SelectedContainer : null;

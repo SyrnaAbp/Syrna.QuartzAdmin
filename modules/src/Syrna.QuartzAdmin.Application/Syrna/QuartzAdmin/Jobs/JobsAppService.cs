@@ -143,7 +143,9 @@ namespace Syrna.QuartzAdmin.Jobs
             try
             {
                 if (string.IsNullOrEmpty(jobGroup) || string.IsNullOrEmpty(jobName))
+                {
                     throw new UserFriendlyException("JobName or JobGroup is invalid", "InvalidJobNameOrJobGroup");
+                }
 
                 var jobDetails = await Scheduler.GetJobDetail(new JobKey(jobName, jobGroup));
 

@@ -18,7 +18,7 @@ public partial class ScheduleDialog
     [Inject] private ISchedulerAppService SchedulerSvc { get; set; } = null!;
     public JobDetailModel JobDetail { get; set; } = new();
     [Parameter] public TriggerDetailModel TriggerDetail { get; set; } = new();
-    public bool IsNew { get; set; }
+    private bool IsNew { get; set; }
     [Parameter] public Key JobKey { get; set; }
     [Parameter] public Key TriggerKey { get; set; }
     [Parameter] public bool IsReadOnlyJobDetail { get; set; }
@@ -30,7 +30,7 @@ public partial class ScheduleDialog
     private string _nextIcon = IconName.AngleRight.ToString();
     private BlazoriseJob _jobPanel = null!;
     private BlazoriseTrigger _triggerPanel = null!;
-    Modal modalRef;
+    private Modal _modalRef;
 
     public ScheduleDialog()
     {
@@ -40,49 +40,61 @@ public partial class ScheduleDialog
     protected override void OnInitialized()
     {
         _nextText = L["Next"];
-        if (SelectedTab == ScheduleDialogTab.Trigger)
+        if (SelectedTab != ScheduleDialogTab.Trigger)
         {
-            _jobDetailIsValid = true;
-            _nextText = @L["Save"];
-            _nextIcon = null;
+            return;
         }
+
+        _jobDetailIsValid = true;
+        _nextText = L["Save"];
+        _nextIcon = null;
     }
 
     private async Task OnSelectedTabChanged(ScheduleDialogTab tab)
     {
         if (SelectedTab == tab)
+        {
             return;
+        }
 
         // validate before change tab
         if (SelectedTab == ScheduleDialogTab.Job)
         {
             await _jobPanel.Validate();
             if (!_jobDetailIsValid)
+            {
                 return;
+            }
         }
 
         SelectedTab = tab;
-
-        // update text
-        if (SelectedTab == ScheduleDialogTab.Job)
+        switch (SelectedTab)
         {
-            _nextText = @L["Next"];
-            _nextIcon = IconName.AngleLeft.ToString();
-        }
-        else if (SelectedTab == ScheduleDialogTab.Trigger)
-        {
-            if (string.IsNullOrEmpty(TriggerDetail.Name) &&
-                !string.IsNullOrEmpty(JobDetail.Name))
+            // update text
+            case ScheduleDialogTab.Job:
+                _nextText = L["Next"];
+                _nextIcon = IconName.AngleLeft.ToString();
+                break;
+            case ScheduleDialogTab.Trigger:
             {
-                // use job name as trigger name when trigger name not yet specified
-                // determine if trigger name can be used
-                var exists = await SchedulerSvc.ContainsTriggerKey(JobDetail.Name, TriggerDetail.Group);
-                if (!exists)
-                    TriggerDetail.Name = JobDetail.Name;
-            }
+                if (string.IsNullOrEmpty(TriggerDetail.Name) &&
+                    !string.IsNullOrEmpty(JobDetail.Name))
+                {
+                    // use job name as trigger name when trigger name not yet specified
+                    // determine if trigger name can be used
+                    var exists = await SchedulerSvc.ContainsTriggerKey(JobDetail.Name, TriggerDetail.Group);
+                    if (!exists)
+                    {
+                        TriggerDetail.Name = JobDetail.Name;
+                    }
+                }
 
-            _nextText = @L["Save"];
-            _nextIcon = null;
+                _nextText = L["Save"];
+                _nextIcon = null;
+                break;
+            }
+            default:
+                throw new ArgumentOutOfRangeException();
         }
     }
 
@@ -116,6 +128,7 @@ public partial class ScheduleDialog
                     TriggerDetailModel = TriggerDetail
                 };  
                 await SchedulerSvc.CreateSchedule(createScheduleArgs);
+                await Notify.Info(L["CreatedSuccessfully"]);
             }
             catch (Exception ex)
             {
@@ -128,7 +141,15 @@ public partial class ScheduleDialog
         {
             try
             {
-                await SchedulerSvc.UpdateSchedule(JobKey, TriggerKey, JobDetail, TriggerDetail);
+                var args = new UpdateScheduleArgs
+                {
+                    OldJobKey = OriginalJobKey,
+                    OldTriggerKey = OriginalTriggerKey,
+                    NewJobModel = JobDetail,
+                    NewTriggerModel = TriggerDetail
+                };
+                await SchedulerSvc.UpdateSchedule(args);
+                await Notify.Info(L["SavedSuccessfully"]);
             }
             catch (Exception ex)
             {
@@ -138,9 +159,11 @@ public partial class ScheduleDialog
             }
         }
 
-        await modalRef.Hide();
+        await _modalRef.Hide();
     }
 
+    private Key OriginalTriggerKey { get; set; }
+    private Key OriginalJobKey { get; set; }
     public async Task OpenModalAsync(JobDetailModel jobDetail, TriggerDetailModel triggerDetail, bool isNew = false, ScheduleDialogTab selectedTab = ScheduleDialogTab.Job, bool isReadOnlyJobDetail = false, Key jobKey=null,Key triggerKey=null)
     {
         JobDetail = jobDetail;
@@ -148,19 +171,24 @@ public partial class ScheduleDialog
         SelectedTab = selectedTab;
         IsReadOnlyJobDetail = isReadOnlyJobDetail;
         IsNew = isNew;
-        await modalRef.Show();
+        JobKey = jobKey;
+        TriggerKey = triggerKey;
+        OriginalJobKey = Key.Create(JobDetail.Name, JobDetail.Group);
+        OriginalTriggerKey = Key.Create(TriggerDetail.Name, TriggerDetail.Group);
+        
+        await _modalRef.Show();
     }
 
     protected async Task OnCancel()
     {
-        await modalRef.Hide();
+        await _modalRef.Hide();
     }
 
     protected override void Dispose(bool disposing)
     {
         if (disposing)
         {
-            modalRef?.Dispose();
+            _modalRef?.Dispose();
         }
         base.Dispose(disposing);
     }

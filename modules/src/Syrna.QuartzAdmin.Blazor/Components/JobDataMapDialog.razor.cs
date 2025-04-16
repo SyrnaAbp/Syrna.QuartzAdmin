@@ -80,7 +80,9 @@ public partial class JobDataMapDialog
         var isValid = await _validations.ValidateAll();
 
         if (!isValid)
+        {
             return;
+        }
 
         try
         {

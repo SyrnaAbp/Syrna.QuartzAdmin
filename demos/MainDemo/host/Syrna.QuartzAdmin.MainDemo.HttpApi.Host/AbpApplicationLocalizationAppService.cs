@@ -14,8 +14,8 @@ public class AbpApplicationLocalizationAppService :
     ApplicationService,
     IAbpApplicationLocalizationAppService
 {
-    protected IExternalLocalizationStore ExternalLocalizationStore { get; }
-    protected AbpLocalizationOptions LocalizationOptions { get; }
+    private IExternalLocalizationStore ExternalLocalizationStore { get; }
+    private AbpLocalizationOptions LocalizationOptions { get; }
 
     public AbpApplicationLocalizationAppService(
         IExternalLocalizationStore externalLocalizationStore,

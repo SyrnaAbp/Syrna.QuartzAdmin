@@ -70,11 +70,17 @@ namespace Syrna.QuartzAdmin.Triggers
                 var dow = DaysOfWeekViewModel.Create(trigger.DaysOfWeek);
 
                 if(dow.AreOnlyWeekdaysEnabled)
+                {
                     result += " only on Weekdays";
+                }
                 else if(dow.AreOnlyWeekendEnabled)
+                {
                     result += " only on Weekends";
+                }
                 else
+                {
                     result += " on " + string.Join(", ", trigger.DaysOfWeek);
+                }
             }
 
             return result;
@@ -89,7 +95,10 @@ namespace Syrna.QuartzAdmin.Triggers
         {
             var result = "Repeat ";
             if(trigger.RepeatCount > 0)
+            {
                 result += trigger.RepeatCount + " times ";
+            }
+
             result += "every ";
 
             var diff = trigger.RepeatInterval.TotalMilliseconds;
@@ -101,9 +110,13 @@ namespace Syrna.QuartzAdmin.Triggers
                 diff -= currentPartValue * part.Multiplier;
 
                 if(currentPartValue == 1)
+                {
                     messagesParts.Add(part.Singular);
+                }
                 else if(currentPartValue > 1)
+                {
                     messagesParts.Add(currentPartValue + " " + part.Plural);
+                }
             }
 
             result += string.Join(", ", messagesParts);
@@ -122,15 +135,22 @@ namespace Syrna.QuartzAdmin.Triggers
         {
             var result = "Repeat ";
             if(repeatCount > 0)
+            {
                 result += repeatCount + " times ";
+            }
+
             result += "every ";
 
             var unitStr = repeatIntervalUnit.ToString().ToLower();
 
             if(repeatInterval == 1)
+            {
                 result += unitStr;
+            }
             else
+            {
                 result += repeatInterval + " " + unitStr + "s";
+            }
 
             return result;
         }
@@ -257,13 +277,40 @@ namespace Syrna.QuartzAdmin.Triggers
             /// <returns>The list of selected days in the model.</returns>
             public IEnumerable<DayOfWeek> GetSelected()
             {
-                if(Monday) yield return DayOfWeek.Monday;
-                if(Tuesday) yield return DayOfWeek.Tuesday;
-                if(Wednesday) yield return DayOfWeek.Wednesday;
-                if(Thursday) yield return DayOfWeek.Thursday;
-                if(Friday) yield return DayOfWeek.Friday;
-                if(Saturday) yield return DayOfWeek.Saturday;
-                if(Sunday) yield return DayOfWeek.Sunday;
+                if(Monday)
+                {
+                    yield return DayOfWeek.Monday;
+                }
+
+                if(Tuesday)
+                {
+                    yield return DayOfWeek.Tuesday;
+                }
+
+                if(Wednesday)
+                {
+                    yield return DayOfWeek.Wednesday;
+                }
+
+                if(Thursday)
+                {
+                    yield return DayOfWeek.Thursday;
+                }
+
+                if(Friday)
+                {
+                    yield return DayOfWeek.Friday;
+                }
+
+                if(Saturday)
+                {
+                    yield return DayOfWeek.Saturday;
+                }
+
+                if(Sunday)
+                {
+                    yield return DayOfWeek.Sunday;
+                }
             }
 
             /// <summary>

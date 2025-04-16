@@ -294,7 +294,9 @@ namespace Syrna.QuartzAdmin.Scheduler
                 if (filter != null && !filter.IncludeSystemJobs)
                 {
                     if (jobGrp == Constants.SYSTEM_GROUP)
+                    {
                         continue;
+                    }
                 }
 
                 var jobKeys = await Scheduler.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(jobGrp));
@@ -392,18 +394,17 @@ namespace Syrna.QuartzAdmin.Scheduler
         }
 
         [HttpPost]
-        public async Task UpdateSchedule(Key oldJobKey, Key oldTriggerKey, JobDetailModel newJobModel, TriggerDetailModel newTriggerModel)
+        public async Task UpdateSchedule(UpdateScheduleArgs args)
         {
-            var oJobKey = oldJobKey.ToJobKey();
+            var oJobKey = args.OldJobKey.ToJobKey();
 
-            var newJob = CreateJobDetail(newJobModel);
-            var trigger = BuildTrigger(newTriggerModel, newJob.Key);
+            var newJob = CreateJobDetail(args.NewJobModel);
+            var trigger = BuildTrigger(args.NewTriggerModel, newJob.Key);
             // determine if old triggerKey exists
-            if (oldTriggerKey != null &&
-                await Scheduler.CheckExists(oldTriggerKey.ToTriggerKey()))
+            if (args.OldTriggerKey != null &&
+                await Scheduler.CheckExists(args.OldTriggerKey.ToTriggerKey()))
             {
-                await Scheduler.UnscheduleJob(oldTriggerKey.ToTriggerKey())
-                    ;
+                await Scheduler.UnscheduleJob(args.OldTriggerKey.ToTriggerKey());
             }
 
             var existingTriggers = await Scheduler.GetTriggersOfJob(oJobKey);
@@ -413,7 +414,10 @@ namespace Syrna.QuartzAdmin.Scheduler
             {
                 var b = t.GetTriggerBuilder().ForJob(newJob.Key);
                 if (t.StartTimeUtc < DateTimeOffset.UtcNow)
+                {
                     b.StartNow();
+                }
+
                 return b.Build();
             }).ToList();
             triggers.Add(trigger);
@@ -431,7 +435,9 @@ namespace Syrna.QuartzAdmin.Scheduler
             var jd = await Scheduler.GetJobDetail(new JobKey(jobName, groupName));
 
             if (jd == null)
+            {
                 return null;
+            }
 
             return new JobDetailModel
             {
@@ -450,7 +456,9 @@ namespace Syrna.QuartzAdmin.Scheduler
             var trigger = await Scheduler.GetTrigger(new TriggerKey(triggerName, triggerGroup));
 
             if (trigger == null)
+            {
                 return null;
+            }
 
             return CreateTriggerDetailModel(trigger);
         }
@@ -493,10 +501,14 @@ namespace Syrna.QuartzAdmin.Scheduler
         public async Task<bool> DeleteSchedule(ScheduleModel model)
         {
             if (model.JobName == null)
+            {
                 return false;
+            }
 
             if (model.JobStatus == JobStatus.NoSchedule)
+            {
                 return true;
+            }
 
             var jobKey = new JobKey(model.JobName, model.JobGroup);
             if (model.JobStatus == JobStatus.Error &&
@@ -511,7 +523,9 @@ namespace Syrna.QuartzAdmin.Scheduler
             {
                 var triggers = await Scheduler.GetTriggersOfJob(jobKey);
                 if (!triggers.Any())
+                {
                     return await Scheduler.DeleteJob(jobKey);
+                }
                 else
                 {
                     Logger.LogWarning("Cannot delete Job [{jobGroup}.{jobName}]. There are still {triggerCount}" +
@@ -522,7 +536,9 @@ namespace Syrna.QuartzAdmin.Scheduler
             }
 
             if (model.TriggerName == null)
+            {
                 return false;
+            }
 
             var success = await Scheduler.UnscheduleJob(model.TriggerGroup == null ?
                 new TriggerKey(model.TriggerName) :
@@ -868,7 +884,9 @@ namespace Syrna.QuartzAdmin.Scheduler
                                 triggerDetailModel.TriggerIntervalUnit.Value.ToQuartzIntervalUnit());
                         }
                         if (triggerDetailModel.RepeatCount > 0)
+                        {
                             x.WithRepeatCount(triggerDetailModel.RepeatCount);
+                        }
                     });
                     break;
                 case TriggerType.Simple:
@@ -924,9 +942,13 @@ namespace Syrna.QuartzAdmin.Scheduler
                         }
 
                         if (triggerDetailModel.RepeatForever)
+                        {
                             x.RepeatForever();
+                        }
                         else
+                        {
                             x.WithRepeatCount(triggerDetailModel.RepeatCount);
+                        }
                     });
                     break;
                 case TriggerType.Calendar:
@@ -979,9 +1001,13 @@ namespace Syrna.QuartzAdmin.Scheduler
                     break;
             }
             if (simple.RepeatCount >= 0)
+            {
                 model.RepeatCount = simple.RepeatCount;
+            }
             else
+            {
                 model.RepeatForever = true;
+            }
 
             var total = simple.RepeatInterval.TotalHours;
             if (Math.Round(total) == total)

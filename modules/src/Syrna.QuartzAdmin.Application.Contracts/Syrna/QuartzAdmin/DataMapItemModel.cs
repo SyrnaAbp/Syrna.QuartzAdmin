@@ -30,8 +30,10 @@ public class DataMapItemModel
     public void SetValue(string value)
     {
         if (string.IsNullOrEmpty(value))
+        {
             return;
-            
+        }
+
         switch (Type)
         {
             case DataMapType.Bool:

@@ -12,7 +12,7 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Triggers
     public partial class Triggers
     {
         [Inject] protected new IStringLocalizer<QuartzAdminResource> L { get; set; }
-        [Inject] ITriggersAppService TriggersAppService { get; set; } = null!;
+        [Inject] private ITriggersAppService TriggersAppService { get; set; } = null!;
 
         private int totalItems;
         private int pageSize = 10;

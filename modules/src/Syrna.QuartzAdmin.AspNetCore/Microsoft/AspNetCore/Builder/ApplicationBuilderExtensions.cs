@@ -126,7 +126,11 @@ public static class ApplicationBuilderExtensions
                     }
                     tb.WithIdentity(tk);
                     tb.WithDescription(so.TriggerDescription ?? $"{t.Name}'s Trigger,full name is {t.FullName}");
-                    if (so.Priority > 0) tb.WithPriority(so.Priority);
+                    if (so.Priority > 0)
+                    {
+                        tb.WithPriority(so.Priority);
+                    }
+
                     return tb;
                 }
                 else
@@ -181,7 +185,11 @@ public static class ApplicationBuilderExtensions
                     }
                     tb.WithIdentity(tk);
                     tb.WithDescription(so.TriggerDescription ?? $"{t.Name}'s Trigger,full name is {t.FullName}");
-                    if (so.Priority > 0) tb.WithPriority(so.Priority);
+                    if (so.Priority > 0)
+                    {
+                        tb.WithPriority(so.Priority);
+                    }
+
                     return tb;
                 }
                 else

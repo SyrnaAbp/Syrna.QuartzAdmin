@@ -28,7 +28,6 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Schedules
 
         [Inject] protected new IStringLocalizer<QuartzAdminResource> L { get; set; }
         [Inject] private ISchedulerAppService SchedulerSvc { get; set; } = null!;
-        //[Inject] private ISchedulerListenerService SchedulerListenerSvc { get; set; } = null!;
         [Inject] private IExecutionLogAppService ExecutionLogSvc { get; set; } = null!;
         [Inject] protected IUiMessageService UiMessageService { get; set; } = default!;
 
@@ -46,8 +45,8 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Schedules
             model.JobStatus == JobStatus.Running ||
             model.JobGroup == Constants.SYSTEM_GROUP;
 
-        internal bool IsRunActionDisabled(ScheduleModel model) => model.JobStatus == JobStatus.NoSchedule ||
-                                            model.JobStatus == JobStatus.NoTrigger;
+        private bool IsRunActionDisabled(ScheduleModel model) => model.JobStatus == JobStatus.NoSchedule ||
+                                                                 model.JobStatus == JobStatus.NoTrigger;
 
         internal bool IsPauseActionDisabled(ScheduleModel model) => model.JobStatus == JobStatus.NoSchedule ||
                                             model.JobStatus == JobStatus.Error ||
@@ -79,11 +78,6 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Schedules
         string TriggerDetailToolTipText(ScheduleModel context) =>
             $"<div style='max-width: 220px; overflow-wrap: break-word;'>{context.TriggerDetail?.ToSummaryString(L)}</div>";
 
-        //protected override async Task OnInitializedAsync()
-        //{
-        //    await Task.Run(RegisterEventListeners);
-        //}
-
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
@@ -91,227 +85,6 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Schedules
                 await RefreshJobs();
             }
         }
-
-        //private void UnRegisterEventListeners()
-        //{
-        //    SchedulerListenerSvc.OnJobToBeExecuted -= SchedulerListenerSvc_OnJobToBeExecuted;
-        //    SchedulerListenerSvc.OnJobScheduled -= SchedulerListenerSvc_OnJobScheduled;
-        //    SchedulerListenerSvc.OnJobWasExecuted -= SchedulerListenerSvc_OnJobWasExecuted;
-        //    SchedulerListenerSvc.OnTriggerFinalized -= SchedulerListenerSvc_OnTriggerFinalized;
-        //    SchedulerListenerSvc.OnJobDeleted -= SchedulerListenerSvc_OnJobDeleted;
-        //    SchedulerListenerSvc.OnJobUnscheduled -= SchedulerListenerSvc_OnJobUnscheduled;
-        //    SchedulerListenerSvc.OnTriggerResumed -= SchedulerListenerSvc_OnTriggerResumed;
-        //    SchedulerListenerSvc.OnTriggerPaused -= SchedulerListenerSvc_OnTriggerPaused;
-        //}
-
-        //private void RegisterEventListeners()
-        //{
-        //    SchedulerListenerSvc.OnJobToBeExecuted += SchedulerListenerSvc_OnJobToBeExecuted;
-        //    SchedulerListenerSvc.OnJobScheduled += SchedulerListenerSvc_OnJobScheduled;
-        //    SchedulerListenerSvc.OnJobWasExecuted += SchedulerListenerSvc_OnJobWasExecuted;
-        //    SchedulerListenerSvc.OnTriggerFinalized += SchedulerListenerSvc_OnTriggerFinalized;
-        //    SchedulerListenerSvc.OnJobDeleted += SchedulerListenerSvc_OnJobDeleted;
-        //    SchedulerListenerSvc.OnJobUnscheduled += SchedulerListenerSvc_OnJobUnscheduled;
-        //    SchedulerListenerSvc.OnTriggerResumed += SchedulerListenerSvc_OnTriggerResumed;
-        //    SchedulerListenerSvc.OnTriggerPaused += SchedulerListenerSvc_OnTriggerPaused;
-        //}
-
-        //private async void SchedulerListenerSvc_OnTriggerPaused(object sender, EventArgs<TriggerKey> e)
-        //{
-        //    var triggerKey = e.Args;
-
-        //    await InvokeAsync(() =>
-        //    {
-        //        var model = FindScheduleModelByTrigger(triggerKey).SingleOrDefault();
-        //        if (model != null)
-        //        {
-        //            model.JobStatus = JobStatus.Paused;
-        //            StateHasChanged();
-        //        }
-        //    });
-        //}
-
-        //private async void SchedulerListenerSvc_OnTriggerResumed(object sender, EventArgs<TriggerKey> e)
-        //{
-        //    var triggerKey = e.Args;
-
-        //    await InvokeAsync(() =>
-        //    {
-        //        var model = FindScheduleModelByTrigger(triggerKey).SingleOrDefault();
-        //        if (model != null)
-        //        {
-        //            model.JobStatus = JobStatus.Idle;
-        //            StateHasChanged();
-        //        }
-        //    });
-        //}
-
-        //private async void SchedulerListenerSvc_OnJobUnscheduled(object sender, EventArgs<TriggerKey> e)
-        //{
-        //    Logger.LogInformation("Job trigger {triggerKey} got unscheduled", e.Args);
-        //    await OnTriggerRemoved(e.Args);
-        //}
-
-        //private async void SchedulerListenerSvc_OnJobDeleted(object sender, EventArgs<JobKey> e)
-        //{
-        //    var jobKey = e.Args;
-        //    Logger.LogInformation("Delete all schedule job {jobKey}", jobKey);
-
-        //    await InvokeAsync(() =>
-        //    {
-        //        var modelList = ScheduledJobs.Where(s => s.JobName == jobKey.Name &&
-        //                s.JobGroup == jobKey.Group).ToList();
-        //        modelList.ForEach(s => ScheduledJobs.Remove(s));
-        //    });
-        //}
-
-        //private async void SchedulerListenerSvc_OnTriggerFinalized(object sender, EventArgs<ITrigger> e)
-        //{
-        //    var triggerKey = e.Args.Key;
-        //    Logger.LogInformation("Trigger {triggerKey} finalized", triggerKey);
-
-        //    await OnTriggerRemoved(triggerKey);
-        //}
-
-        //private async Task OnTriggerRemoved(TriggerKey triggerKey)
-        //{
-        //    await InvokeAsync(async () =>
-        //    {
-        //        ScheduleModel model;
-        //        try
-        //        {
-        //            model = FindScheduleModelByTrigger(triggerKey).SingleOrDefault();
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            await Notify.Warn(string.Format(L["CannotUpdateTriggerStatus"], triggerKey));
-        //            Logger.LogWarning(ex, "Cannot update trigger status. Found more than one schedule with trigger {triggerKey}", triggerKey);
-        //            return;
-        //        }
-
-        //        if (model is not null)
-        //        {
-        //            if (model.JobName == null || model.JobStatus == JobStatus.Error)
-        //            {
-        //                // Just remove if no way to get job details
-        //                // if status is error, means get job details will throw exception
-        //                ScheduledJobs.Remove(model);
-        //            }
-        //            else
-        //            {
-        //                var jobDetail = await SchedulerSvc.GetJobDetail(model.JobName, model.JobGroup);
-
-        //                if (jobDetail is { IsDurable: true })
-        //                {
-        //                    // see if similar job name already exists
-        //                    var similarJobNameExists = ScheduledJobs.Any(s => s != model &&
-        //                        s.JobName == model.JobName &&
-        //                        s.JobGroup == model.JobGroup);
-        //                    if (similarJobNameExists)
-        //                    {
-        //                        // delete this duplicate no trigger job
-        //                        ScheduledJobs.Remove(model);
-        //                    }
-        //                    else
-        //                    {
-        //                        model.JobStatus = JobStatus.NoTrigger;
-        //                        model.ClearTrigger();
-        //                    }
-        //                }
-        //                else
-        //                {
-        //                    model.JobStatus = JobStatus.NoSchedule;
-        //                }
-        //            }
-
-        //            StateHasChanged();
-        //        }
-        //    });
-        //}
-
-        //#region JobWasExecuted
-        //private async Task JobWasExecuted(JobWasExecutedEventArgs e)
-        //{
-        //    var jobKey = e.JobExecutionContext.JobDetail.Key;
-        //    var triggerKey = e.JobExecutionContext.Trigger.Key;
-
-        //    var model = FindScheduleModel(jobKey, triggerKey).SingleOrDefault();
-        //    if (model is not null)
-        //    {
-        //        model.PreviousTriggerTime = e.JobExecutionContext.FireTimeUtc;
-        //        model.NextTriggerTime = e.JobExecutionContext.NextFireTimeUtc;
-        //        model.JobStatus = JobStatus.Idle;
-        //        var isSuccess = e.JobExecutionContext.GetIsSuccess();
-        //        if (e.JobException != null)
-        //            model.ExceptionMessage = e.JobException.Message;
-        //        else if (isSuccess.HasValue && !isSuccess.Value)
-        //            model.ExceptionMessage = e.JobExecutionContext.GetReturnCodeAndResult();
-
-        //        await InvokeAsync(StateHasChanged);
-        //    }
-
-        //    await Task.CompletedTask;
-        //}
-
-        //private async void SchedulerListenerSvc_OnJobWasExecuted(object sender, JobWasExecutedEventArgs e)
-        //{
-        //    var jobKey = e.JobExecutionContext.JobDetail.Key;
-        //    var triggerKey = e.JobExecutionContext.Trigger.Key;
-        //    Logger.LogInformation("Job {jobKey} Trigger {triggerKey} JobWasExecuted", jobKey, triggerKey);
-        //    await InvokeAsync(() => JobWasExecuted(e));
-        //}
-        //#endregion
-
-        //private async void SchedulerListenerSvc_OnJobScheduled(object sender, EventArgs<ITrigger> e)
-        //{
-        //    if (!_filter.IncludeSystemJobs && (e.Args.JobKey.Group == Constants.SYSTEM_GROUP ||
-        //        e.Args.Key.Group == Constants.SYSTEM_GROUP))
-        //    {
-        //        // system job is not visible, skip this event
-        //        return;
-        //    }
-
-        //    await InvokeAsync(async () =>
-        //    {
-        //        var model = await SchedulerSvc.GetScheduleModelAsync(e.Args);
-        //        ScheduledJobs.Add(model);
-        //    });
-        //}
-
-        //#region JobToBeExecuted
-        //private async Task JobToBeExecuted(EventArgs<IJobExecutionContext> e)
-        //{
-        //    var jobKey = e.Args.JobDetail.Key;
-        //    var triggerKey = e.Args.Trigger.Key;
-        //    var model = FindScheduleModel(jobKey, triggerKey).SingleOrDefault();
-        //    if (model is not null)
-        //    {
-        //        model.JobStatus = JobStatus.Running;
-
-        //        await InvokeAsync(StateHasChanged);
-        //    }
-        //    await Task.CompletedTask;
-        //}
-        //private async void SchedulerListenerSvc_OnJobToBeExecuted(object sender, EventArgs<IJobExecutionContext> e)
-        //{
-        //    await InvokeAsync(() => JobToBeExecuted(e));
-        //}
-        //#endregion
-
-        //private IEnumerable<ScheduleModel> FindScheduleModelByTrigger(TriggerKey triggerKey)
-        //{
-        //    return ScheduledJobs.Where(j => j.EqualsTriggerKey(triggerKey) &&
-        //        j.JobStatus != JobStatus.NoSchedule &&
-        //        j.JobStatus != JobStatus.NoTrigger);
-        //}
-
-        //private IEnumerable<ScheduleModel> FindScheduleModel(JobKey jobKey, TriggerKey triggerKey)
-        //{
-        //    return ScheduledJobs.Where(j => j.Equals(jobKey, triggerKey)
-        //        && (j.JobStatus != JobStatus.NoSchedule && j.JobStatus != JobStatus.NoTrigger
-        //            || j is { JobStatus: JobStatus.Error, TriggerName: not null })
-        //        );
-        //}
 
         private async Task RefreshJobs()
         {
@@ -323,7 +96,9 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Schedules
                 ScheduledJobs.Add(job);
             }
             if (ScheduledJobs.Any())
+            {
                 _scheduleDataGrid?.ExpandAllGroups();
+            }
 
             await UpdateScheduleModelsLastExecution();
         }
@@ -336,7 +111,10 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Schedules
             foreach (var schModel in ScheduledJobs)
             {
                 if (string.IsNullOrEmpty(schModel.JobName))
+                {
                     continue;
+                }
+
                 LatestExecutionLogReadArgs latestExecutionLogReadArgs = new()
                 {
                     JobName = schModel.JobName,
@@ -390,7 +168,7 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Schedules
                 await Notify.Error(L["CantEditScheduleJobExists"]);
                 return;
             }
-            var origJobKey = new Key(currentJobDetail.Name, currentJobDetail.Group);
+            var origJobKey = Key.Create(currentJobDetail.Name, currentJobDetail.Group);
 
             TriggerDetailModel currentTriggerModel = null;
             Key origTriggerKey = null;
@@ -401,7 +179,7 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Schedules
 
                 if (currentTriggerModel != null)
                 {
-                    origTriggerKey = new Key(currentTriggerModel.Name, currentTriggerModel.Group);
+                    origTriggerKey = Key.Create(currentTriggerModel.Name, currentTriggerModel.Group);
 
                     ResetStartEndDateTimeIfEarlier(ref currentTriggerModel);
                 }
@@ -502,7 +280,7 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Schedules
                 // not possible?
                 return;
             }
-            await HistoryDialogRef.OpenModalAsync(new Key(model.JobName, model.JobGroup), model.TriggerName != null ? new Key(model.TriggerName, model.TriggerGroup ?? Constants.DEFAULT_GROUP) : null);
+            await HistoryDialogRef.OpenModalAsync(Key.Create(model.JobName, model.JobGroup), model.TriggerName != null ? Key.Create(model.TriggerName, model.TriggerGroup ?? Constants.DEFAULT_GROUP) : null);
         }
 
         private async Task OnTriggerNow(ScheduleModel model)
@@ -534,12 +312,16 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Schedules
         private async Task OnDeleteSelectedScheduleJobs()
         {
             if (_scheduleDataGrid is null)
+            {
                 return;
+            }
 
             var selectedItems = _scheduleDataGrid.SelectedRows;
 
             if (selectedItems == null || selectedItems.Count == 0)
+            {
                 return;
+            }
 
             // confirm delete
             bool? yes = await UiMessageService.Confirm(DeleteConfirnationMessage(selectedItems));

@@ -19,7 +19,9 @@ namespace Syrna.QuartzAdmin.Blazor.Components
         public bool ValidateDaysOfWeek(TriggerDetailModel triggerModel)
         {
             if (triggerModel.TriggerType != TriggerType.Daily)
+            {
                 return true;
+            }
 
             foreach (var val in triggerModel.DailyDayOfWeek)
             {
@@ -60,9 +62,14 @@ namespace Syrna.QuartzAdmin.Blazor.Components
                 var end = model.EndDate.Value.Add(model.EndTimeSpan ?? TimeSpan.Zero);
 
                 if (start > end)
+                {
                     e.Status = ValidationStatus.Error;
+                }
                 else
+                {
                     e.Status = ValidationStatus.Success;
+                }
+
                 return;
             }
         }
@@ -89,6 +96,11 @@ namespace Syrna.QuartzAdmin.Blazor.Components
 
         public async Task ValidateTriggerName(ValidatorEventArgs eventArgs, TriggerDetailModel triggerModel, Key triggerKey)
         {
+            if (triggerKey == null)
+            {
+                return;
+            }
+
             var name = Convert.ToString(eventArgs.Value);
             if (string.IsNullOrEmpty(name))
             {
@@ -97,7 +109,7 @@ namespace Syrna.QuartzAdmin.Blazor.Components
                 return;
             }
 
-            if (triggerKey != null && triggerKey.Equals(name, triggerModel.Group))
+            if (triggerKey.Equals(name, triggerModel.Group))
             {
                 eventArgs.Status = ValidationStatus.None;
                 return;
@@ -112,6 +124,7 @@ namespace Syrna.QuartzAdmin.Blazor.Components
             }
 
             eventArgs.Status = ValidationStatus.Success;
+            await Task.CompletedTask;
         }
     }
 }

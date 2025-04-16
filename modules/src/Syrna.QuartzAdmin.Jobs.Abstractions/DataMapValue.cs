@@ -39,7 +39,9 @@ namespace Syrna.QuartzAdmin.Jobs.Abstractions
         {
             var value = Convert.ToString(dataMapValue, CultureInfo.InvariantCulture);
             if (value == null)
+            {
                 return null;
+            }
 
             return JsonSerializer.Deserialize<DataMapValue>(value);
         }
@@ -52,9 +54,15 @@ namespace Syrna.QuartzAdmin.Jobs.Abstractions
         public static DataMapValue Create(string dataMapValue)
         {
             if (dataMapValue == null)
+            {
                 return null;
+            }
+
             if (dataMapValue.Contains("{{"))
+            {
                 return JsonSerializer.Deserialize<DataMapValue>(dataMapValue);
+            }
+
             return new DataMapValue(DataMapValueType.InterpolatedString, dataMapValue, 1);
         }
 
@@ -63,9 +71,13 @@ namespace Syrna.QuartzAdmin.Jobs.Abstractions
         {
             var dmv = Create(dataMapValue);
             if (dmv != null)
+            {
                 return dmv;
+            }
             else
+            {
                 return new(defaultType, defaultValue, defaultVersion);
+            }
         }
     }
 }

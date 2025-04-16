@@ -137,7 +137,9 @@ namespace Syrna.QuartzAdmin.Scheduler
             var result = new List<object>();
 
             foreach (var name in groups.OrderBy(x => x, StringComparer.InvariantCultureIgnoreCase))
+            {
                 result.Add(new { Name = name, IsPaused = await func(name) });
+            }
 
             return result;
         }

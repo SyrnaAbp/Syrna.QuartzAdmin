@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace Syrna.QuartzAdmin.MainDemo.Jobs
 {
-    [QuartzTrigger(120, "this is an long job test", "_longjobauto")]
+    [QuartzTrigger(2,0, "this is an long job test", "_longjobauto")]
     public class AutoJob2 : IJob
     {
         private readonly ILogger<HelloJob> _logger;

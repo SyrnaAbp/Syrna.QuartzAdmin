@@ -80,13 +80,17 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.History
         private static (IconName, TextColor, string) GetLogIconAndColor(ExecutionLogDto log)
         {
             if (log.IsException ?? log.IsSuccess.HasValue && !log.IsSuccess.Value)
+            {
                 return (IconName.ExclamationCircle, TextColor.Danger, "Error");
+            }
 
             switch (log.LogType)
             {
                 case LogType.ScheduleJob:
                     if (log.IsVetoed ?? false)
+                    {
                         return (IconName.InfoCircle, TextColor.Warning, "Vetoed");
+                    }
 
                     return log.IsSuccess is null ?
                         // still running
@@ -179,9 +183,13 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.History
         {
             _selectedLogType = logTypes;
             if (logTypes == null)
+            {
                 _filter.LogTypes = null;
+            }
             else
+            {
                 _filter.LogTypes = new HashSet<LogType> { logTypes.Value };
+            }
 
             await RefreshLogs();
         }

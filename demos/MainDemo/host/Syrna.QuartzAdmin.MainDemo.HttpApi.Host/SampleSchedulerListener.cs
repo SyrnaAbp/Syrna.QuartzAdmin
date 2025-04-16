@@ -71,7 +71,11 @@ public class SampleSchedulerListener : SchedulerListenerBase
                     }
                     tb.WithIdentity(tk);
                     tb.WithDescription(so.TriggerDescription ?? $"{t.Name}'s Trigger,full name is {t.FullName}");
-                    if (so.Priority > 0) tb.WithPriority(so.Priority);
+                    if (so.Priority > 0)
+                    {
+                        tb.WithPriority(so.Priority);
+                    }
+
                     return tb;
                 }
                 else
@@ -111,7 +115,9 @@ public class SampleSchedulerListener : SchedulerListenerBase
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         if (_scheduleJobs == null || !_scheduleJobs.Any())
+        {
             return;
+        }
 
         foreach (var scheduleJob in _scheduleJobs)
         {

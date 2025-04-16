@@ -39,16 +39,22 @@ namespace Syrna.QuartzAdmin.Scheduler
             if (JobType != null)
             {
                 if (JobType.Length <= suggestedMaxLength)
+                {
                     return JobType;
+                }
 
                 var dotIndex = JobType.LastIndexOf('.');
                 if (dotIndex < 0)
+                {
                     return JobType;
+                }
 
                 var className = JobType.Substring(dotIndex+1);
                 var classNameLength = className.Length;
                 if (classNameLength >= suggestedMaxLength)
+                {
                     return className;
+                }
 
                 var remainLength = suggestedMaxLength - classNameLength - 3;
                 return $"{JobType[..remainLength]}...{className}";

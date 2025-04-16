@@ -64,7 +64,9 @@ namespace Syrna.QuartzAdmin.Triggers
             var trigger = await scheduler.GetTrigger(key);
 
             if (trigger == null)
+            {
                 throw new InvalidOperationException("Trigger " + key + " not found.");
+            }
 
             return trigger;
         }

@@ -131,7 +131,9 @@ namespace Syrna.QuartzAdmin.Blazor.Services
         {
             var jobUI = (IJobUI)Activator.CreateInstance(jobUIType);
             if (jobUI != null)
+            {
                 return jobUI.JobClass;
+            }
 
             _logger.LogWarning("Failed to instantiate job ui type {type}", jobUIType.FullName);
             return null;

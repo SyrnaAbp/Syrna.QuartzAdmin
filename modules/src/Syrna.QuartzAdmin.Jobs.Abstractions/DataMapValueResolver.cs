@@ -17,7 +17,9 @@ namespace Syrna.QuartzAdmin.Jobs.Abstractions
         public string Resolve(DataMapValue dmv)
         {
             if (dmv == null)
+            {
                 return null;
+            }
 
             switch (dmv.Type)
             {

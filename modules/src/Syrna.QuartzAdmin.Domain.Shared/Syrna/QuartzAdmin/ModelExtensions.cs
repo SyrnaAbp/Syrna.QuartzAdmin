@@ -9,15 +9,26 @@ namespace Syrna.QuartzAdmin
 		public static TriggerType GetTriggerType(this ITrigger trigger)
 		{
 			if (trigger is ICronTrigger)
-				return TriggerType.Cron;
-			if (trigger is ISimpleTrigger)
-				return TriggerType.Simple;
-			if (trigger is ICalendarIntervalTrigger)
-				return TriggerType.Calendar;
-			if (trigger is IDailyTimeIntervalTrigger)
-				return TriggerType.Daily;
+            {
+                return TriggerType.Cron;
+            }
 
-			return TriggerType.Unknown;
+            if (trigger is ISimpleTrigger)
+            {
+                return TriggerType.Simple;
+            }
+
+            if (trigger is ICalendarIntervalTrigger)
+            {
+                return TriggerType.Calendar;
+            }
+
+            if (trigger is IDailyTimeIntervalTrigger)
+            {
+                return TriggerType.Daily;
+            }
+
+            return TriggerType.Unknown;
 		}
 
 		public static TimeOfDay ToTimeOfDay(this TimeSpan timeSpan)
@@ -62,7 +73,9 @@ namespace Syrna.QuartzAdmin
             {
 				currentException = currentException.InnerException;
 				if (currentException == null)
-					break;
+                {
+                    break;
+                }
             }
 			return currentException?.StackTrace;
         }

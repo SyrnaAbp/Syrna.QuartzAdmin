@@ -27,7 +27,7 @@ public class AbpExecutionHistoryPlugin : SchedulerListenerBase, ISchedulerPlugin
 
     public Type StoreType { get; set; } = null!;
 
-    public string Name { get; protected set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
 
     public Task Initialize(string pluginName, IScheduler scheduler, CancellationToken cancellationToken = default)
     {
@@ -38,7 +38,7 @@ public class AbpExecutionHistoryPlugin : SchedulerListenerBase, ISchedulerPlugin
         return Task.FromResult(0);
     }
 
-    public async override Task JobScheduled(ITrigger trigger, CancellationToken cancellationToken = default)
+    public override async Task JobScheduled(ITrigger trigger, CancellationToken cancellationToken = default)
     {
         var jKey = trigger.JobKey;
         var tKey = trigger.Key;
@@ -56,7 +56,7 @@ public class AbpExecutionHistoryPlugin : SchedulerListenerBase, ISchedulerPlugin
         await _store.Save(entry);
     }
 
-    public async override Task TriggerFinalized(ITrigger trigger, CancellationToken cancellationToken = default)
+    public override async Task TriggerFinalized(ITrigger trigger, CancellationToken cancellationToken = default)
     {
         var jKey = trigger.JobKey;
         var tKey = trigger.Key;
@@ -74,7 +74,7 @@ public class AbpExecutionHistoryPlugin : SchedulerListenerBase, ISchedulerPlugin
         await _store.Save(entry);
     }
 
-    public async override Task TriggerResumed(TriggerKey triggerKey, CancellationToken cancellationToken = default)
+    public override async Task TriggerResumed(TriggerKey triggerKey, CancellationToken cancellationToken = default)
     {
         var tKey = triggerKey;
         var entry = new ExecutionHistoryEntry()
@@ -103,7 +103,7 @@ public class AbpExecutionHistoryPlugin : SchedulerListenerBase, ISchedulerPlugin
         await _store.Save(entry);
     }
 
-    public async override Task TriggerPaused(TriggerKey triggerKey, CancellationToken cancellationToken = default)
+    public override async Task TriggerPaused(TriggerKey triggerKey, CancellationToken cancellationToken = default)
     {
         var tKey = triggerKey;
         var entry = new ExecutionHistoryEntry()
@@ -150,7 +150,7 @@ public class AbpExecutionHistoryPlugin : SchedulerListenerBase, ISchedulerPlugin
         await _store.Save(entry);
     }
 
-    public async override Task SchedulerError(string msg, SchedulerException cause, CancellationToken cancellationToken = default)
+    public override async Task SchedulerError(string msg, SchedulerException cause, CancellationToken cancellationToken = default)
     {
         var entry = new ExecutionHistoryEntry()
         {
@@ -167,7 +167,7 @@ public class AbpExecutionHistoryPlugin : SchedulerListenerBase, ISchedulerPlugin
         await _store.Save(entry);
     }
 
-    public async override Task JobInterrupted(JobKey jobKey, CancellationToken cancellationToken = default)
+    public override async Task JobInterrupted(JobKey jobKey, CancellationToken cancellationToken = default)
     {
         var jKey = jobKey;
         var entry = new ExecutionHistoryEntry
@@ -182,9 +182,9 @@ public class AbpExecutionHistoryPlugin : SchedulerListenerBase, ISchedulerPlugin
         await _store.Save(entry);
     }
 
-    public async override Task JobDeleted(JobKey jobKey, CancellationToken cancellationToken = default)
+    public override async Task JobDeleted(JobKey jobKey, CancellationToken cancellationToken = default)
     {
-        JobKey jKey = jobKey;
+        var jKey = jobKey;
         var entry = new ExecutionHistoryEntry()
         {
             SchedulerInstanceId = _scheduler.SchedulerInstanceId,
@@ -228,9 +228,13 @@ public class AbpExecutionHistoryPlugin : SchedulerListenerBase, ISchedulerPlugin
         await _store.Save(entry);
 
         if (jobException == null)
+        {
             await _store.IncrementTotalJobsExecuted();
+        }
         else
+        {
             await _store.IncrementTotalJobsFailed();
+        }
     }
 
     public async Task JobToBeExecuted(IJobExecutionContext context, CancellationToken cancellationToken = default)
@@ -259,7 +263,9 @@ public class AbpExecutionHistoryPlugin : SchedulerListenerBase, ISchedulerPlugin
         _store.SchedulerName = _scheduler.SchedulerName;
 
         if (_store is AbpExecutionHistoryStore abpStore)
+        {
             await abpStore.InitializeSummaryAsync();
+        }
 
         //await _store.Purge();
         await PrepareAutoJobs();
@@ -267,11 +273,11 @@ public class AbpExecutionHistoryPlugin : SchedulerListenerBase, ISchedulerPlugin
         await MarkIncompleteExecution(cancellationToken);
     }
 
-    internal async Task MarkIncompleteExecution(CancellationToken stoppingToken)
+    private async Task MarkIncompleteExecution(CancellationToken stoppingToken)
     {
         try
         {
-            await _store.MarkExecutingJobAsIncomplete();
+            await _store.MarkExecutingJobAsIncomplete(stoppingToken);
         }
         catch (OperationCanceledException)
         {
@@ -283,7 +289,7 @@ public class AbpExecutionHistoryPlugin : SchedulerListenerBase, ISchedulerPlugin
         }
     }
 
-    public async Task PrepareAutoJobs()
+    private async Task PrepareAutoJobs()
     {
         var type = typeof(IJob);
         var types = AutoJobsListHelper.GetQuartzAdminJobs();
@@ -324,7 +330,11 @@ public class AbpExecutionHistoryPlugin : SchedulerListenerBase, ISchedulerPlugin
                     }
                     tb.WithIdentity(tk);
                     tb.WithDescription(so.TriggerDescription ?? $"{t.Name}'s Trigger,full name is {t.FullName}");
-                    if (so.Priority > 0) tb.WithPriority(so.Priority);
+                    if (so.Priority > 0)
+                    {
+                        tb.WithPriority(so.Priority);
+                    }
+
                     return tb;
                 }
                 else
@@ -335,7 +345,7 @@ public class AbpExecutionHistoryPlugin : SchedulerListenerBase, ISchedulerPlugin
         }
     }
 
-    public async Task PrepareAutoJob(Type t, Func<TriggerBuilder> triggerBuilders_func)
+    private async Task PrepareAutoJob(Type t, Func<TriggerBuilder> triggerBuilders_func)
     {
         var lst = new List<TriggerBuilder>();
         var tb = triggerBuilders_func?.Invoke();
@@ -345,9 +355,10 @@ public class AbpExecutionHistoryPlugin : SchedulerListenerBase, ISchedulerPlugin
         }
         await PrepareAutoJob(t, lst);
     }
-    protected IEnumerable<IScheduleJob> _scheduleJobs => LazyServiceProvider.LazyGetRequiredService<IEnumerable<IScheduleJob>>();
 
-    public async Task PrepareAutoJob(Type t, IEnumerable<TriggerBuilder> triggerBuilders)
+    private IEnumerable<IScheduleJob> _scheduleJobs => LazyServiceProvider.LazyGetRequiredService<IEnumerable<IScheduleJob>>();
+
+    private async Task PrepareAutoJob(Type t, IEnumerable<TriggerBuilder> triggerBuilders)
     {
         var job = from js in _scheduleJobs where js.JobDetail.JobType == t select js;
         if (job.Any())
@@ -362,10 +373,12 @@ public class AbpExecutionHistoryPlugin : SchedulerListenerBase, ISchedulerPlugin
         await Task.CompletedTask;
     }
 
-    public async Task RegisterAutoJobsAsync(CancellationToken cancellationToken)
+    private async Task RegisterAutoJobsAsync(CancellationToken cancellationToken)
     {
         if (_scheduleJobs == null || !_scheduleJobs.Any())
+        {
             return;
+        }
 
         foreach (var scheduleJob in _scheduleJobs)
         {
@@ -419,8 +432,7 @@ public class AbpExecutionHistoryPlugin : SchedulerListenerBase, ISchedulerPlugin
         log.ReturnCode = context.GetReturnCode();
         log.IsSuccess = context.GetIsSuccess();
 
-        if (log.IsSuccess is null)
-            log.IsSuccess = defaultIsSuccess;
+        log.IsSuccess ??= defaultIsSuccess;
 
         var execDetail = context.GetExecutionDetails();
         if (!string.IsNullOrEmpty(execDetail))
@@ -437,8 +449,7 @@ public class AbpExecutionHistoryPlugin : SchedulerListenerBase, ISchedulerPlugin
             logDetail.ErrorStackTrace = jobException.ToString();
             logDetail.ErrorHelpLink = jobException.HelpLink;
 
-            if (log.ReturnCode == null)
-                log.ReturnCode = jobException.HResult.ToString();
+            log.ReturnCode ??= jobException.HResult.ToString();
 
             log.IsException = true;
             log.IsSuccess = false;
@@ -469,47 +480,6 @@ public class AbpExecutionHistoryPlugin : SchedulerListenerBase, ISchedulerPlugin
     {
         return Task.CompletedTask;
     }
-
-    //public Task JobUnscheduled(TriggerKey triggerKey, CancellationToken cancellationToken = default)
-    //{
-    //    return Task.CompletedTask;
-    //}
-
-    //public Task TriggersPaused(string triggerGroup, CancellationToken cancellationToken = default)
-    //{
-    //    return Task.CompletedTask;
-    //}
-
-    //public Task TriggersResumed(string triggerGroup, CancellationToken cancellationToken = default)
-    //{
-    //    return Task.CompletedTask;
-    //}
-
-    //public Task JobAdded(IJobDetail jobDetail, CancellationToken cancellationToken = default)
-    //{
-    //    return Task.CompletedTask;
-    //}
-
-    //public Task JobPaused(JobKey jobKey, CancellationToken cancellationToken = default)
-    //{
-    //    return Task.CompletedTask;
-    //}
-
-    //public Task JobsPaused(string jobGroup, CancellationToken cancellationToken = default)
-    //{
-    //    return Task.CompletedTask;
-    //}
-
-    //public Task JobResumed(JobKey jobKey, CancellationToken cancellationToken = default)
-    //{
-    //    return Task.CompletedTask;
-    //}
-
-    //public Task JobsResumed(string jobGroup, CancellationToken cancellationToken = default)
-    //{
-    //    return Task.CompletedTask;
-    //}
-
     public override Task SchedulerInStandbyMode(CancellationToken cancellationToken = default)
     {
         Logger.LogInformation("Plugin SchedulerInStandbyMode");
@@ -536,7 +506,7 @@ public class AbpExecutionHistoryPlugin : SchedulerListenerBase, ISchedulerPlugin
 
     public override Task SchedulerShuttingdown(CancellationToken cancellationToken = default)
     {
-        Logger.LogInformation("Plugin SchedulerShuttingdown");
+        Logger.LogInformation("Plugin SchedulerShuttingDown");
         return Task.CompletedTask;
     }
 

@@ -33,7 +33,11 @@ namespace Syrna.QuartzAdmin.Blazor.Components
 		{
             var format = "G" + significantDigits;
             locale ??= CultureInfo.CurrentUICulture.ToString().ToLower();
-			if (locale.IsNullOrEmpty()) locale= "en";
+			if (locale.IsNullOrEmpty())
+            {
+                locale= "en";
+            }
+
             if (locale == "en" ||locale=="en-us")
 			{
                 return span.TotalMilliseconds < 1000 ? span.TotalMilliseconds.ToString(format) + " ms"

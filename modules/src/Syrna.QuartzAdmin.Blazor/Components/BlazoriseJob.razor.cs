@@ -11,7 +11,6 @@ using Syrna.QuartzAdmin.Scheduler;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -28,12 +27,13 @@ namespace Syrna.QuartzAdmin.Blazor.Components
         [EditorRequired]
         public JobDetailModel JobDetail { get; set; } = new();
         [Parameter] public bool IsReadOnly { get; set; }
+        [Parameter] public bool IsNew { get; set; }
 
         [Parameter] public bool IsValid { get; set; }
 
         [Parameter] public EventCallback<bool> IsValidChanged { get; set; }
 
-        private Key OriginalJobKey = new(string.Empty, "DEFAULT");
+        [Parameter] public Key OriginalJobKey { get; set; }
 
         private IEnumerable<string> AvailableJobTypeNames = Enumerable.Empty<string>();
         private IEnumerable<SelectListItem> ExistingJobGroups;
@@ -63,24 +63,31 @@ namespace Syrna.QuartzAdmin.Blazor.Components
             AvailableJobTypeNames = typeList;
             await OnJobClassValueChanged(JobDetail.JobClassName);
 
-            OriginalJobKey = new(JobDetail.Name, JobDetail.Group);
+            //OriginalJobKey = new(JobDetail.Name, JobDetail.Group);
             await GetJobGroups();
         }
 
+        //protected override async Task OnAfterRenderAsync(bool firstRender)
+        //{
+        //    if (firstRender)
+        //    {
+        //    }
+        //}
+
         private async Task GetJobGroups()
         {
-            if (ExistingJobGroups == null)
-            {
-                ExistingJobGroups = (await SchedulerSvc.GetJobGroups()).Select(s => new SelectListItem(s, s));
-            }
+            ExistingJobGroups ??= (await SchedulerSvc.GetJobGroups()).Select(s => new SelectListItem(s, s));
         }
 
-        private void OnSetIsValid(ValidationsStatusChangedEventArgs eventArgs)
+        private async Task OnSetIsValid(ValidationsStatusChangedEventArgs eventArgs)
         {
             if (eventArgs.Status != ValidationStatus.Success)
+            {
                 return;
+            }
+
             IsValid = eventArgs.Status == ValidationStatus.Success;
-            IsValidChanged.InvokeAsync(IsValid).RunSynchronously();
+            await IsValidChanged.InvokeAsync(IsValid);
         }
 
         public async Task Validate()
@@ -103,9 +110,13 @@ namespace Syrna.QuartzAdmin.Blazor.Components
             e.Status = e.Value != null ? ValidationStatus.Success : ValidationStatus.Error;
         }
 
-        private async Task ValidateJobName(ValidatorEventArgs e, CancellationToken cancellationToken)
+        public async Task ValidateJobName(ValidatorEventArgs e, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+            if (OriginalJobKey == null)
+            {
+                return;
+            }
 
             e.Status = ValidationStatus.Success;
 
@@ -116,6 +127,13 @@ namespace Syrna.QuartzAdmin.Blazor.Components
                 e.Status = ValidationStatus.Error;
                 return;
             }
+
+            // accept if same as original
+            if (OriginalJobKey.Equals(name, JobDetail.Group))
+            {
+                return;
+            }
+
             var detail = await SchedulerSvc.GetJobDetail(name, JobDetail.Group);
             if (detail != null)
             {
@@ -123,16 +141,19 @@ namespace Syrna.QuartzAdmin.Blazor.Components
                 e.ErrorText = @L["Error:JobNameAlreadyInUsed"];
                 return;
             }
-
-            // accept if same as original
-            //if (OriginalJobKey.Equals(name, JobDetail.Group))
-            //    return null;
-
+            await Task.CompletedTask;
             //if (IsReadOnly)
             //{
             //    Logger.LogDebug("Skip checking of job name uniqueness if in readonly mode");
             //    return null;
             //}
+        }
+
+        private async Task JobGroupSelected(string jobGroup)
+        {
+            JobDetail.Group = jobGroup;
+            await InvokeAsync(StateHasChanged);
+            await Task.CompletedTask;
         }
 
         private async Task OnJobClassValueChanged(string jobTypeName)
@@ -145,18 +166,25 @@ namespace Syrna.QuartzAdmin.Blazor.Components
             JobDetail.JobClassName = jobTypeName;
             // clear previous changes
             if (_jobUIComponent?.Instance is IJobUI jobUi)
+            {
                 await jobUi.ClearChanges();
+            }
 
             var jobUiType = await JobUIProvider.GetJobUIType(jobTypeName);
             var jobUITypeName = jobUiType.FullName;
             JobUITypeParameters.Clear();
             JobUITypeParameters[nameof(IsReadOnly)] = IsReadOnly;
             if (jobUiType == typeof(DefaultJobUI))
+            {
                 JobUITypeParameters[nameof(JobDetail)] = JobDetail;
+            }
             else
+            {
                 JobUITypeParameters[nameof(JobDetail.JobDataMap)] = JobDetail.JobDataMap;
+            }
+
             JobUIType = jobUiType;
-            Logger.LogInformation("Setting jobuitype {jobUITypeName}", jobUITypeName);
+            Logger.LogInformation("Setting job ui type {jobUITypeName}", jobUITypeName);
             await InvokeAsync(StateHasChanged);
             await Task.CompletedTask;
         }
