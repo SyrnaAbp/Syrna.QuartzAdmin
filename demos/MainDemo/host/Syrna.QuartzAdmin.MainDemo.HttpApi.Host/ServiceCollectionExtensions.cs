@@ -10,7 +10,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddQuartzAdminMain(
         this IServiceCollection services,
         IConfiguration quartzAdminUIConfiguration,
-        Func<List<Assembly>> jobsasmlist = null)
+        Func<List<Assembly>>? jobsasmlist = null)
     {
         services.Configure<QuartzAdminUIOptions>(quartzAdminUIConfiguration);
 

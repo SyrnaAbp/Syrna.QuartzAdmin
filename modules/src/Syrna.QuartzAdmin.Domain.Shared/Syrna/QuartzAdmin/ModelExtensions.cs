@@ -6,40 +6,6 @@ namespace Syrna.QuartzAdmin
 {
 	public static class ModelExtensions
 	{
-		/*
-		public static bool EqualsTriggerKey(this ScheduleModel model, TriggerKey triggerKey)
-        {
-			return model.TriggerName == triggerKey.Name &&
-				model.TriggerGroup == triggerKey.Group;
-		}
-		*/
-		/*
-		public static bool Equals(this ScheduleModel model, JobKey jobKey, TriggerKey triggerKey)
-		{
-			if (jobKey != null && triggerKey != null)
-				return model.JobName == jobKey.Name &&
-					model.JobGroup == jobKey.Group &&
-					model.TriggerName == triggerKey.Name &&
-					model.TriggerGroup == triggerKey.Group;
-
-			if (jobKey != null && triggerKey == null)
-				return model.JobName == jobKey.Name &&
-					model.JobGroup == jobKey.Group &&
-					model.TriggerName == null &&
-					model.TriggerGroup == null;
-
-			// less possible
-			if (jobKey == null && triggerKey != null)
-				return model.TriggerName == triggerKey.Name &&
-					model.TriggerGroup == triggerKey.Group &&
-					model.JobName == null &&
-					model.JobGroup == Constants.DEFAULT_GROUP;
-
-			return model.JobName == null &&
-				model.TriggerName == null &&
-				model.TriggerGroup == null;
-		}
-		*/
 		public static TriggerType GetTriggerType(this ITrigger trigger)
 		{
 			if (trigger is ICronTrigger)
