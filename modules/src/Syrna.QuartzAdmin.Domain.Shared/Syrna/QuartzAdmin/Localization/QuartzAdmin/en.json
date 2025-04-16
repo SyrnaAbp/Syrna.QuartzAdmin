@@ -37,19 +37,28 @@
     "TriggerDetail": "Trigger Detail",
 
     "Menu:QuartzAdmin": "Quartz Admin",
-    "Permission:Schedules": "Schedules",
+
     "Permission:History": "History",
     "Permission:Overview": "Overview",
+    "Permission:Schedules": "Schedules",
     "Permission:Schedules.Create": "Create",
     "Permission:Schedules.Update": "Update",
     "Permission:Schedules.Delete": "Delete",
+
+    "Permission:Triggers": "Triggers",
+    "Permission:Triggers.Create": "Create",
+    "Permission:Triggers.Update": "Update",
+    "Permission:Triggers.Delete": "Delete",
+
     "Menu:Schedules": "Schedules",
     "Menu:History": "History",
     "Menu:Overview": "Overview",
+    "Menu:Triggers": "Triggers",
 
     "Title:Schedules": "Schedules",
     "Title:History": "History",
     "Title:Overview": "Overview",
+    "Title:Triggers": "Triggers",
 
     "ExecutionLog:ReturnCode": "Return Code",
     "ExecutionLog:Result": "Result",
@@ -260,6 +269,14 @@
     "JobStatus:NoTrigger": "No Trigger",
 
     "Error:FailedUpdateSchedule": "Failed to update schedule. {0}",
-    "Error:FailedCreateSchedule": "Failed to create new schedule. {0}"
+    "Error:FailedCreateSchedule": "Failed to create new schedule. {0}",
+
+    "TriggerListItem:TriggerName": "Trigger Name",
+    "TriggerListItem:TriggerGroup": "Trigger Group",
+    "TriggerListItem:Type": "Type",
+    "TriggerListItem:StartTimeUtc": "Start Time",
+    "TriggerListItem:EndTimeUtc": "End Time",
+    "TriggerListItem:LastFireTimeUtc": "Last Fire Time",
+    "TriggerListItem:NextFireTimeUtc": "Next Fire Time"
   }
 }

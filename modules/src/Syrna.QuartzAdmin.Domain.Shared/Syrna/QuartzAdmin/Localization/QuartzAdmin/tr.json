@@ -37,19 +37,28 @@
     "TriggerDetail": "Tetikleyici Detayları",
 
     "Menu:QuartzAdmin": "Quartz Admin",
-    "Permission:Schedules": "Zamanlayıcı",
-    "Permission:History": "Çalıştırma Geçmişi",
+
+    "Permission:History": "Geçmiş",
     "Permission:Overview": "Gözlem",
+    "Permission:Schedules": "Zamanlayıcılar",
     "Permission:Schedules.Create": "Yeni",
     "Permission:Schedules.Update": "Güncelle",
     "Permission:Schedules.Delete": "Sil",
-    "Menu:Schedules": "Zamanlayıcı",
-    "Menu:History": "Çalıştırma Geçmişi",
-    "Menu:Overview": "Gözlem",
 
-    "Title:Schedules": "Zamanlayıcı",
-    "Title:History": "Çalıştırma Geçmişi",
+    "Permission:Triggers": "Tetikleyiciler",
+    "Permission:Triggers.Create": "Yeni",
+    "Permission:Triggers.Update": "Güncelle",
+    "Permission:Triggers.Delete": "Sil",
+
+    "Menu:Schedules": "Zamanlayıcılar",
+    "Menu:History": "Geçmiş",
+    "Menu:Overview": "Gözlem",
+    "Menu:Triggers": "Tetikleyiciler",
+
+    "Title:Schedules": "Zamanlayıcılar",
+    "Title:History": "Geçmiş",
     "Title:Overview": "Gözlem",
+    "Title:Triggers": "Tetikleyiciler",
 
     "ExecutionLog:ReturnCode": "İşlem Kodu",
     "ExecutionLog:Result": "Sonuç",
@@ -260,6 +269,14 @@
     "JobStatus:NoTrigger": "Tetikleyici yok",
 
     "Error:FailedUpdateSchedule": "Zamanlayıcı güncellenemedi. {0}",
-    "Error:FailedCreateSchedule": "Yeni zamanlayıcı oluşturulamadı. {0}"
+    "Error:FailedCreateSchedule": "Yeni zamanlayıcı oluşturulamadı. {0}",
+
+    "TriggerListItem:TriggerName": "Tetikleyici Adı",
+    "TriggerListItem:TriggerGroup": "Tetikleyici Grubu",
+    "TriggerListItem:Type": "Türü",
+    "TriggerListItem:StartTimeUtc": "Başlama Zamanı",
+    "TriggerListItem:EndTimeUtc": "Bitiş Zamanı",
+    "TriggerListItem:LastFireTimeUtc": "Son Çalışma Zamanı",
+    "TriggerListItem:NextFireTimeUtc": "Sonraki Çalışma Zamanı"
   }
 }
