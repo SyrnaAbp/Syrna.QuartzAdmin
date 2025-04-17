@@ -40,15 +40,27 @@
 
     "Permission:History": "History",
     "Permission:Overview": "Overview",
+
     "Permission:Schedules": "Schedules",
     "Permission:Schedules.Create": "Create",
     "Permission:Schedules.Update": "Update",
     "Permission:Schedules.Delete": "Delete",
+    "Permission:Schedules.ShutDown": "ShutDown",
+    "Permission:Schedules.Standby": "Standby",
+    "Permission:Schedules.Trigger": "Trigger",
+    "Permission:Schedules.Interrupt": "Interrupt",
 
     "Permission:Triggers": "Triggers",
     "Permission:Triggers.Create": "Create",
     "Permission:Triggers.Update": "Update",
     "Permission:Triggers.Delete": "Delete",
+
+    "Permission:Jobs": "Jobs",
+    "Permission:Jobs.Create": "Create",
+    "Permission:Jobs.Update": "Update",
+    "Permission:Jobs.Delete": "Delete",
+    "Permission:Jobs.Trigger": "Trigger",
+    "Permission:Jobs.Interrupt": "Interrupt",
 
     "Menu:Schedules": "Schedules",
     "Menu:History": "History",

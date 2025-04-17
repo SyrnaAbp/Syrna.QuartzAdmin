@@ -40,15 +40,27 @@
 
     "Permission:History": "Geçmiş",
     "Permission:Overview": "Gözlem",
+
     "Permission:Schedules": "Zamanlayıcılar",
     "Permission:Schedules.Create": "Yeni",
     "Permission:Schedules.Update": "Güncelle",
     "Permission:Schedules.Delete": "Sil",
+    "Permission:Schedules.ShutDown": "Kapat",
+    "Permission:Schedules.Standby": "Beklet",
+    "Permission:Schedules.Trigger": "Tetikle",
+    "Permission:Schedules.Interrupt": "Sonlandır",
 
     "Permission:Triggers": "Tetikleyiciler",
     "Permission:Triggers.Create": "Yeni",
     "Permission:Triggers.Update": "Güncelle",
     "Permission:Triggers.Delete": "Sil",
+
+    "Permission:Jobs": "İşler",
+    "Permission:Jobs.Create": "Yeni",
+    "Permission:Jobs.Update": "Güncelle",
+    "Permission:Jobs.Delete": "Sil",
+    "Permission:Jobs.Trigger": "Tetikle",
+    "Permission:Jobs.Interrupt": "Sonlandır",
 
     "Menu:Schedules": "Zamanlayıcılar",
     "Menu:History": "Geçmiş",

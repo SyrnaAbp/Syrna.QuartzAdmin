@@ -538,7 +538,6 @@
 
 		<PackageVersion Include="CronExpressionDescriptor" Version="2.39.0" />
 		<PackageVersion Include="DartSassBuilder" Version="1.1.0" />
-		<PackageVersion Include="Quartz.Extensions.Hosting" Version="3.13.0" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageVersion Include="Aspire.Hosting.AppHost" Version="9.0.0" />

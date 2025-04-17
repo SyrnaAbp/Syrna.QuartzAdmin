@@ -7,13 +7,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Syrna.QuartzAdmin.Authorization;
 using Volo.Abp;
 
 namespace Syrna.QuartzAdmin.Jobs
 {
     public class JobsAppService : QuartzAdminAppService, IJobsAppService
     {
-        protected IScheduler Scheduler => LazyServiceProvider.LazyGetRequiredService<IScheduler>();
+        private IScheduler Scheduler => LazyServiceProvider.LazyGetRequiredService<IScheduler>();
 
         /// <summary>
         /// Getting a list of <see cref="JobListDetail"/> for all configured <see cref="IJob"/> instances in the <see cref="IScheduler"/>.
@@ -22,6 +24,7 @@ namespace Syrna.QuartzAdmin.Jobs
         /// <response code="200">Returns the list of configured jobs for the scheduler..</response>
         /// <response code="500">Returns the internal server error..</response>
         [HttpGet]
+        [Authorize(QuartzAdminPermissions.Jobs.Default)]
         public async Task<List<JobListDetail>> GetAllJobs()
         {
             try
@@ -69,6 +72,7 @@ namespace Syrna.QuartzAdmin.Jobs
         /// <response code="200">True if job was interrupted.</response>
         /// <response code="500">Returns the internal server error..</response>
         [HttpPost]
+        [Authorize(QuartzAdminPermissions.Jobs.Interrupt)]
         public async Task<bool> InterruptJob(string fireInstanceId)
         {
             try
@@ -92,6 +96,7 @@ namespace Syrna.QuartzAdmin.Jobs
         /// <response code="200">True if the job was deleted.</response>
         /// <response code="500">Returns the internal server error..</response>
         [HttpDelete]
+        [Authorize(QuartzAdminPermissions.Jobs.Delete)]
         public async Task<bool> DeleteJob(string jobGroup, string jobName)
         {
             try
@@ -115,6 +120,7 @@ namespace Syrna.QuartzAdmin.Jobs
         /// <response code="204">Success.</response>
         /// <response code="500">Returns the internal server error..</response>
         [HttpGet]
+        [Authorize(QuartzAdminPermissions.Jobs.Trigger)]
         public async Task<ApiResponse> TriggerJob(string jobGroup, string jobName)
         {
             try
@@ -138,6 +144,7 @@ namespace Syrna.QuartzAdmin.Jobs
         /// <response code="200">Success.</response>
         /// <response code="500">Returns the internal server error..</response>
         [HttpGet]
+        [Authorize(QuartzAdminPermissions.Jobs.Default)]
         public async Task<IJobDetail> GetJobConfiguration(string jobGroup, string jobName)
         {
             try
@@ -166,6 +173,7 @@ namespace Syrna.QuartzAdmin.Jobs
         /// <response code="204">Success.</response>
         /// <response code="500">Returns the internal server error..</response>
         [HttpPost]
+        [Authorize(QuartzAdminPermissions.Jobs.Create)]
         public async Task<ApiResponse> CreateJobConfiguration(JobDetails model)
         {
             return await AddEditJobDetails(model, false);
@@ -179,6 +187,7 @@ namespace Syrna.QuartzAdmin.Jobs
         /// <response code="204">Success.</response>
         /// <response code="500">Returns the internal server error..</response>
         [HttpPut]
+        [Authorize(QuartzAdminPermissions.Jobs.Update)]
         public async Task<ApiResponse> UpdateJobConfiguration(JobDetails model)
         {
             return await AddEditJobDetails(model, true);

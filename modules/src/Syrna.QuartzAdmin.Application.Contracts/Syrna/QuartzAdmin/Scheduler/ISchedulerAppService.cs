@@ -36,6 +36,7 @@ namespace Syrna.QuartzAdmin.Scheduler
         Task PauseTrigger(string triggerName, string triggerGroup);
         Task ResumeTrigger(string triggerName, string triggerGroup);
         Task TriggerJob(string jobName, string jobGroup);
+        Task<bool> InterruptJob(string fireInstanceId);
         Task<bool> DeleteSchedule(ScheduleModel model);
         Task UpdateSchedule(UpdateScheduleArgs args);
         Task<SchedulerMetaDataDto> GetMetadataAsync();

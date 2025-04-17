@@ -10,20 +10,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Syrna.QuartzAdmin.Authorization;
 using Volo.Abp;
 
 namespace Syrna.QuartzAdmin.Scheduler
 {
     public class SchedulerAppService : QuartzAdminAppService, ISchedulerAppService
     {
-        protected IScheduler Scheduler => LazyServiceProvider.LazyGetRequiredService<IScheduler>();
-        protected ISchedulerDefinitionService SchedulerDefinitionService => LazyServiceProvider.LazyGetRequiredService<ISchedulerDefinitionService>();
+        private IScheduler Scheduler => LazyServiceProvider.LazyGetRequiredService<IScheduler>();
+        private ISchedulerDefinitionService SchedulerDefinitionService => LazyServiceProvider.LazyGetRequiredService<ISchedulerDefinitionService>();
 
         /// <summary>
         /// Getting meta data for a Scheduler.
         /// </summary>
         /// <returns>The Scheduler meta data.</returns>
         [HttpGet]
+        [Authorize(QuartzAdminPermissions.Schedules.Default)]
         public async Task<SchedulerDetails> GetSchedulerMetaData()
         {
             try
@@ -43,6 +46,7 @@ namespace Syrna.QuartzAdmin.Scheduler
         /// </summary>
         /// <returns>The Status of the operation.</returns>
         [HttpPost]
+        [Authorize(QuartzAdminPermissions.Schedules.Default)]
         public async Task<ApiResponse> StartSchedulerExt(int? delayMilliseconds = null)
         {
             try
@@ -70,6 +74,7 @@ namespace Syrna.QuartzAdmin.Scheduler
         /// </summary>
         /// <returns>The Status of the operation.</returns>
         [HttpGet]
+        [Authorize(QuartzAdminPermissions.Schedules.Default)]
         public async Task<ApiResponse> PauseScheduler()
         {
             try
@@ -89,6 +94,7 @@ namespace Syrna.QuartzAdmin.Scheduler
         /// </summary>
         /// <returns>The Status of the operation.</returns>
         [HttpDelete]
+        [Authorize(QuartzAdminPermissions.Schedules.Delete)]
         public async Task<ApiResponse> ClearScheduler()
         {
             try
@@ -111,6 +117,7 @@ namespace Syrna.QuartzAdmin.Scheduler
         /// <response code="204">Ok.</response>
         /// <response code="500">Returns the internal server error..</response>
         [HttpGet]
+        [Authorize(QuartzAdminPermissions.Schedules.ShutDown)]
         public async Task<ApiResponse> ShutDownSchedulerExt(bool waitForJobsToComplete = false)
         {
             try
@@ -132,6 +139,7 @@ namespace Syrna.QuartzAdmin.Scheduler
         /// <response code="200">The list of <see cref="ExecutingJobContext"/> objects.</response>
         /// <response code="500">Returns the internal server error..</response>
         [HttpGet]
+        [Authorize(QuartzAdminPermissions.Schedules.Default)]
         public async Task<List<ExecutingJobContext>> GetCurrentExecutingJobs()
         {
             try
@@ -139,7 +147,7 @@ namespace Syrna.QuartzAdmin.Scheduler
                 await Scheduler.Clear();
                 var metaData = await Scheduler.GetCurrentlyExecutingJobs();
                 var model = metaData
-                    .Select(context => ExecutingJobContext.Create(context))
+                    .Select(ExecutingJobContext.Create)
                     .ToList();
 
                 return model;
@@ -159,6 +167,7 @@ namespace Syrna.QuartzAdmin.Scheduler
         /// <response code="204">Ok.</response>
         /// <response code="500">Returns the internal server error..</response>
         [HttpPost]
+        [Authorize(QuartzAdminPermissions.Schedules.Default)]
         public async Task<ApiResponse> PauseAllJobsInGroup(string groupName)
         {
             try
@@ -181,6 +190,7 @@ namespace Syrna.QuartzAdmin.Scheduler
         /// <response code="204">Ok.</response>
         /// <response code="500">Returns the internal server error..</response>
         [HttpPost]
+        [Authorize(QuartzAdminPermissions.Schedules.Default)]
         public async Task<ApiResponse> ResumeAllJobsInGroup(string groupName)
         {
             try
@@ -203,6 +213,7 @@ namespace Syrna.QuartzAdmin.Scheduler
         /// <response code="204">Ok.</response>
         /// <response code="500">Returns the internal server error..</response>
         [HttpPost]
+        [Authorize(QuartzAdminPermissions.Schedules.Default)]
         public async Task<ApiResponse> PauseAllTriggersInGroup(string groupName)
         {
             try
@@ -226,6 +237,7 @@ namespace Syrna.QuartzAdmin.Scheduler
         /// <response code="204">Ok.</response>
         /// <response code="500">Returns the internal server error..</response>
         [HttpPost]
+        [Authorize(QuartzAdminPermissions.Schedules.Default)]
         public async Task<ApiResponse> ResumeAllTriggersInGroup(string groupName)
         {
             try
@@ -248,6 +260,7 @@ namespace Syrna.QuartzAdmin.Scheduler
         /// <response code="204">Ok.</response>
         /// <response code="500">Returns the internal server error..</response>
         [HttpGet]
+        [Authorize(QuartzAdminPermissions.Schedules.Default)]
         public async Task<ApiResponse> PauseAll()
         {
             try
@@ -269,6 +282,7 @@ namespace Syrna.QuartzAdmin.Scheduler
         /// <response code="204">Ok.</response>
         /// <response code="500">Returns the internal server error..</response>
         [HttpGet]
+        [Authorize(QuartzAdminPermissions.Schedules.Default)]
         public async Task<ApiResponse> ResumeAll()
         {
             try
@@ -285,13 +299,14 @@ namespace Syrna.QuartzAdmin.Scheduler
 
         //CAK
         [HttpGet]
+        [Authorize(QuartzAdminPermissions.Schedules.Default)]
         public async Task<List<ScheduleModel>> GetAllJobsAsync(ScheduleJobFilter filter)
         {
             var jobGroupNames = await Scheduler.GetJobGroupNames();
             var list = new List<ScheduleModel>(jobGroupNames.Count);
             foreach (var jobGrp in jobGroupNames)
             {
-                if (filter != null && !filter.IncludeSystemJobs)
+                if (filter is { IncludeSystemJobs: false })
                 {
                     if (jobGrp == Constants.SYSTEM_GROUP)
                     {
@@ -313,6 +328,7 @@ namespace Syrna.QuartzAdmin.Scheduler
         }
 
         [HttpGet]
+        [Authorize(QuartzAdminPermissions.Schedules.Default)]
         public async Task<ScheduleModel> GetScheduleModelAsync(ITrigger trigger)
         {
             var jobDetail = await Scheduler.GetJobDetail(trigger.JobKey);
@@ -321,6 +337,7 @@ namespace Syrna.QuartzAdmin.Scheduler
         }
 
         [HttpGet]
+        [Authorize(QuartzAdminPermissions.Schedules.Default)]
         public async Task<IReadOnlyCollection<string>> GetJobGroups()
         {
             return (await Scheduler.GetJobGroupNames())
@@ -328,6 +345,7 @@ namespace Syrna.QuartzAdmin.Scheduler
         }
 
         [HttpGet]
+        [Authorize(QuartzAdminPermissions.Schedules.Default)]
         public async Task<IReadOnlyCollection<string>> GetTriggerGroups()
         {
             return (await Scheduler.GetTriggerGroupNames()).
@@ -335,6 +353,7 @@ namespace Syrna.QuartzAdmin.Scheduler
         }
 
         [HttpGet]
+        [Authorize(QuartzAdminPermissions.Schedules.Default)]
         public async Task<IList<KeyValuePair<string, int>>> GetScheduledJobSummary()
         {
             var executingCount = (await Scheduler.GetCurrentlyExecutingJobs()).Count;
@@ -347,21 +366,23 @@ namespace Syrna.QuartzAdmin.Scheduler
 
             return new List<KeyValuePair<string, int>>
             {
-                new KeyValuePair<string, int>("Jobs", jobCount),
-                new KeyValuePair<string, int>("Triggers", triggerCount),
-                new KeyValuePair<string, int>("Executing", executingCount),
-                new KeyValuePair<string, int>("System Jobs", sysJobCount),
-                new KeyValuePair<string, int>("System Triggers", sysTriggerCount)
+                new("Jobs", jobCount),
+                new("Triggers", triggerCount),
+                new("Executing", executingCount),
+                new("System Jobs", sysJobCount),
+                new("System Triggers", sysTriggerCount)
             };
         }
 
         [HttpGet]
+        [Authorize(QuartzAdminPermissions.Schedules.Default)]
         public async Task<SchedulerMetaDataDto> GetMetadataAsync()
         {
             return SchedulerMetaDataDto.Create(await Scheduler.GetMetaData());
         }
 
         [HttpPost]
+        [Authorize(QuartzAdminPermissions.Schedules.Create)]
         public async Task CreateSchedule(CreateScheduleArgs createScheduleArgs)
         {
             var trigger = BuildTrigger(createScheduleArgs.TriggerDetailModel);
@@ -394,6 +415,7 @@ namespace Syrna.QuartzAdmin.Scheduler
         }
 
         [HttpPost]
+        [Authorize(QuartzAdminPermissions.Schedules.Update)]
         public async Task UpdateSchedule(UpdateScheduleArgs args)
         {
             var oJobKey = args.OldJobKey.ToJobKey();
@@ -430,6 +452,7 @@ namespace Syrna.QuartzAdmin.Scheduler
         }
 
         [HttpGet]
+        [Authorize(QuartzAdminPermissions.Schedules.Default)]
         public async Task<JobDetailModel> GetJobDetail(string jobName, string groupName)
         {
             var jd = await Scheduler.GetJobDetail(new JobKey(jobName, groupName));
@@ -451,6 +474,7 @@ namespace Syrna.QuartzAdmin.Scheduler
         }
 
         [HttpGet]
+        [Authorize(QuartzAdminPermissions.Schedules.Default)]
         public async Task<TriggerDetailModel> GetTriggerDetail(string triggerName, string triggerGroup)
         {
             var trigger = await Scheduler.GetTrigger(new TriggerKey(triggerName, triggerGroup));
@@ -464,24 +488,28 @@ namespace Syrna.QuartzAdmin.Scheduler
         }
 
         [HttpGet]
+        [Authorize(QuartzAdminPermissions.Schedules.Default)]
         public async Task<bool> ContainsTriggerKey(string triggerName, string triggerGroup)
         {
             return await Scheduler.CheckExists(new TriggerKey(triggerName, triggerGroup));
         }
 
         [HttpGet]
+        [Authorize(QuartzAdminPermissions.Schedules.Default)]
         public async Task<bool> ContainsJobKey(string jobName, string jobGroup)
         {
             return await Scheduler.CheckExists(new JobKey(jobName, jobGroup));
         }
 
         [HttpGet]
+        [Authorize(QuartzAdminPermissions.Schedules.Default)]
         public async Task<IReadOnlyCollection<string>> GetCalendarNames(CancellationToken cancelToken = default)
         {
             return await Scheduler.GetCalendarNames(cancelToken);
         }
 
         [HttpPost]
+        [Authorize(QuartzAdminPermissions.Schedules.Default)]
         public async Task PauseTrigger(string triggerName, string triggerGroup)
         {
             await Scheduler.PauseTrigger(triggerGroup == null ?
@@ -490,6 +518,7 @@ namespace Syrna.QuartzAdmin.Scheduler
         }
 
         [HttpPost]
+        [Authorize(QuartzAdminPermissions.Schedules.Default)]
         public async Task ResumeTrigger(string triggerName, string triggerGroup)
         {
             await Scheduler.ResumeTrigger(triggerGroup == null ?
@@ -498,6 +527,7 @@ namespace Syrna.QuartzAdmin.Scheduler
         }
 
         [HttpDelete]
+        [Authorize(QuartzAdminPermissions.Schedules.Delete)]
         public async Task<bool> DeleteSchedule(ScheduleModel model)
         {
             if (model.JobName == null)
@@ -515,7 +545,7 @@ namespace Syrna.QuartzAdmin.Scheduler
                 model.TriggerName == null)
             {
                 Logger.LogInformation("Job [{jobGroup}.{jobName}] has no trigger name. " +
-                    "Cannot UncheduleJob by trigger, will delete job directly.", jobKey.Group, jobKey.Name);
+                    "Cannot UnscheduleJob by trigger, will delete job directly.", jobKey.Group, jobKey.Name);
                 return await Scheduler.DeleteJob(jobKey);
             }
 
@@ -564,36 +594,65 @@ namespace Syrna.QuartzAdmin.Scheduler
         }
 
         [HttpPost]
+        [Authorize(QuartzAdminPermissions.Schedules.Trigger)]
         public async Task TriggerJob(string jobName, string jobGroup)
         {
             await Scheduler.TriggerJob(new JobKey(jobName, jobGroup));
         }
 
+        /// <summary>
+        /// Interrupts the execution of a job.
+        /// </summary>
+        /// <param name="fireInstanceId">The id of the running job instance.</param>
+        /// <returns>True if the job is interrupted, otherwise false.</returns>
+        /// <response code="200">True if job was interrupted.</response>
+        /// <response code="500">Returns the internal server error..</response>
+        [HttpPost]
+        [Authorize(QuartzAdminPermissions.Schedules.Interrupt)]
+        public async Task<bool> InterruptJob(string fireInstanceId)
+        {
+            try
+            {
+                var result = await Scheduler.Interrupt(fireInstanceId);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "InterruptJob");
+                throw new UserFriendlyException("Can not interrupt job", "CantInterruptJob", innerException: ex);
+            }
+        }
+
         [HttpGet]
+        [Authorize(QuartzAdminPermissions.Schedules.Default)]
         public async Task PauseAllSchedules()
         {
             await Scheduler.PauseAll();
         }
 
         [HttpGet]
+        [Authorize(QuartzAdminPermissions.Schedules.Default)]
         public async Task ResumeAllSchedules()
         {
             await Scheduler.ResumeAll();
         }
 
         [HttpGet]
+        [Authorize(QuartzAdminPermissions.Schedules.ShutDown)]
         public async Task ShutdownScheduler()
         {
             await Scheduler.Shutdown();
         }
 
         [HttpGet]
+        [Authorize(QuartzAdminPermissions.Schedules.Default)]
         public async Task StartScheduler()
         {
             await Scheduler.Start();
         }
 
         [HttpGet]
+        [Authorize(QuartzAdminPermissions.Schedules.Standby)]
         public async Task StandbyScheduler()
         {
             await Scheduler.Standby();
@@ -603,9 +662,8 @@ namespace Syrna.QuartzAdmin.Scheduler
         #region Private methods
         private async Task<ScheduleModel> CreateScheduleModel(IJobDetail jobDetail, ITrigger trigger, CancellationToken cancellationToken = default)
         {
-            var triggerState = await Scheduler.GetTriggerState(trigger.Key);
-            var runningTrigger = (await Scheduler.GetCurrentlyExecutingJobs(cancellationToken)).Where(context =>
-                context.Trigger.Equals(trigger)).FirstOrDefault();
+            var triggerState = await Scheduler.GetTriggerState(trigger.Key, cancellationToken);
+            var runningTrigger = (await Scheduler.GetCurrentlyExecutingJobs(cancellationToken)).FirstOrDefault(context => context.Trigger.Equals(trigger));
 
             return new ScheduleModel
             {
@@ -631,7 +689,7 @@ namespace Syrna.QuartzAdmin.Scheduler
             };
         }
 
-        private async Task<List<ScheduleModel>> GetScheduleModelsAsync(JobKey jobkey)
+        private async Task<List<ScheduleModel>> GetScheduleModelsAsync(JobKey jobKey)
         {
             IJobDetail jobDetail = null;
             IReadOnlyCollection<ITrigger> jobTriggers = null;
@@ -639,16 +697,16 @@ namespace Syrna.QuartzAdmin.Scheduler
             var list = new List<ScheduleModel>();
             try
             {
-                jobTriggers = await Scheduler.GetTriggersOfJob(jobkey);
-                jobDetail = await Scheduler.GetJobDetail(jobkey);
+                jobTriggers = await Scheduler.GetTriggersOfJob(jobKey);
+                jobDetail = await Scheduler.GetJobDetail(jobKey);
             }
             catch (Exception ex)
             {
-                Logger.LogWarning(ex, "Cannot GetScheduleModel of job [{jobGroup}.{jobName}]", jobkey.Group, jobkey.Name);
+                Logger.LogWarning(ex, "Cannot GetScheduleModel of job [{jobGroup}.{jobName}]", jobKey.Group, jobKey.Name);
                 exceptionJob = new ScheduleModel
                 {
-                    JobName = jobkey.Name,
-                    JobGroup = jobkey.Group,
+                    JobName = jobKey.Name,
+                    JobGroup = jobKey.Group,
                     JobStatus = JobStatus.Error,
                     ExceptionMessage = ex.Message
                 };
@@ -679,8 +737,8 @@ namespace Syrna.QuartzAdmin.Scheduler
             {
                 var sm = new ScheduleModel
                 {
-                    JobName = jobkey.Name,
-                    JobGroup = jobkey.Group,
+                    JobName = jobKey.Name,
+                    JobGroup = jobKey.Group,
                     JobType = jobDetail?.JobType.ToString(),
                     JobStatus = JobStatus.NoTrigger
                 };
@@ -717,19 +775,16 @@ namespace Syrna.QuartzAdmin.Scheduler
 
             };
 
-            switch (trigger.MisfireInstruction)
+            model.MisfireAction = trigger.MisfireInstruction switch
             {
-                case MisfireInstruction.IgnoreMisfirePolicy:
-                    model.MisfireAction = MisfireAction.IgnoreMisfirePolicy;
-                    break;
+                MisfireInstruction.IgnoreMisfirePolicy => MisfireAction.IgnoreMisfirePolicy,
                 // comment out same as SmartPolicy
                 //case MisfireInstruction.InstructionNotSet:
                 //    model.MisfireAction = MisfireAction.InstructionNotSet;
                 //    break;
-                case MisfireInstruction.SmartPolicy:
-                    model.MisfireAction = MisfireAction.SmartPolicy;
-                    break;
-            }
+                MisfireInstruction.SmartPolicy => MisfireAction.SmartPolicy,
+                _ => model.MisfireAction
+            };
 
             switch (triggerType)
             {
@@ -737,15 +792,12 @@ namespace Syrna.QuartzAdmin.Scheduler
                     var cron = (ICronTrigger)trigger;
                     model.CronExpression = cron.CronExpressionString;
                     model.InTimeZoneId = cron.TimeZone.Id;
-                    switch (cron.MisfireInstruction)
+                    model.MisfireAction = cron.MisfireInstruction switch
                     {
-                        case MisfireInstruction.CronTrigger.DoNothing:
-                            model.MisfireAction = MisfireAction.DoNothing;
-                            break;
-                        case MisfireInstruction.CronTrigger.FireOnceNow:
-                            model.MisfireAction = MisfireAction.FireOnceNow;
-                            break;
-                    }
+                        MisfireInstruction.CronTrigger.DoNothing => MisfireAction.DoNothing,
+                        MisfireInstruction.CronTrigger.FireOnceNow => MisfireAction.FireOnceNow,
+                        _ => model.MisfireAction
+                    };
                     break;
                 case TriggerType.Daily:
                     var daily = (IDailyTimeIntervalTrigger)trigger;
@@ -753,15 +805,13 @@ namespace Syrna.QuartzAdmin.Scheduler
                     {
                         model.DailyDayOfWeek[(int)dow] = true;
                     }
-                    switch (daily.MisfireInstruction)
+
+                    model.MisfireAction = daily.MisfireInstruction switch
                     {
-                        case MisfireInstruction.DailyTimeIntervalTrigger.DoNothing:
-                            model.MisfireAction = MisfireAction.DoNothing;
-                            break;
-                        case MisfireInstruction.DailyTimeIntervalTrigger.FireOnceNow:
-                            model.MisfireAction = MisfireAction.FireOnceNow;
-                            break;
-                    }
+                        MisfireInstruction.DailyTimeIntervalTrigger.DoNothing => MisfireAction.DoNothing,
+                        MisfireInstruction.DailyTimeIntervalTrigger.FireOnceNow => MisfireAction.FireOnceNow,
+                        _ => model.MisfireAction
+                    };
                     model.RepeatCount = daily.RepeatCount;
                     model.TriggerInterval = daily.RepeatInterval;
                     model.TriggerIntervalUnit = daily.RepeatIntervalUnit.ToQuartzAdminIntervalUnit();
@@ -775,15 +825,12 @@ namespace Syrna.QuartzAdmin.Scheduler
                     break;
                 case TriggerType.Calendar:
                     var calTrigger = (ICalendarIntervalTrigger)trigger;
-                    switch (calTrigger.MisfireInstruction)
+                    model.MisfireAction = calTrigger.MisfireInstruction switch
                     {
-                        case MisfireInstruction.CalendarIntervalTrigger.DoNothing:
-                            model.MisfireAction = MisfireAction.DoNothing;
-                            break;
-                        case MisfireInstruction.CalendarIntervalTrigger.FireOnceNow:
-                            model.MisfireAction = MisfireAction.FireOnceNow;
-                            break;
-                    }
+                        MisfireInstruction.CalendarIntervalTrigger.DoNothing => MisfireAction.DoNothing,
+                        MisfireInstruction.CalendarIntervalTrigger.FireOnceNow => MisfireAction.FireOnceNow,
+                        _ => model.MisfireAction
+                    };
                     model.TriggerInterval = calTrigger.RepeatInterval;
                     model.TriggerIntervalUnit = calTrigger.RepeatIntervalUnit.ToQuartzAdminIntervalUnit();
                     model.InTimeZoneId = calTrigger.TimeZone.Id;

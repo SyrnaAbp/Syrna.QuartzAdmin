@@ -5,12 +5,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Syrna.QuartzAdmin.Authorization;
 
 namespace Syrna.QuartzAdmin.ExecutionLog
 {
     public class ExecutionLogAppService(IQuartzExecutionHistoryRepository executionLogRepository) : QuartzAdminAppService, IExecutionLogAppService
     {
         [HttpPost]
+        [Authorize(QuartzAdminPermissions.History.Default)]
         public async Task<DataEnvelope<ExecutionLogDto>> GetLatestExecutionLog(LatestExecutionLogReadArgs args)
         {
             var query = await executionLogRepository.GetLatestExecutionLog(args.JobName, args.JobGroup, args.TriggerName, args.TriggerGroup, args.FirstLogId, args.LogTypes);
@@ -38,6 +41,7 @@ namespace Syrna.QuartzAdmin.ExecutionLog
         }
 
         [HttpPost]
+        [Authorize(QuartzAdminPermissions.History.Default)]
         public async Task<DataEnvelope<ExecutionLogDto>> GetExecutionLogs(ExecutionLogReadArgs args)
         {
             var query = await executionLogRepository.GetExecutionLogs(args.Filter, args.FirstLogId);
@@ -65,21 +69,25 @@ namespace Syrna.QuartzAdmin.ExecutionLog
             }
         }
 
+        [Authorize(QuartzAdminPermissions.History.Default)]
         public async Task<IList<string>> GetJobNames()
         {
             return await executionLogRepository.GetJobNames();
         }
 
+        [Authorize(QuartzAdminPermissions.History.Default)]
         public async Task<IList<string>> GetJobGroups()
         {
             return await executionLogRepository.GetJobGroups();
         }
 
+        [Authorize(QuartzAdminPermissions.History.Default)]
         public async Task<IList<string>> GetTriggerNames()
         {
             return await executionLogRepository.GetTriggerNames();
         }
 
+        [Authorize(QuartzAdminPermissions.History.Default)]
         public async Task<IList<string>> GetTriggerGroups()
         {
             return await executionLogRepository.GetTriggerGroups();
@@ -87,6 +95,7 @@ namespace Syrna.QuartzAdmin.ExecutionLog
 
 
         [HttpPost]
+        [Authorize(QuartzAdminPermissions.History.Default)]
         public async Task<JobExecutionStatusSummaryModel> GetJobExecutionStatusSummary(JobExecutionStatusSummaryReadArgs args)
         {
             return await executionLogRepository.GetJobExecutionStatusSummary(args.StartTimeUtc, args.EndTimeUtc);

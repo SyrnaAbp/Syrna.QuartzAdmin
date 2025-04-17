@@ -7,13 +7,16 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Syrna.QuartzAdmin.Authorization;
+using Syrna.QuartzAdmin.Jobs;
 using Volo.Abp;
 
 namespace Syrna.QuartzAdmin.Triggers
 {
     public class TriggersAppService : QuartzAdminAppService, ITriggersAppService
     {
-        protected IScheduler Scheduler => LazyServiceProvider.LazyGetRequiredService<IScheduler>();
+        private IScheduler Scheduler => LazyServiceProvider.LazyGetRequiredService<IScheduler>();
 
         /// <summary>
         /// Getting a list of <see cref="JobListDetail"/> for all configured <see cref="IJob"/> instances in the <see cref="IScheduler"/>.
@@ -22,6 +25,7 @@ namespace Syrna.QuartzAdmin.Triggers
         /// <response code="200">Returns the list of configured triggers for the scheduler..</response>
         /// <response code="500">Returns the internal server error..</response>
         [HttpGet]
+        [Authorize(QuartzAdminPermissions.Triggers.Default)]
         public async Task<List<TriggerListItem>> GetAllTriggers()
         {
             try
@@ -59,6 +63,7 @@ namespace Syrna.QuartzAdmin.Triggers
         }
 
 
+        [Authorize(QuartzAdminPermissions.Triggers.Default)]
         private static async Task<ITrigger> GetTrigger(TriggerKey key, IScheduler scheduler)
         {
             var trigger = await scheduler.GetTrigger(key);
