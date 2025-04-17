@@ -1,8 +1,7 @@
 ﻿using Blazorise.DataGrid;
+using Localization.Resources.AbpUi;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
-using Quartz;
 using Syrna.QuartzAdmin.Blazor.Components;
 using Syrna.QuartzAdmin.Blazor.Services;
 using Syrna.QuartzAdmin.ExecutionLog;
@@ -14,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Volo.Abp.AspNetCore.Components.Messages;
 
@@ -26,6 +26,7 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Schedules
             LocalizationResource = typeof(QuartzAdminResource);
         }
 
+        [Inject] protected IStringLocalizer<AbpUiResource> UiLocalizer { get; set; }
         [Inject] protected new IStringLocalizer<QuartzAdminResource> L { get; set; }
         [Inject] private ISchedulerAppService SchedulerSvc { get; set; } = null!;
         [Inject] private IExecutionLogAppService ExecutionLogSvc { get; set; } = null!;
@@ -40,33 +41,33 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Schedules
         private ScheduleJobFilter _filter = new();
         private ScheduleJobFilter _origFilter = new();
 
-        internal bool IsEditActionDisabled(ScheduleModel model) => model.JobStatus == JobStatus.NoSchedule ||
-            model.JobStatus == JobStatus.Error ||
-            model.JobStatus == JobStatus.Running ||
-            model.JobGroup == Constants.SYSTEM_GROUP;
+        private bool IsEditActionDisabled(ScheduleModel model) => model.JobStatus == JobStatus.NoSchedule ||
+                                                                  model.JobStatus == JobStatus.Error ||
+                                                                  model.JobStatus == JobStatus.Running ||
+                                                                  model.JobGroup == Constants.SYSTEM_GROUP;
 
         private bool IsRunActionDisabled(ScheduleModel model) => model.JobStatus == JobStatus.NoSchedule ||
                                                                  model.JobStatus == JobStatus.NoTrigger;
 
-        internal bool IsPauseActionDisabled(ScheduleModel model) => model.JobStatus == JobStatus.NoSchedule ||
-                                            model.JobStatus == JobStatus.Error ||
-                                            model.JobStatus == JobStatus.NoTrigger;
+        private bool IsPauseActionDisabled(ScheduleModel model) => model.JobStatus == JobStatus.NoSchedule ||
+                                                                   model.JobStatus == JobStatus.Error ||
+                                                                   model.JobStatus == JobStatus.NoTrigger;
 
-        internal bool IsTriggerNowActionDisabled(ScheduleModel model) => model.JobStatus == JobStatus.NoSchedule ||
-            model.JobStatus == JobStatus.Error ||
-            model.JobStatus == JobStatus.Running;
+        private bool IsTriggerNowActionDisabled(ScheduleModel model) => model.JobStatus == JobStatus.NoSchedule ||
+                                                                        model.JobStatus == JobStatus.Error ||
+                                                                        model.JobStatus == JobStatus.Running;
 
-        internal bool IsAddTriggerActionDisabled(ScheduleModel model) => model.JobStatus == JobStatus.NoSchedule ||
-            model.JobStatus == JobStatus.Error ||
-            model.JobGroup == Constants.SYSTEM_GROUP;
+        private bool IsAddTriggerActionDisabled(ScheduleModel model) => model.JobStatus == JobStatus.NoSchedule ||
+                                                                        model.JobStatus == JobStatus.Error ||
+                                                                        model.JobGroup == Constants.SYSTEM_GROUP;
 
-        internal bool IsCopyActionDisabled(ScheduleModel model) => model.JobStatus == JobStatus.NoSchedule ||
-            model.JobStatus == JobStatus.Error ||
-            model.JobGroup == Constants.SYSTEM_GROUP;
+        private bool IsCopyActionDisabled(ScheduleModel model) => model.JobStatus == JobStatus.NoSchedule ||
+                                                                  model.JobStatus == JobStatus.Error ||
+                                                                  model.JobGroup == Constants.SYSTEM_GROUP;
 
-        internal bool IsHistoryActionDisabled(ScheduleModel model) => model.JobStatus == JobStatus.NoSchedule;
+        private bool IsHistoryActionDisabled(ScheduleModel model) => model.JobStatus == JobStatus.NoSchedule;
 
-        internal bool IsDeleteActionDisabled(ScheduleModel model) => model.JobStatus == JobStatus.Running;
+        private bool IsDeleteActionDisabled(ScheduleModel model) => model.JobStatus == JobStatus.Running;
 
         readonly Func<ScheduleModel, object> _groupDefinition = x => x.JobGroup;
 
@@ -78,11 +79,49 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Schedules
         string TriggerDetailToolTipText(ScheduleModel context) =>
             $"<div style='max-width: 220px; overflow-wrap: break-word;'>{context.TriggerDetail?.ToSummaryString(L)}</div>";
 
+        #region Auto refresh
+        private void StartAutoRefresh()
+        {
+            _trackTimer?.Change(0, REFRESH_IN_MS);
+        }
+
+        private void StopAutoRefresh()
+        {
+            _trackTimer?.Change(Timeout.Infinite, Timeout.Infinite);
+        }
+
+        private void OnCheckAutoRefresh(bool flag)
+        {
+            AutoRefresh = flag;
+            if (AutoRefresh)
+            {
+                StartAutoRefresh();
+            }
+            else
+            {
+                StopAutoRefresh();
+            }
+        }
+        #endregion Auto refresh
+
+        private Timer _trackTimer;
+        private const int REFRESH_IN_MS = 10000;
+        private bool AutoRefresh = true;
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
             {
                 await RefreshJobs();
+                _trackTimer = new Timer(_ =>
+                {
+                    InvokeAsync(async () =>
+                    {
+                        await UpdateScheduleModelsLastExecution();
+
+                        // Update the UI
+                        StateHasChanged();
+                    });
+                }, null, REFRESH_IN_MS, REFRESH_IN_MS);
             }
         }
 
@@ -108,6 +147,16 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Schedules
             var latestResult = PageMetadata.New(0, 1);
             var scheduleJobType = new HashSet<LogType> { LogType.ScheduleJob };
 
+            var jobs = await SchedulerSvc.GetAllJobsAsync(_filter);
+            foreach (var job in jobs)
+            {
+                var schModel = ScheduledJobs.FirstOrDefault(w => w.JobName == job.JobName && w.JobGroup == job.JobGroup && w.TriggerName == job.TriggerName && w.TriggerGroup == job.TriggerGroup);
+                if (schModel != null)
+                {
+                    schModel.JobStatus = job.JobStatus;
+                }
+            }
+
             foreach (var schModel in ScheduledJobs)
             {
                 if (string.IsNullOrEmpty(schModel.JobName))
@@ -126,32 +175,38 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Schedules
                     LogTypes = scheduleJobType
                 };
                 var latestLogList = await ExecutionLogSvc.GetLatestExecutionLog(latestExecutionLogReadArgs);
-
-                if (latestLogList != null && latestLogList.Items.Any())
+                if (latestLogList == null || !latestLogList.Items.Any())
                 {
-                    var latestLog = latestLogList.Items.First();
-                    if (!schModel.PreviousTriggerTime.HasValue)
-                    {
-                        schModel.PreviousTriggerTime = latestLog.FireTimeUtc;
-                    }
-                    if (latestLog.IsSuccess.HasValue && !latestLog.IsSuccess.Value)
-                    {
-                        schModel.ExceptionMessage = latestLog.GetShortResultMessage();
-                    }
-                    else if (latestLog.IsException ?? false)
-                    {
-                        schModel.ExceptionMessage = latestLog.GetShortExceptionMessage();
-                    }
+                    continue;
+                }
+
+                var latestLog = latestLogList.Items.First();
+                if (!schModel.PreviousTriggerTime.HasValue)
+                {
+                    schModel.PreviousTriggerTime = latestLog.FireTimeUtc;
+                }
+                if (latestLog.IsSuccess.HasValue && !latestLog.IsSuccess.Value)
+                {
+                    schModel.ExceptionMessage = latestLog.GetShortResultMessage();
+                }
+                else if (latestLog.IsException ?? false)
+                {
+                    schModel.ExceptionMessage = latestLog.GetShortExceptionMessage();
                 }
             }
+        }
+
+        private async Task AfterSave(bool saved)
+        {
+            await RefreshJobs();
         }
 
         ScheduleDialog ScheduleDialogRef;
         private async Task OnNewSchedule()
         {
-            JobDetailModel jobDetail = new JobDetailModel();
-            TriggerDetailModel triggerDetail = new TriggerDetailModel();
-            await ScheduleDialogRef.OpenModalAsync(jobDetail, triggerDetail, true);
+            var jobDetail = new JobDetailModel();
+            var triggerDetail = new TriggerDetailModel();
+            await ScheduleDialogRef.OpenModalAsync(jobDetail, triggerDetail, AfterSave, true);
         }
 
         private async Task OnEditScheduleJob(ScheduleModel model)
@@ -185,7 +240,7 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Schedules
                 }
             }
 
-            await ScheduleDialogRef.OpenModalAsync(currentJobDetail, currentTriggerModel ?? new TriggerDetailModel(), false, ScheduleDialogTab.Job, false, origJobKey, origTriggerKey);
+            await ScheduleDialogRef.OpenModalAsync(currentJobDetail, currentTriggerModel ?? new TriggerDetailModel(), AfterSave, false, ScheduleDialogTab.Job, false, origJobKey, origTriggerKey);
         }
 
         private async Task OnResumeScheduleJob(ScheduleModel model)
@@ -269,7 +324,7 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Schedules
 
             currentJobDetail.Name = string.Empty;
 
-            await ScheduleDialogRef.OpenModalAsync(currentJobDetail, currentTriggerModel ?? new(), true);
+            await ScheduleDialogRef.OpenModalAsync(currentJobDetail, currentTriggerModel ?? new(), AfterSave, true);
         }
 
         HistoryDialog HistoryDialogRef;
@@ -303,11 +358,11 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Schedules
             }
             var currentJobDetail = await SchedulerSvc.GetJobDetail(model.JobName, model.JobGroup);
 
-            TriggerDetailModel triggerDetail = new TriggerDetailModel();
-            await ScheduleDialogRef.OpenModalAsync(currentJobDetail, triggerDetail, false, ScheduleDialogTab.Trigger, true);
+            var triggerDetail = new TriggerDetailModel();
+            await ScheduleDialogRef.OpenModalAsync(currentJobDetail, triggerDetail, AfterSave, false, ScheduleDialogTab.Trigger, true);
         }
 
-        private string DeleteConfirnationMessage(List<ScheduleModel> items) => string.Format(L["SchedulesDeleteConfirmationMessage"], items.Count);
+        private string DeleteConfirmationMessage(List<ScheduleModel> items) => string.Format(L["SchedulesDeleteConfirmationMessage"], items.Count);
 
         private async Task OnDeleteSelectedScheduleJobs()
         {
@@ -324,7 +379,7 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Schedules
             }
 
             // confirm delete
-            bool? yes = await UiMessageService.Confirm(DeleteConfirnationMessage(selectedItems));
+            bool? yes = await UiMessageService.Confirm(DeleteConfirmationMessage(selectedItems));
             if (yes == null || !yes.Value)
             {
                 return;
@@ -433,6 +488,7 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Schedules
                 //HistoryDialogRef.Dispose(disposing);
                 //ScheduleDialogRef.Dispose(disposing);
                 //UnRegisterEventListeners();
+                _trackTimer?.Dispose();
             }
             base.Dispose(disposing);
         }

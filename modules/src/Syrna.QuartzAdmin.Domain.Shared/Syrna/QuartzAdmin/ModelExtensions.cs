@@ -68,7 +68,7 @@ namespace Syrna.QuartzAdmin
         /// <returns>null if inner exceptions does not have stack trace</returns>
 		public static string NonNullStackTrace(this Exception exception)
         {
-			Exception currentException = exception;
+			var currentException = exception;
 			while (currentException.StackTrace == null)
             {
 				currentException = currentException.InnerException;

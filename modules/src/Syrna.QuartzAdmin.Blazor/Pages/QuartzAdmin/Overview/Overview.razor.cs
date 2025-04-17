@@ -41,7 +41,7 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.Overview
 
         private DateTimeOffset? RunningSince;
 
-        protected List<ExecutionLogDto> ErrorLogPagedList { get; set; }
+        private List<ExecutionLogDto> ErrorLogPagedList { get; set; }
         //private long _firstLogId;
         private OrderedDictionary SchedulerInfo = [];
 

@@ -44,6 +44,12 @@ public class MainDemoDomainSharedModule : AbpModule
                 .Add<MainDemoResource>("en")
                 .AddBaseTypes(typeof(AbpValidationResource))
                 .AddVirtualJson("/Localization/MainDemo");
+            options.DefaultResourceType = typeof(MainDemoResource);
+        });
+
+        Configure<AbpExceptionLocalizationOptions>(options =>
+        {
+            options.MapCodeNamespace("MainDemo", typeof(MainDemoResource));
         });
     }
 }

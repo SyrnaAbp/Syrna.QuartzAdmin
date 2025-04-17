@@ -1,6 +1,7 @@
 ﻿using Syrna.QuartzAdmin.Localization;
 using Volo.Abp.Domain;
 using Volo.Abp.Localization;
+using Volo.Abp.Localization.ExceptionHandling;
 using Volo.Abp.Modularity;
 using Volo.Abp.Validation;
 using Volo.Abp.Validation.Localization;
@@ -25,6 +26,11 @@ namespace Syrna.QuartzAdmin
                     .Add<QuartzAdminResource>("en")
                     .AddBaseTypes(typeof(AbpValidationResource))
                     .AddVirtualJson("/Syrna/QuartzAdmin/Localization/QuartzAdmin");
+            });
+
+            Configure<AbpExceptionLocalizationOptions>(options =>
+            {
+                options.MapCodeNamespace("SyrnaQuartzAdmin", typeof(QuartzAdminResource));
             });
         }
     }

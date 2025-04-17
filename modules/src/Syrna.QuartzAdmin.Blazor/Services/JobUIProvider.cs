@@ -69,7 +69,7 @@ namespace Syrna.QuartzAdmin.Blazor.Services
                             !x.IsAbstract &&
                             typeof(IJobUI).IsAssignableFrom(x)));
 
-            int systemJobUICount = jobUITypes.Count;
+            var systemJobUICount = jobUITypes.Count;
             _logger.LogInformation("Detected {count} IJobUI implementations under QuartzAdmin assembly", systemJobUICount);
 
             _logger.LogDebug("Detecting IJobUI implementations specified in AllowedJobAssemblyFiles...");
@@ -77,10 +77,10 @@ namespace Syrna.QuartzAdmin.Blazor.Services
 
             foreach (var assemblyStr in _options.AllowedJobAssemblyFiles)
             {
-                string assemblyPath = Path.Combine(path, assemblyStr + ".dll");
+                var assemblyPath = Path.Combine(path, assemblyStr + ".dll");
                 try
                 {
-                    Assembly assembly = Assembly.LoadFrom(assemblyPath);
+                    var assembly = Assembly.LoadFrom(assemblyPath);
                     if (assembly == null)
                     {
                         _logger.LogWarning("Cannot load allowed job assembly name '{assembly}'", assemblyStr);

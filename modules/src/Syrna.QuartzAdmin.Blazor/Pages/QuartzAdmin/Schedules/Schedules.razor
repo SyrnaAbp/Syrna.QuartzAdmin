@@ -41,13 +41,21 @@
         <Button Color="Color.Primary" Margin="Margin.Is1"
                 Clicked="OnNewSchedule">
             <Icon Name="@IconName.Add"></Icon>
-            @L["AddNew"]
+            @UiLocalizer["AddNew"]
         </Button>
         <Button Color="Color.Danger" Margin="Margin.Is1"
                 Clicked="OnDeleteSelectedScheduleJobs">
             <Icon Name="@IconName.Delete"></Icon>
-            @L["Delete"]
+            @UiLocalizer["Delete"]
         </Button>
+        <Span Margin="Margin.Is2.FromStart" Padding="Padding.Is2" TextAlignment="TextAlignment.Center" VerticalAlignment="VerticalAlignment.Middle">
+            <Switch Checked="AutoRefresh"
+                    TValue="bool"
+                    CheckedChanged="OnCheckAutoRefresh"
+                    Color="Color.Primary">
+                @L["AutoRefresh"]
+            </Switch>
+        </Span>
     </BarStart>
     <BarEnd>
         <Addons>

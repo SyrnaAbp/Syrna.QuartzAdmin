@@ -8,13 +8,14 @@ using Syrna.QuartzAdmin.Scheduler;
 using Syrna.QuartzAdmin.Triggers;
 using System;
 using System.Threading.Tasks;
+using Localization.Resources.AbpUi;
 
 namespace Syrna.QuartzAdmin.Blazor.Components;
 
 public partial class ScheduleDialog
 {
-    [Inject]
-    protected new IStringLocalizer<QuartzAdminResource> L { get; set; }
+    [Inject] protected IStringLocalizer<AbpUiResource> UiLocalizer { get; set; }
+    [Inject] protected new IStringLocalizer<QuartzAdminResource> L { get; set; }
     [Inject] private ISchedulerAppService SchedulerSvc { get; set; } = null!;
     public JobDetailModel JobDetail { get; set; } = new();
     [Parameter] public TriggerDetailModel TriggerDetail { get; set; } = new();
@@ -76,23 +77,23 @@ public partial class ScheduleDialog
                 _nextIcon = IconName.AngleLeft.ToString();
                 break;
             case ScheduleDialogTab.Trigger:
-            {
-                if (string.IsNullOrEmpty(TriggerDetail.Name) &&
-                    !string.IsNullOrEmpty(JobDetail.Name))
                 {
-                    // use job name as trigger name when trigger name not yet specified
-                    // determine if trigger name can be used
-                    var exists = await SchedulerSvc.ContainsTriggerKey(JobDetail.Name, TriggerDetail.Group);
-                    if (!exists)
+                    if (string.IsNullOrEmpty(TriggerDetail.Name) &&
+                        !string.IsNullOrEmpty(JobDetail.Name))
                     {
-                        TriggerDetail.Name = JobDetail.Name;
+                        // use job name as trigger name when trigger name not yet specified
+                        // determine if trigger name can be used
+                        var exists = await SchedulerSvc.ContainsTriggerKey(JobDetail.Name, TriggerDetail.Group);
+                        if (!exists)
+                        {
+                            TriggerDetail.Name = JobDetail.Name;
+                        }
                     }
-                }
 
-                _nextText = L["Save"];
-                _nextIcon = null;
-                break;
-            }
+                    _nextText = L["Save"];
+                    _nextIcon = null;
+                    break;
+                }
             default:
                 throw new ArgumentOutOfRangeException();
         }
@@ -126,9 +127,10 @@ public partial class ScheduleDialog
                 {
                     JobDetailModel = JobDetail,
                     TriggerDetailModel = TriggerDetail
-                };  
+                };
                 await SchedulerSvc.CreateSchedule(createScheduleArgs);
-                await Notify.Info(L["CreatedSuccessfully"]);
+                await AfterSave.Invoke(true);
+                await Notify.Info(UiLocalizer["CreatedSuccessfully"]);
             }
             catch (Exception ex)
             {
@@ -149,11 +151,12 @@ public partial class ScheduleDialog
                     NewTriggerModel = TriggerDetail
                 };
                 await SchedulerSvc.UpdateSchedule(args);
-                await Notify.Info(L["SavedSuccessfully"]);
+                await AfterSave.Invoke(true);
+                await Notify.Info(UiLocalizer["SavedSuccessfully"]);
             }
             catch (Exception ex)
             {
-                await Notify.Error(string.Format(L["Error:FailedUpdateSchedule"],ex.Message));
+                await Notify.Error(string.Format(L["Error:FailedUpdateSchedule"], ex.Message));
                 Logger.LogError(ex, "Failed to update schedule.");
                 // TODO display the dialog again?
             }
@@ -162,9 +165,11 @@ public partial class ScheduleDialog
         await _modalRef.Hide();
     }
 
+    private Func<bool, Task> AfterSave { get; set; }
+
     private Key OriginalTriggerKey { get; set; }
     private Key OriginalJobKey { get; set; }
-    public async Task OpenModalAsync(JobDetailModel jobDetail, TriggerDetailModel triggerDetail, bool isNew = false, ScheduleDialogTab selectedTab = ScheduleDialogTab.Job, bool isReadOnlyJobDetail = false, Key jobKey=null,Key triggerKey=null)
+    public async Task OpenModalAsync(JobDetailModel jobDetail, TriggerDetailModel triggerDetail, Func<bool, Task> afterSave, bool isNew = false, ScheduleDialogTab selectedTab = ScheduleDialogTab.Job, bool isReadOnlyJobDetail = false, Key jobKey = null, Key triggerKey = null)
     {
         JobDetail = jobDetail;
         TriggerDetail = triggerDetail;
@@ -175,7 +180,8 @@ public partial class ScheduleDialog
         TriggerKey = triggerKey;
         OriginalJobKey = Key.Create(JobDetail.Name, JobDetail.Group);
         OriginalTriggerKey = Key.Create(TriggerDetail.Name, TriggerDetail.Group);
-        
+        AfterSave = afterSave;
+
         await _modalRef.Show();
     }
 

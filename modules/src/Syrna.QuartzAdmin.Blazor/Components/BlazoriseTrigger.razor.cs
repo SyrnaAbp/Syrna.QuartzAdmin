@@ -77,6 +77,14 @@ namespace Syrna.QuartzAdmin.Blazor.Components
             return L[$"DataMapType:{mapType}"];
         }
 
+        private async Task TriggerGroupSelected(string triggerGroup)
+        {
+            TriggerDetail.Group = triggerGroup;
+            await InvokeAsync(StateHasChanged);
+            await Task.CompletedTask;
+        }
+
+
         public static void DailyDayOfWeekValidation(ValidatorEventArgs e)
         {
             if (e.Value is bool[] { Length: > 0 } items)

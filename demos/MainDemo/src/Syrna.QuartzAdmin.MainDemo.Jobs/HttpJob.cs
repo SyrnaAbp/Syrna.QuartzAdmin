@@ -86,7 +86,7 @@ namespace Syrna.QuartzAdmin.MainDemo.Jobs
                     reqParam = new StringContent(parameters, Encoding.UTF8, Application.Json);
                 }
 
-                HttpResponseMessage response = new HttpResponseMessage();
+                var response = new HttpResponseMessage();
                 logger.LogInformation("[{runInstanceId}]. Sending '{action}' request to specified url '{url}'.",
                     context.FireInstanceId, action, url);
                 switch (action)

@@ -10,7 +10,7 @@ namespace Syrna.QuartzAdmin.Blazor.Services
 
         public static string GetShortResultMessage(this ExecutionLogDto log)
         {
-            StringBuilder strBldr = new StringBuilder();
+            var strBldr = new StringBuilder();
 
             if (log.ReturnCode != null)
             {
@@ -43,7 +43,7 @@ namespace Syrna.QuartzAdmin.Blazor.Services
 
         public static string GetShortExceptionMessage(this ExecutionLogDto log)
         {
-            StringBuilder strBldr = new StringBuilder();
+            var strBldr = new StringBuilder();
 
             if (log.ReturnCode != null)
             {

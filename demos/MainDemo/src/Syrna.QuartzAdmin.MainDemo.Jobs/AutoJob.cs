@@ -9,7 +9,7 @@ namespace Syrna.QuartzAdmin.MainDemo.Jobs
         public async Task CanFireIt()
         {
             Random random = new();
-            int randomNumber = random.Next(1, 100);
+            var randomNumber = random.Next(1, 100);
             if (randomNumber % 2 == 0)
             {
                 throw new Exception("Test exception");

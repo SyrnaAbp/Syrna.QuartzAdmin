@@ -122,7 +122,7 @@ namespace Syrna.QuartzAdmin.Triggers
         {
             var dayOfWeekCount = 7;
             var list = new List<DayOfWeek>(dayOfWeekCount);
-            for (int i = 0; i < dayOfWeekCount; i++)
+            for (var i = 0; i < dayOfWeekCount; i++)
             {
                 if (DailyDayOfWeek[i])
                 {

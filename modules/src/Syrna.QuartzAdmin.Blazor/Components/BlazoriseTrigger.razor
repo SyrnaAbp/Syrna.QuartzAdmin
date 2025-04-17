@@ -18,7 +18,7 @@
                                 <FieldBody>
                                     <TextEdit @bind-Text="TriggerDetail.Name" Immediate="true">
                                         <Feedback>
-                                            <ValidationError />
+                                            <ValidationError>@L["Error:TriggerNameAlreadyInUsed"]</ValidationError>
                                         </Feedback>
                                     </TextEdit>
                                 </FieldBody>
@@ -31,11 +31,25 @@
                             <Field>
                                 <FieldLabel RequiredIndicator="true">@L["TriggerDetail:Group"]</FieldLabel>
                                 <FieldBody>
-                                    <TextEdit @bind-Text="TriggerDetail.Group" Immediate="true">
-                                        <Feedback>
-                                            <ValidationError />
-                                        </Feedback>
-                                    </TextEdit>
+                                    <Addons>
+                                        <Addon AddonType="AddonType.Body">
+                                            <TextEdit @bind-Text="TriggerDetail.Group"
+                                                      Immediate="true"
+                                                      Margin="Margin.Is0">
+                                            </TextEdit>
+                                        </Addon>
+                                        <Addon AddonType="AddonType.End">
+                                            <Dropdown>
+                                                <DropdownToggle Color="Color.Primary"></DropdownToggle>
+                                                <DropdownMenu>
+                                                    <Repeater Items="@ExistingTriggerGroups">
+                                                        <DropdownItem Clicked="async (e)=>await TriggerGroupSelected((string)e)" Value="@context.Value">@context.Text</DropdownItem>
+                                                    </Repeater>
+                                                </DropdownMenu>
+                                            </Dropdown>
+                                        </Addon>
+                                        <ValidationError>@L["Error:TriggerNameAlreadyInUsed"]</ValidationError>
+                                    </Addons>
                                 </FieldBody>
                             </Field>
                         </Validation>

@@ -324,7 +324,7 @@ internal class QuartzExecutionHistoryRepository
 
     public async Task<int> DeleteLogsByDays(int daysToKeep, CancellationToken cancelToken = default)
     {
-        DateTime oldDate = DateTime.UtcNow.Date.AddDays(-(daysToKeep + 1));
+        var oldDate = DateTime.UtcNow.Date.AddDays(-(daysToKeep + 1));
         var query = await GetQueryableAsync();
         var list = query.Where(w => w.DateAddedUtc < oldDate).ToList();
         await DeleteManyAsync(list, true, cancelToken);

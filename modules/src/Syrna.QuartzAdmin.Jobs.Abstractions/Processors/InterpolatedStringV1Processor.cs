@@ -27,8 +27,8 @@ namespace Syrna.QuartzAdmin.Jobs.Abstractions.Processors
                 return interpolatedString.Value;
             }
 
-            StringBuilder strBldr = new StringBuilder();
-            int lastIndex = 0;
+            var strBldr = new StringBuilder();
+            var lastIndex = 0;
 
             var provider = new SystemVariableV1Provider();
             

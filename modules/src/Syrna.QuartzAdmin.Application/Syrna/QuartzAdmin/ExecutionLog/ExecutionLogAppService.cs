@@ -22,7 +22,7 @@ namespace Syrna.QuartzAdmin.ExecutionLog
             }
             else
             {
-                PageMetadata newPageMetadata = args.PageMetadata;
+                var newPageMetadata = args.PageMetadata;
                 if (args.PageMetadata.Page == 0)
                 {
                     newPageMetadata = new PageMetadata { TotalCount = totalRecords };
@@ -49,7 +49,7 @@ namespace Syrna.QuartzAdmin.ExecutionLog
             }
             else
             {
-                PageMetadata newPageMetadata = args.PageMetadata;
+                var newPageMetadata = args.PageMetadata;
                 if (args.PageMetadata.Page == 0)
                 {
                     // if first page, get the total records
