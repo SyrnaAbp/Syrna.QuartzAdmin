@@ -4,43 +4,48 @@ using Syrna.QuartzAdmin.Jobs.Abstractions;
 
 namespace Syrna.QuartzAdmin.MainDemo.Jobs;
 
-public class LongJob : IJob
+public class LongJob(
+    ILogger<LongJob> logger,
+    IDataMapValueResolver dmvResolver)
+    : IJob
 {
-    public const string PropertyMessage = "message";
-    public const string PropertyDelayInMs = "delay";
-
-    private readonly ILogger<HelloJob> _logger;
-    private readonly IDataMapValueResolver _dmvResolver;
-
-    public LongJob(ILogger<HelloJob> logger,
-        IDataMapValueResolver dmvResolver)
-    {
-        _logger = logger;
-        // to support resolving dynamic variables
-        _dmvResolver = dmvResolver;
-    }
+    private const string PropertyMessage = "message";
+    private const string PropertyDelayInMs = "delay";
 
     public async Task Execute(IJobExecutionContext context)
     {
-        var rawMsg = context.GetDataMapValue(PropertyMessage);
-
-        // resolve dynamic variable
-        var msg = _dmvResolver.Resolve(rawMsg);
-
-        _logger.LogInformation("Hello! {message}", msg);
-
-        if (context.MergedJobDataMap.TryGetIntValueFromString(PropertyDelayInMs, out var delay)
-            && delay > 0)
+        var taskCompletionSource = new TaskCompletionSource();
+        context.CancellationToken.Register(() =>
         {
-            _logger.LogInformation("Delaying {delay} ms", delay);
-            await Task.Delay(delay);
-        }
+            // We received a cancellation message, cancel the TaskCompletionSource.Task
+            taskCompletionSource.TrySetCanceled();
+        });
 
-        // Write the output to display in execution log
-        context.Result = $"Hello! {msg}";
-        context.JobDetail.JobDataMap[JobDataMapKeys.IsSuccess] = true;
-        context.JobDetail.JobDataMap[JobDataMapKeys.ReturnCode] = 0;
-        context.JobDetail.JobDataMap[JobDataMapKeys.ExecutionDetails] = "Executed successfully";
+        var task = Task.Run(async () =>
+        {
+            var rawMsg = context.GetDataMapValue(PropertyMessage);
+
+            // resolve dynamic variable
+            var msg = dmvResolver.Resolve(rawMsg);
+
+            logger.LogInformation("Hello! {message}", msg);
+
+            if (context.MergedJobDataMap.TryGetIntValueFromString(PropertyDelayInMs, out var delay)
+                && delay > 0)
+            {
+                logger.LogInformation("Delaying {delay} ms", delay);
+                await Task.Delay(delay, context.CancellationToken);
+            }
+
+            // Write the output to display in execution log
+            context.Result = $"Hello! {msg}";
+            context.JobDetail.JobDataMap[JobDataMapKeys.IsSuccess] = true;
+            context.JobDetail.JobDataMap[JobDataMapKeys.ReturnCode] = 0;
+            context.JobDetail.JobDataMap[JobDataMapKeys.ExecutionDetails] = "Executed successfully";
+        });
+        var completedTask = await Task.WhenAny(task, taskCompletionSource.Task);
+
+        await completedTask;
     }
 }
 

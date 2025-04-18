@@ -49,7 +49,7 @@
             @UiLocalizer["Delete"]
         </Button>
         <Span Margin="Margin.Is2.FromStart" Padding="Padding.Is2" TextAlignment="TextAlignment.Center" VerticalAlignment="VerticalAlignment.Middle">
-            <Switch Checked="AutoRefresh"
+            <Switch Checked="_autoRefresh"
                     TValue="bool"
                     CheckedChanged="OnCheckAutoRefresh"
                     Color="Color.Primary">
@@ -262,7 +262,7 @@
                     </Button>
                 </Tooltip>
 
-                @if (@context.JobStatus is JobStatus.Paused or JobStatus.NoTrigger)
+                @if (context.JobStatus is JobStatus.Paused or JobStatus.NoTrigger)
                 {
                     <Tooltip FadeDuration="1000" Text="@L["ScheduleMenu:ResumeTrigger"]">
                         <Button Disabled="@IsRunActionDisabled(context)"
@@ -322,5 +322,5 @@
         </DataGridColumn>
     </DataGridColumns>
 </DataGrid>
-<ScheduleDialog @ref="ScheduleDialogRef"></ScheduleDialog>
-<HistoryDialog @ref="HistoryDialogRef"></HistoryDialog>
+<ScheduleDialog @ref="_scheduleDialogRef"></ScheduleDialog>
+<HistoryDialog @ref="_historyDialogRef"></HistoryDialog>

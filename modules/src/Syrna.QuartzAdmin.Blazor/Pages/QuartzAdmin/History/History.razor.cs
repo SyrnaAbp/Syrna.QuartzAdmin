@@ -1,11 +1,13 @@
 ﻿using Blazorise;
 using Blazorise.DataGrid;
+using Localization.Resources.AbpUi;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Syrna.QuartzAdmin.Blazor.Components;
 using Syrna.QuartzAdmin.ExecutionLog;
 using Syrna.QuartzAdmin.ExecutionLog.Dtos;
 using Syrna.QuartzAdmin.Localization;
+using Syrna.QuartzAdmin.Scheduler;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,15 +18,17 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.History
     public partial class History
     {
         [Inject] protected new IStringLocalizer<QuartzAdminResource> L { get; set; }
-        [Inject] IExecutionLogAppService LogSvc { get; set; } = null!;
+        [Inject] private IExecutionLogAppService LogSvc { get; set; } = null!;
+        [Inject] private ISchedulerAppService SchedulerSvc { get; set; } = null!;
+        [Inject] protected IStringLocalizer<AbpUiResource> UiLocalizer { get; set; }
 
-        private IEnumerable<ExecutionLogDto> pagedData;
-        private DataGrid<ExecutionLogDto> table = null!;
+        private IEnumerable<ExecutionLogDto> _pagedData;
+        private DataGrid<ExecutionLogDto> _table = null!;
 
         private long _firstLogId;
 
-        private int totalItems;
-        private int pageSize = 10;
+        private int _totalItems;
+        private readonly int _pageSize = 10;
         private bool _openFilter;
 
         private ExecutionLogFilter _filter = new();
@@ -35,18 +39,10 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.History
         private IEnumerable<string> _triggerNames = [];
         private IEnumerable<string> _triggerGroups = [];
 
-        public async Task OnReadData()
+        private async Task OnReadData()
         {
-            PageMetadata pageMeta;
-            var state = await table.GetState();
-            if (pagedData == null)
-            {
-                pageMeta = PageMetadata.New(0, state.PageSize);
-            }
-            else
-            {
-                pageMeta = new PageMetadata { Page = state.CurrentPage - 1, PageSize = state.PageSize };
-            }
+            var state = await _table.GetState();
+            var pageMeta = _pagedData == null ? PageMetadata.New(0, state.PageSize) : new PageMetadata { Page = state.CurrentPage - 1, PageSize = state.PageSize };
             var args = new ExecutionLogReadArgs
             {
                 Filter = _filter,
@@ -60,8 +56,8 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.History
                 _firstLogId = data.Items.FirstOrDefault()?.Id ?? 0;
             }
 
-            totalItems = (int)data.TotalCount;
-            pagedData = data.Items;
+            _totalItems = (int)data.TotalCount;
+            _pagedData = data.Items;
         }
 
         private async Task OnSearch(string text)
@@ -72,9 +68,9 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.History
 
         public async Task RefreshLogs()
         {
-            pagedData = null;
+            _pagedData = null;
             _firstLogId = 0;
-            await table.ReadData.InvokeAsync();
+            await _table.ReadData.InvokeAsync();
         }
 
         private static (IconName, TextColor, string) GetLogIconAndColor(ExecutionLogDto log)
@@ -102,10 +98,28 @@ namespace Syrna.QuartzAdmin.Blazor.Pages.QuartzAdmin.History
             }
         }
 
-        ExecutionDetailsDialog ExecutionDetailsDialogRef;
+        private async Task OnInterruptScheduleJob(ExecutionLogDto log)
+        {
+            if (log.FireInstanceId == null)
+            {
+                await Notify.Error(L["CannotInterruptJob"]);
+                return;
+            }
+
+            if (await SchedulerSvc.InterruptJob(log.FireInstanceId))
+            {
+                await Notify.Info(UiLocalizer["InterruptJobSuccessfully"]);
+            }
+            else
+            {
+                await Notify.Error(L["InterruptJobFailed"]);
+            }
+        }
+
+        private ExecutionDetailsDialog _executionDetailsDialogRef;
         private async Task OnMoreDetails(ExecutionLogDto log, string titleSuffix)
         {
-            await ExecutionDetailsDialogRef.OpenModalAsync(log, titleSuffix);
+            await _executionDetailsDialogRef.OpenModalAsync(log, titleSuffix);
         }
 
         public History()

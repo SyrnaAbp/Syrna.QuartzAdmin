@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
-using Quartz.Logging;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Guids;
 using Volo.Abp.Uow;
@@ -16,11 +15,11 @@ public class AbpExecutionHistoryStore : IExecutionHistoryStore, ISingletonDepend
 {
     public string SchedulerName { get; set; } = null!;
 
-    protected IServiceScopeFactory ServiceScopeFactory = null!;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
 
-    public ILogger<AbpExecutionHistoryStore> Logger { get; set; }
+    private ILogger<AbpExecutionHistoryStore> Logger { get; }
 
-    public AbpExecutionHistoryStore()
+    private AbpExecutionHistoryStore()
     {
         Logger = NullLogger<AbpExecutionHistoryStore>.Instance;
     }
@@ -28,25 +27,21 @@ public class AbpExecutionHistoryStore : IExecutionHistoryStore, ISingletonDepend
     public AbpExecutionHistoryStore(
         IServiceScopeFactory serviceScopeFactory) : this()
     {
-        ServiceScopeFactory = serviceScopeFactory;
+        _serviceScopeFactory = serviceScopeFactory;
     }
 
     public async Task<ExecutionHistoryEntry> Get(string fireInstanceId)
     {
-        using var scope = ServiceScopeFactory.CreateScope();
+        using var scope = _serviceScopeFactory.CreateScope();
         var repository = scope.ServiceProvider.GetRequiredService<IQuartzExecutionHistoryRepository>();
 
         var quartzJobHistory = await repository.FindByFireInstanceIdAsync(fireInstanceId);
-        if (quartzJobHistory == null)
-        {
-            return null;
-        }
-        return quartzJobHistory.ToEntry();
+        return quartzJobHistory?.ToEntry();
     }
 
     public async Task Purge()
     {
-        using var scope = ServiceScopeFactory.CreateScope();
+        using var scope = _serviceScopeFactory.CreateScope();
         var repository = scope.ServiceProvider.GetRequiredService<IQuartzExecutionHistoryRepository>();
 
         await repository.PurgeAsync();
@@ -54,8 +49,8 @@ public class AbpExecutionHistoryStore : IExecutionHistoryStore, ISingletonDepend
 
     public async Task Save(ExecutionHistoryEntry entry)
     {
-        using var scope = ServiceScopeFactory.CreateScope();
-        var guidGenerator = scope.ServiceProvider.GetRequiredService<IGuidGenerator>();
+        using var scope = _serviceScopeFactory.CreateScope();
+        //var guidGenerator = scope.ServiceProvider.GetRequiredService<IGuidGenerator>();
         var repository = scope.ServiceProvider.GetRequiredService<IQuartzExecutionHistoryRepository>();
 
         var quartzJobHistory = await repository.FindByFireInstanceIdAsync(entry.FireInstanceId);
@@ -74,7 +69,7 @@ public class AbpExecutionHistoryStore : IExecutionHistoryStore, ISingletonDepend
 
     public async Task<IEnumerable<ExecutionHistoryEntry>> FilterLastOfEveryJob(int limitPerJob)
     {
-        using var scope = ServiceScopeFactory.CreateScope();
+        using var scope = _serviceScopeFactory.CreateScope();
         var repository = scope.ServiceProvider.GetRequiredService<IQuartzExecutionHistoryRepository>();
 
         var quartzJobHistories = await repository.GetLastOfEveryJobAsync(SchedulerName, limitPerJob);
@@ -84,7 +79,7 @@ public class AbpExecutionHistoryStore : IExecutionHistoryStore, ISingletonDepend
 
     public async Task<IEnumerable<ExecutionHistoryEntry>> FilterLastOfEveryTrigger(int limitPerTrigger)
     {
-        using var scope = ServiceScopeFactory.CreateScope();
+        using var scope = _serviceScopeFactory.CreateScope();
         var repository = scope.ServiceProvider.GetRequiredService<IQuartzExecutionHistoryRepository>();
 
         var quartzJobHistories = await repository.GetLastOfEveryTriggerAsync(SchedulerName, limitPerTrigger);
@@ -94,7 +89,7 @@ public class AbpExecutionHistoryStore : IExecutionHistoryStore, ISingletonDepend
 
     public async Task<IEnumerable<ExecutionHistoryEntry>> FilterLast(int limit)
     {
-        using var scope = ServiceScopeFactory.CreateScope();
+        using var scope = _serviceScopeFactory.CreateScope();
         var repository = scope.ServiceProvider.GetRequiredService<IQuartzExecutionHistoryRepository>();
 
         var quartzJobHistories = await repository.GetLastAsync(SchedulerName, limit);
@@ -104,7 +99,7 @@ public class AbpExecutionHistoryStore : IExecutionHistoryStore, ISingletonDepend
 
     public async Task<int> GetTotalJobsExecuted()
     {
-        using var scope = ServiceScopeFactory.CreateScope();
+        using var scope = _serviceScopeFactory.CreateScope();
         var repository = scope.ServiceProvider.GetRequiredService<IQuartzJobSummaryRepository>();
 
         return await repository.GetTotalJobsExecutedAsync(SchedulerName);
@@ -112,7 +107,7 @@ public class AbpExecutionHistoryStore : IExecutionHistoryStore, ISingletonDepend
 
     public async Task<int> GetTotalJobsFailed()
     {
-        using var scope = ServiceScopeFactory.CreateScope();
+        using var scope = _serviceScopeFactory.CreateScope();
         var repository = scope.ServiceProvider.GetRequiredService<IQuartzJobSummaryRepository>();
 
         return await repository.GetTotalJobsFailedAsync(SchedulerName);
@@ -120,7 +115,7 @@ public class AbpExecutionHistoryStore : IExecutionHistoryStore, ISingletonDepend
 
     public async Task IncrementTotalJobsExecuted()
     {
-        using var scope = ServiceScopeFactory.CreateScope();
+        using var scope = _serviceScopeFactory.CreateScope();
         var repository = scope.ServiceProvider.GetRequiredService<IQuartzJobSummaryRepository>();
 
         await repository.IncrementTotalJobsExecutedAsync(SchedulerName);
@@ -128,15 +123,15 @@ public class AbpExecutionHistoryStore : IExecutionHistoryStore, ISingletonDepend
 
     public async Task IncrementTotalJobsFailed()
     {
-        using var scope = ServiceScopeFactory.CreateScope();
+        using var scope = _serviceScopeFactory.CreateScope();
         var repository = scope.ServiceProvider.GetRequiredService<IQuartzJobSummaryRepository>();
 
         await repository.IncrementTotalJobsFailedAsync(SchedulerName);
     }
 
-    public virtual async Task InitializeSummaryAsync()
+    public async Task InitializeSummaryAsync()
     {
-        using var scope = ServiceScopeFactory.CreateScope();
+        using var scope = _serviceScopeFactory.CreateScope();
         var unitOfWorkManager = scope.ServiceProvider.GetRequiredService<IUnitOfWorkManager>();
         var repository = scope.ServiceProvider.GetRequiredService<IQuartzJobSummaryRepository>();
         var guidGenerator = scope.ServiceProvider.GetRequiredService<IGuidGenerator>();
@@ -155,14 +150,14 @@ public class AbpExecutionHistoryStore : IExecutionHistoryStore, ISingletonDepend
 
     public async Task AddExecutionLog(QuartzExecutionHistory log, CancellationToken cancelToken = default)
     {
-        using var scope = ServiceScopeFactory.CreateScope();
+        using var scope = _serviceScopeFactory.CreateScope();
         var repository = scope.ServiceProvider.GetRequiredService<IQuartzExecutionHistoryRepository>();
         await repository.InsertAsync(log, true, cancelToken);
     }
 
     public Task<bool> ExistsAsync(QuartzExecutionHistory log)
     {
-        using var scope = ServiceScopeFactory.CreateScope();
+        using var scope = _serviceScopeFactory.CreateScope();
         var repository = scope.ServiceProvider.GetRequiredService<IQuartzExecutionHistoryRepository>();
 
         return repository.AnyAsync(l => l.FireInstanceId == log.FireInstanceId);
@@ -175,7 +170,7 @@ public class AbpExecutionHistoryStore : IExecutionHistoryStore, ISingletonDepend
 
     public async Task<int> DeleteLogsByDays(int daysToKeep, CancellationToken cancelToken = default)
     {
-        using var scope = ServiceScopeFactory.CreateScope();
+        using var scope = _serviceScopeFactory.CreateScope();
         var repository = scope.ServiceProvider.GetRequiredService<IQuartzExecutionHistoryRepository>();
 
         return await repository.DeleteLogsByDays(daysToKeep, cancelToken);
@@ -183,7 +178,7 @@ public class AbpExecutionHistoryStore : IExecutionHistoryStore, ISingletonDepend
 
     public async Task SaveChangesAsync(CancellationToken cancelToken = default)
     {
-        using var scope = ServiceScopeFactory.CreateScope();
+        using var scope = _serviceScopeFactory.CreateScope();
         var repository = scope.ServiceProvider.GetRequiredService<IQuartzExecutionHistoryRepository>();
 
         await repository.SaveChangesAsync(cancelToken);
@@ -191,7 +186,7 @@ public class AbpExecutionHistoryStore : IExecutionHistoryStore, ISingletonDepend
 
     public async ValueTask UpdateExecutionLog(QuartzExecutionHistory log)
     {
-        using var scope = ServiceScopeFactory.CreateScope();
+        using var scope = _serviceScopeFactory.CreateScope();
         var repository = scope.ServiceProvider.GetRequiredService<IQuartzExecutionHistoryRepository>();
 
         var entry = await repository.FirstOrDefaultAsync(l => l.FireInstanceId == log.FireInstanceId);
@@ -218,11 +213,11 @@ public class AbpExecutionHistoryStore : IExecutionHistoryStore, ISingletonDepend
         await ValueTask.CompletedTask;
     }
 
-    public async Task MarkExecutingJobAsIncomplete(CancellationToken cancellToken = default)
+    public async Task MarkExecutingJobAsIncomplete(CancellationToken cancellationToken = default)
     {
-        using var scope = ServiceScopeFactory.CreateScope();
+        using var scope = _serviceScopeFactory.CreateScope();
         var repository = scope.ServiceProvider.GetRequiredService<IQuartzExecutionHistoryRepository>();
 
-        await repository.MarkExecutingJobAsIncomplete(cancellToken);
+        await repository.MarkExecutingJobAsIncomplete(cancellationToken);
     }
 }

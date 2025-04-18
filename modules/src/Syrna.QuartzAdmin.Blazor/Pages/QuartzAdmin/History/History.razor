@@ -150,12 +150,12 @@
         </Addons>
     </BarEnd>
 </Bar>
-<DataGrid @ref="table"
+<DataGrid @ref="_table"
           TItem="ExecutionLogDto"
-          Data="@pagedData"
+          Data="@_pagedData"
           ReadData="@OnReadData"
-          TotalItems="@totalItems"
-          PageSize="@pageSize"
+          TotalItems="@_totalItems"
+          PageSize="@_pageSize"
           Editable="false"
           ShowPager
           FixedHeader
@@ -183,6 +183,15 @@
                     var iconAndColor = GetLogIconAndColor(context);
                 }
                 <Icon Name="@iconAndColor.Item1" TextColor="@iconAndColor.Item2" title="@iconAndColor.Item3" IconSize="IconSize.Default" />
+                @if (context.IsSuccess is null && context.LogType == LogType.ScheduleJob)
+                {
+                    <Tooltip FadeDuration="1000" Text="@L["HistoryMenu:InterruptJob"]">
+                        <Button Clicked="@(async () => await OnInterruptScheduleJob(context))"
+                                aria-label="@L["HistoryMenu:InterruptJob"]">
+                            <Icon Name="@IconName.Stop" IconSize="IconSize.Default"></Icon>
+                        </Button>
+                    </Tooltip>
+                }
             </DisplayTemplate>
         </DataGridColumn>
         <DataGridDateColumn Field="@nameof(ExecutionLogDto.DateAddedUtc)" Caption="@L["ExecutionLog:DateAddedUtc"]" Width="160px">
@@ -234,4 +243,4 @@
         </DataGridColumn>
     </DataGridColumns>
 </DataGrid>
-<ExecutionDetailsDialog @ref="ExecutionDetailsDialogRef"></ExecutionDetailsDialog>
+<ExecutionDetailsDialog @ref="_executionDetailsDialogRef"></ExecutionDetailsDialog>

@@ -4,43 +4,49 @@ using Syrna.QuartzAdmin.Jobs.Abstractions;
 
 namespace Syrna.QuartzAdmin.MainDemo.Jobs;
 
-public class HelloJob : IJob
+public class HelloJob(
+    ILogger<HelloJob> logger,
+    IDataMapValueResolver dmvResolver)
+    : IJob
 {
-    public const string PropertyMessage = "message";
-    public const string PropertyDelayInMs = "delay";
+    private const string PropertyMessage = "message";
+    private const string PropertyDelayInMs = "delay";
 
-    private readonly ILogger<HelloJob> _logger;
-    private readonly IDataMapValueResolver _dmvResolver;
-
-    public HelloJob(ILogger<HelloJob> logger,
-        IDataMapValueResolver dmvResolver)
-    {
-        _logger = logger;
-        // to support resolving dynamic variables
-        _dmvResolver = dmvResolver;
-    }
-
-    public async Task Execute(IJobExecutionContext context)
+    private async Task ExecuteJob(IJobExecutionContext context)
     {
         var rawMsg = context.GetDataMapValue(PropertyMessage);
 
         // resolve dynamic variable
-        var msg = _dmvResolver.Resolve(rawMsg);
+        var msg = dmvResolver.Resolve(rawMsg);
 
-        _logger.LogInformation("Hello! {message}", msg);
+        logger.LogInformation("Hello! {message}", msg);
 
         if (context.MergedJobDataMap.TryGetIntValueFromString(PropertyDelayInMs, out var delay)
             && delay > 0)
         {
-            _logger.LogInformation("Delaying {delay} ms", delay);
-            await Task.Delay(delay);
+            logger.LogInformation("Delaying {delay} ms", delay);
+            await Task.Delay(delay, context.CancellationToken);
         }
+        context.SetIsSuccess(true);
+        context.SetReturnCode(0);
+        context.SetExecutionDetails("Executed successfully");
 
         // Write the output to display in execution log
         context.Result = $"Hello! {msg}";
-        context.JobDetail.JobDataMap[JobDataMapKeys.IsSuccess] = true;
-        context.JobDetail.JobDataMap[JobDataMapKeys.ReturnCode] = 0;
-        context.JobDetail.JobDataMap[JobDataMapKeys.ExecutionDetails] = "Executed successfully";
+    }
+
+    public async Task Execute(IJobExecutionContext context)
+    {
+        var taskCompletionSource = new TaskCompletionSource();
+        context.CancellationToken.Register(() =>
+        {
+            // We received a cancellation message, cancel the TaskCompletionSource.Task
+            // ReSharper disable once InvertIf
+            taskCompletionSource.TrySetCanceled();
+        });
+        var completedTask = await Task.WhenAny(ExecuteJob(context), taskCompletionSource.Task);
+
+        await completedTask;
     }
 }
 

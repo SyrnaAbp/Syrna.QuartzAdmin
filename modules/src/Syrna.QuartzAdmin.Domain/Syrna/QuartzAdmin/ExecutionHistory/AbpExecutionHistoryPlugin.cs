@@ -428,38 +428,51 @@ public class AbpExecutionHistoryPlugin : SchedulerListenerBase, ISchedulerPlugin
             LogType = LogType.ScheduleJob
         };
         var logDetail = new ExecutionHistoryDetail();
-
-        log.ReturnCode = context.GetReturnCode();
-        log.IsSuccess = context.GetIsSuccess();
-
-        log.IsSuccess ??= defaultIsSuccess;
-
-        var execDetail = context.GetExecutionDetails();
-        if (!string.IsNullOrEmpty(execDetail))
+        if (context.CancellationToken.IsCancellationRequested)
         {
-            logDetail.ExecutionDetails = execDetail;
-            log.ExecutionHistoryDetail = logDetail;
-        }
-
-        if (jobException != null)
-        {
-            log.ErrorMessage = jobException.Message;
-            log.ExecutionHistoryDetail = logDetail;
-            logDetail.ErrorCode = jobException.HResult;
-            logDetail.ErrorStackTrace = jobException.ToString();
-            logDetail.ErrorHelpLink = jobException.HelpLink;
-
-            log.ReturnCode ??= jobException.HResult.ToString();
-
-            log.IsException = true;
+            log.ReturnCode = "-1";
             log.IsSuccess = false;
+            log.ErrorMessage = "Canceled by user";
+
+            logDetail.ExecutionDetails = "Canceled by user";
+            //logDetail.ErrorCode = -1;
+            log.ExecutionHistoryDetail = logDetail;
         }
         else
         {
-            if (context.Result != null)
+
+            log.ReturnCode = context.GetReturnCode();
+            log.IsSuccess = context.GetIsSuccess();
+
+            log.IsSuccess ??= defaultIsSuccess;
+
+            var execDetail = context.GetExecutionDetails();
+            if (!string.IsNullOrEmpty(execDetail))
             {
-                var result = Convert.ToString(context.Result, CultureInfo.InvariantCulture);
-                log.Result = result?.Substring(0, Math.Min(result.Length, RESULT_MAX_LENGTH));
+                logDetail.ExecutionDetails = execDetail;
+                log.ExecutionHistoryDetail = logDetail;
+            }
+
+            if (jobException != null)
+            {
+                log.ErrorMessage = jobException.Message;
+                log.ExecutionHistoryDetail = logDetail;
+                logDetail.ErrorCode = jobException.HResult;
+                logDetail.ErrorStackTrace = jobException.ToString();
+                logDetail.ErrorHelpLink = jobException.HelpLink;
+
+                log.ReturnCode ??= jobException.HResult.ToString();
+
+                log.IsException = true;
+                log.IsSuccess = false;
+            }
+            else
+            {
+                if (context.Result != null)
+                {
+                    var result = Convert.ToString(context.Result, CultureInfo.InvariantCulture);
+                    log.Result = result?.Substring(0, Math.Min(result.Length, RESULT_MAX_LENGTH));
+                }
             }
         }
 

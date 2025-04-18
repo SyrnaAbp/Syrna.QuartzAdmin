@@ -6,7 +6,7 @@ namespace Syrna.QuartzAdmin.MainDemo.Jobs
     [QuartzTrigger(1, 0, "this is an job test", "_jobauto")]
     public class AutoJob : IJob
     {
-        public async Task CanFireIt()
+        private static async Task CanFireIt()
         {
             Random random = new();
             var randomNumber = random.Next(1, 100);
@@ -19,6 +19,7 @@ namespace Syrna.QuartzAdmin.MainDemo.Jobs
 
         public async Task Execute(IJobExecutionContext context)
         {
+            context.CancellationToken.ThrowIfCancellationRequested();
             Console.WriteLine($"Hello from AutoJob {DateTime.Now}");
 
             await CanFireIt();

@@ -289,6 +289,11 @@
     "TriggerListItem:StartTimeUtc": "Başlama Zamanı",
     "TriggerListItem:EndTimeUtc": "Bitiş Zamanı",
     "TriggerListItem:LastFireTimeUtc": "Son Çalışma Zamanı",
-    "TriggerListItem:NextFireTimeUtc": "Sonraki Çalışma Zamanı"
+    "TriggerListItem:NextFireTimeUtc": "Sonraki Çalışma Zamanı",
+
+    "CannotInterruptJob": "İşi sonlandırma başlatılamadı.",
+    "InterruptJobSuccessfully": "İş başarıyla sonlandırıldı",
+    "InterruptJobFailed": "Sonlandırma işi başarısız oldu",
+    "HistoryMenu:InterruptJob": "İşi Sonlandır"
   }
 }

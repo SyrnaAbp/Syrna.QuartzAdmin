@@ -9,6 +9,7 @@ namespace Syrna.QuartzAdmin.MainDemo.Jobs
     {
         public Task Execute(IJobExecutionContext context)
         {
+            context.CancellationToken.ThrowIfCancellationRequested();
             Console.WriteLine($"Hello from Auto Job1 {DateTime.Now}");
 
             context.SetIsSuccess(true);

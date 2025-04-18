@@ -14,6 +14,7 @@ namespace Syrna.QuartzAdmin.MainDemo.Jobs
     {
 		public async Task Execute(IJobExecutionContext context)
         {
+            context.CancellationToken.ThrowIfCancellationRequested();
             try
             {
                 var data = context.MergedJobDataMap;
