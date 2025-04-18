@@ -98,3 +98,4 @@ PostgreSql
 ![Schedules Edit Triggerdetails Cron](docs/images/schedules-edit-triggerdetails-cron.png)
 ![Schedules Edit Triggerdetails Daily](docs/images/schedules-edit-triggerdetails-daily.png)
 ![Schedules Edit Triggerdetails Simple](docs/images/schedules-edit-triggerdetails-simple.png)
+![History Timeline](docs/images/history-timeline.png)
