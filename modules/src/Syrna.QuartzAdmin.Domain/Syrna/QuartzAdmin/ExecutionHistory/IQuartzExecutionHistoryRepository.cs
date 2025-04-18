@@ -32,7 +32,7 @@ public interface IQuartzExecutionHistoryRepository : IBasicRepository<QuartzExec
     Task<IList<string>> GetTriggerNames();
     Task<IList<string>> GetTriggerGroups();
     Task<JobExecutionStatusSummaryModel> GetJobExecutionStatusSummary(DateTimeOffset? startTimeUtc, DateTimeOffset? endTimeUtc = null);
-    Task MarkExecutingJobAsIncomplete(CancellationToken cancellToken = default);
+    Task MarkExecutingJobAsIncomplete(CancellationToken cancellationToken = default);
     Task<bool> AnyAsync(Expression<Func<QuartzExecutionHistory, bool>> predicate);
     Task<QuartzExecutionHistory> FirstOrDefaultAsync(Expression<Func<QuartzExecutionHistory, bool>> predicate);
     Task<int> DeleteLogsByDays(int daysToKeep, CancellationToken cancelToken = default);

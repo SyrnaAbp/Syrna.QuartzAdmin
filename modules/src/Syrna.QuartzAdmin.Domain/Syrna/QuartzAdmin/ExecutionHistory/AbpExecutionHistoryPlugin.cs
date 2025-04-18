@@ -16,18 +16,14 @@ namespace Syrna.QuartzAdmin.ExecutionHistory;
 
 public class AbpExecutionHistoryPlugin : SchedulerListenerBase, ISchedulerPlugin, IJobListener, ITriggerListener
 {
-    //protected ILoggerFactory LoggerFactory => LazyServiceProvider.LazyGetRequiredService<ILoggerFactory>();
-    //protected ILogger Logger => LazyServiceProvider.LazyGetService<ILogger>(provider => LoggerFactory?.CreateLogger(GetType().FullName!) ?? NullLogger.Instance);
-
-    private const int RESULT_MAX_LENGTH = 8000;
-    private const int MAX_BATCH_SIZE = 50;
+    private const int ResultMaxLength = 8000;
 
     private IScheduler _scheduler = null!;
     private IExecutionHistoryStore _store = null!;
 
     public Type StoreType { get; set; } = null!;
 
-    public string Name { get; set; } = string.Empty;
+    public string Name { get; private set; } = string.Empty;
 
     public Task Initialize(string pluginName, IScheduler scheduler, CancellationToken cancellationToken = default)
     {
@@ -202,27 +198,10 @@ public class AbpExecutionHistoryPlugin : SchedulerListenerBase, ISchedulerPlugin
         var log = CreateScheduleJobLogEntry(context, defaultIsSuccess: false);
         log.IsVetoed = true;
         await _store.Save(log);
-        //var entry = await _store.Get(context.FireInstanceId);
-        //if (entry != null)
-        //{
-        //    var log = CreateScheduleJobLogEntry(context, defaultIsSuccess: false);
-        //    log.IsVetoed = true;
-        //    await _store.Save(log);
-        //}
     }
 
     public async Task JobWasExecuted(IJobExecutionContext context, JobExecutionException jobException, CancellationToken cancellationToken = default)
     {
-        //var entry = await _store.Get(context.FireInstanceId);
-        //if (entry != null)
-        //{
-        //    entry.FinishedTimeUtc = DateTime.UtcNow;
-        //    entry.ErrorMessage = jobException?.GetBaseException()?.ToString();
-        //}
-        //else
-        //{
-        //    entry = CreateScheduleJobLogEntry(context, jobException, true);
-        //}
         var entry = CreateScheduleJobLogEntry(context, jobException, true);
         entry.FinishedTimeUtc = DateTime.UtcNow;
         await _store.Save(entry);
@@ -345,10 +324,10 @@ public class AbpExecutionHistoryPlugin : SchedulerListenerBase, ISchedulerPlugin
         }
     }
 
-    private async Task PrepareAutoJob(Type t, Func<TriggerBuilder> triggerBuilders_func)
+    private async Task PrepareAutoJob(Type t, Func<TriggerBuilder> triggerBuildersFunc)
     {
         var lst = new List<TriggerBuilder>();
-        var tb = triggerBuilders_func?.Invoke();
+        var tb = triggerBuildersFunc?.Invoke();
         if (tb != null)
         {
             lst.Add(tb);
@@ -356,18 +335,18 @@ public class AbpExecutionHistoryPlugin : SchedulerListenerBase, ISchedulerPlugin
         await PrepareAutoJob(t, lst);
     }
 
-    private IEnumerable<IScheduleJob> _scheduleJobs => LazyServiceProvider.LazyGetRequiredService<IEnumerable<IScheduleJob>>();
+    private IEnumerable<IScheduleJob> ScheduleJobs => LazyServiceProvider.LazyGetRequiredService<IEnumerable<IScheduleJob>>();
 
     private async Task PrepareAutoJob(Type t, IEnumerable<TriggerBuilder> triggerBuilders)
     {
-        var job = from js in _scheduleJobs where js.JobDetail.JobType == t select js;
+        var job = (from js in ScheduleJobs where js.JobDetail.JobType == t select js).ToList();
         if (job.Any())
         {
             var scheduleJob = job.First();
-            var lstgs = (List<ITrigger>)scheduleJob.Triggers;
+            var items = (List<ITrigger>)scheduleJob.Triggers;
             triggerBuilders.ToList().ForEach(triggerBuilder =>
             {
-                lstgs.Add(triggerBuilder.ForJob(scheduleJob.JobDetail).Build());
+                items.Add(triggerBuilder.ForJob(scheduleJob.JobDetail).Build());
             });
         }
         await Task.CompletedTask;
@@ -375,12 +354,12 @@ public class AbpExecutionHistoryPlugin : SchedulerListenerBase, ISchedulerPlugin
 
     private async Task RegisterAutoJobsAsync(CancellationToken cancellationToken)
     {
-        if (_scheduleJobs == null || !_scheduleJobs.Any())
+        if (ScheduleJobs == null || !ScheduleJobs.Any())
         {
             return;
         }
 
-        foreach (var scheduleJob in _scheduleJobs)
+        foreach (var scheduleJob in ScheduleJobs)
         {
             var isNewJob = true;
             foreach (var trigger in scheduleJob.Triggers)
@@ -432,6 +411,7 @@ public class AbpExecutionHistoryPlugin : SchedulerListenerBase, ISchedulerPlugin
         {
             log.ReturnCode = "-1";
             log.IsSuccess = false;
+            log.IsException = true;
             log.ErrorMessage = "Canceled by user";
 
             logDetail.ExecutionDetails = "Canceled by user";
@@ -471,7 +451,7 @@ public class AbpExecutionHistoryPlugin : SchedulerListenerBase, ISchedulerPlugin
                 if (context.Result != null)
                 {
                     var result = Convert.ToString(context.Result, CultureInfo.InvariantCulture);
-                    log.Result = result?.Substring(0, Math.Min(result.Length, RESULT_MAX_LENGTH));
+                    log.Result = result?.Substring(0, Math.Min(result.Length, ResultMaxLength));
                 }
             }
         }

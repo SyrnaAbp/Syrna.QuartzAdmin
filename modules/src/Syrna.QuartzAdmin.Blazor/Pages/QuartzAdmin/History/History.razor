@@ -208,13 +208,11 @@
                     <Text TextColor="TextColor.Dark">
                         @if (context.IsException ?? false)
                         {
-                            @context.GetShortExceptionMessage()
-                            ;
+                            @context.GetShortExceptionMessage();
                         }
                         else
                         {
-                            @context.GetShortResultMessage()
-                            ;
+                            @context.GetShortResultMessage();
                         }
                     </Text>
                     @if (context.IsException ?? false)

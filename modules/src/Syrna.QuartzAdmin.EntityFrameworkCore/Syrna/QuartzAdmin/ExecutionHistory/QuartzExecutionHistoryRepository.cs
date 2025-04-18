@@ -295,7 +295,7 @@ internal class QuartzExecutionHistoryRepository
         };
     }
 
-    public async Task MarkExecutingJobAsIncomplete(CancellationToken cancellToken = default)
+    public async Task MarkExecutingJobAsIncomplete(CancellationToken cancellationToken = default)
     {
         var isSuccessNullJobs = (await GetQueryableAsync()).Where(l => !l.IsSuccess.HasValue &&
             l.LogType == LogType.ScheduleJob);
@@ -303,11 +303,15 @@ internal class QuartzExecutionHistoryRepository
         foreach (var log in isSuccessNullJobs)
         {
             log.IsSuccess = false;
+            log.IsException = true;
             log.ErrorMessage = "Incomplete execution.";
-            log.JobRunTime = null;
+            log.ReturnCode = "-1";
+            //log.JobRunTime = null;
+            //log.ExecutionLogDetail = new();
+            //log.ExecutionLogDetail.ExecutionDetails = "Incomplete execution.";
         }
 
-        await SaveChangesAsync(cancellToken);
+        await SaveChangesAsync(cancellationToken);
     }
 
     public async Task<bool> AnyAsync(Expression<Func<QuartzExecutionHistory, bool>> predicate)

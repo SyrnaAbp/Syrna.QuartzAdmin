@@ -28,6 +28,6 @@ namespace Syrna.QuartzAdmin.ExecutionHistory
         Task AddExecutionLog(QuartzExecutionHistory log, CancellationToken cancelToken = default);
         ValueTask UpdateExecutionLog(QuartzExecutionHistory log);
         Task SaveChangesAsync(CancellationToken cancelToken = default);
-        Task MarkExecutingJobAsIncomplete(CancellationToken cancellToken = default);
+        Task MarkExecutingJobAsIncomplete(CancellationToken cancellationToken = default);
     }
 }
