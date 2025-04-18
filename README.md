@@ -51,7 +51,7 @@ An abp application module that allows manage quartz scheduling.
   * Configurable logs retention days
 * Build-in Jobs
   * HTTP API client job
-
+* InterruptJob implemented
 
 ## Usage
 > 1. You must create quartz database. You can find sql mssql script https://github.com/SyrnaAbp/Syrna.QuartzAdmin/blob/dev/demos/MainDemo/src/Syrna.QuartzAdmin.MainDemo.DbMigrator/sqlserver.sql 
