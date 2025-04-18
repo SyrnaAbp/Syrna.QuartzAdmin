@@ -12,7 +12,7 @@ namespace Syrna.QuartzAdmin.MainDemo.Jobs
 		ILogger<HttpJob> logger,
 		IDataMapValueResolver dmvResolver) : IJob
     {
-		public async Task Execute(IJobExecutionContext context)
+        private async Task ExecuteJob(IJobExecutionContext context)
         {
             context.CancellationToken.ThrowIfCancellationRequested();
             try
@@ -126,6 +126,19 @@ namespace Syrna.QuartzAdmin.MainDemo.Jobs
                 context.SetIsSuccess(false);
                 throw new JobExecutionException("Failed to execute http job", ex);
             }
+        }
+        public async Task Execute(IJobExecutionContext context)
+        {
+            var taskCompletionSource = new TaskCompletionSource();
+            context.CancellationToken.Register(() =>
+            {
+                // We received a cancellation message, cancel the TaskCompletionSource.Task
+                // ReSharper disable once InvertIf
+                taskCompletionSource.TrySetCanceled();
+            });
+            var completedTask = await Task.WhenAny(ExecuteJob(context), taskCompletionSource.Task);
+
+            await completedTask;
         }
     }
 }

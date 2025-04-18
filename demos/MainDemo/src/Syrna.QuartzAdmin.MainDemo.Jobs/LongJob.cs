@@ -12,7 +12,7 @@ public class LongJob(
     private const string PropertyMessage = "message";
     private const string PropertyDelayInMs = "delay";
 
-    public async Task Execute(IJobExecutionContext context)
+    private async Task ExecuteJob(IJobExecutionContext context)
     {
         var taskCompletionSource = new TaskCompletionSource();
         context.CancellationToken.Register(() =>
@@ -44,6 +44,20 @@ public class LongJob(
             context.JobDetail.JobDataMap[JobDataMapKeys.ExecutionDetails] = "Executed successfully";
         });
         var completedTask = await Task.WhenAny(task, taskCompletionSource.Task);
+
+        await completedTask;
+    }
+
+    public async Task Execute(IJobExecutionContext context)
+    {
+        var taskCompletionSource = new TaskCompletionSource();
+        context.CancellationToken.Register(() =>
+        {
+            // We received a cancellation message, cancel the TaskCompletionSource.Task
+            // ReSharper disable once InvertIf
+            taskCompletionSource.TrySetCanceled();
+        });
+        var completedTask = await Task.WhenAny(ExecuteJob(context), taskCompletionSource.Task);
 
         await completedTask;
     }
