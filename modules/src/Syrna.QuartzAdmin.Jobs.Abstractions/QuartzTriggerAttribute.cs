@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Syrna.QuartzAdmin.Jobs.Abstractions
+﻿namespace Syrna.QuartzAdmin.Jobs.Abstractions
 {
     public class QuartzTriggerAttribute : Attribute
     {
@@ -10,15 +6,15 @@ namespace Syrna.QuartzAdmin.Jobs.Abstractions
         {
 
         }
-        public QuartzTriggerAttribute(double days, double hours, double minutes, double seconds, double milliseconds, string _identity, string _desciption) : this(days, hours, minutes, seconds, milliseconds, 0, _identity, _desciption)
+        public QuartzTriggerAttribute(double days, double hours, double minutes, double seconds, double milliseconds, string identity, string description) : this(days, hours, minutes, seconds, milliseconds, 0, identity, description)
         {
         }
 
-        public QuartzTriggerAttribute(double hours, double minutes, double seconds, string _identity, string _desciption) : this(0, hours, minutes, seconds, 0, 0, _identity, _desciption)
+        public QuartzTriggerAttribute(double hours, double minutes, double seconds, string identity, string description) : this(0, hours, minutes, seconds, 0, 0, identity, description)
         {
         }
 
-        public QuartzTriggerAttribute(double minutes, double seconds, string _identity, string _desciption) : this(0, 0, minutes, seconds, 0, 0, _identity, _desciption)
+        public QuartzTriggerAttribute(double minutes, double seconds, string identity, string description) : this(0, 0, minutes, seconds, 0, 0, identity, description)
         {
         }
 
@@ -26,9 +22,9 @@ namespace Syrna.QuartzAdmin.Jobs.Abstractions
         /// Trigger every x seconds
         /// </summary>
         /// <param name="seconds"></param>
-        /// <param name="_identity"></param>
-        /// <param name="_desciption"></param>
-        public QuartzTriggerAttribute(double seconds, string _identity, string _desciption) : this(0, 0, 0, seconds, 0, 0, _identity, _desciption)
+        /// <param name="identity"></param>
+        /// <param name="description"></param>
+        public QuartzTriggerAttribute(double seconds, string identity, string description) : this(0, 0, 0, seconds, 0, 0, identity, description)
         {
         }
 
@@ -40,9 +36,9 @@ namespace Syrna.QuartzAdmin.Jobs.Abstractions
         /// <summary>
         /// Trigger every x hours
         /// </summary>
+        /// <param name="minutes"></param>
         /// <param name="seconds"></param>
-        /// <param name="_identity"></param>
-        /// <param name="_desciption"></param>
+        /// <param name="hours"></param>
         public QuartzTriggerAttribute(double hours, double minutes, double seconds) : this(0, hours, minutes, seconds, 0, 0, null, null)
         {
         }
@@ -55,13 +51,13 @@ namespace Syrna.QuartzAdmin.Jobs.Abstractions
         {
         }
 
-        public QuartzTriggerAttribute(bool Manual) : this(0, 0, 0, 0, 0, 0, null, null)
+        public QuartzTriggerAttribute(bool manual) : this(0, 0, 0, 0, 0, 0, null, null)
         {
-            this.Manual = true;
+            Manual = manual;
         }
 
 
-        public QuartzTriggerAttribute(double days, double hours, double minutes, double seconds, double milliseconds, long ticks, string _identity, string _desciption)
+        private QuartzTriggerAttribute(double days, double hours, double minutes, double seconds, double milliseconds, long ticks, string identity, string description)
         {
 
             WithInterval = TimeSpan.FromTicks(ticks + (long)(days * TimeSpan.TicksPerDay
@@ -69,9 +65,11 @@ namespace Syrna.QuartzAdmin.Jobs.Abstractions
                                              + minutes * TimeSpan.TicksPerMinute
                                              + seconds * TimeSpan.TicksPerSecond
                                              + milliseconds + TimeSpan.TicksPerMillisecond));
+            Identity = identity;
+            Description = description;
         }
-        public string Desciption { get; set; } = null;
-        public string Identity { get; set; } = null;
+        public string Description { get; set; }
+        public string Identity { get; set; }
         public TimeSpan WithInterval { get; set; }
         public DateTimeOffset StartAt { get; set; } = DateTimeOffset.MinValue;
         public int RepeatCount { get; set; } = 0;
@@ -79,6 +77,6 @@ namespace Syrna.QuartzAdmin.Jobs.Abstractions
         public string TriggerGroup { get; set; } = string.Empty;
         public string TriggerDescription { get; set; } = string.Empty;
         public int Priority { get; set; } = 0;
-        public bool Manual { get; set; } = false;
+        public bool Manual { get; set; }
     }
 }

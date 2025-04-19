@@ -264,31 +264,6 @@
 		<PackageVersion Include="Microsoft.Extensions.FileProviders.Embedded" Version="$(MicrosoftExtensionsPackageVersion)" />
 		<PackageVersion Include="Microsoft.Extensions.Identity.Core" Version="$(MicrosoftExtensionsPackageVersion)" />
 	</ItemGroup>
-	<!-- Elsa -->
-	<ItemGroup>
-		<PackageVersion Include="Elsa" Version="$(ElsaPackageVersion)" />
-		<PackageVersion Include="Elsa.Activities.Email" Version="$(ElsaPackageVersion)" />
-		<PackageVersion Include="Elsa.Activities.Http" Version="$(ElsaPackageVersion)" />
-		<PackageVersion Include="Elsa.Activities.UserTask" Version="$(ElsaPackageVersion)" />
-		<PackageVersion Include="Elsa.Activities.Temporal.Quartz" Version="$(ElsaPackageVersion)" />
-		<PackageVersion Include="Elsa.Core" Version="$(ElsaPackageVersion)" />
-		<PackageVersion Include="Elsa.Designer.Components.Web" Version="$(ElsaPackageVersion)" />
-		<PackageVersion Include="Elsa.Rebus.RabbitMq" Version="$(ElsaPackageVersion)" />
-		<PackageVersion Include="Elsa.Server.Api" Version="$(ElsaPackageVersion)" />
-		<PackageVersion Include="Elsa.Webhooks.Api" Version="$(ElsaPackageVersion)" />
-		<PackageVersion Include="Elsa.Webhooks.Persistence.EntityFramework.Core" Version="$(ElsaPackageVersion)" />
-		<PackageVersion Include="Elsa.WorkflowSettings.Persistence.EntityFramework.Core" Version="$(ElsaPackageVersion)" />
-		<PackageVersion Include="Elsa.Webhooks.Persistence.EntityFramework.MySql" Version="$(ElsaPackageVersion)" />
-		<PackageVersion Include="Elsa.WorkflowSettings.Persistence.EntityFramework.MySql" Version="$(ElsaPackageVersion)" />
-	</ItemGroup>
-	<!-- DotNetCore.CAP -->
-	<ItemGroup>
-		<PackageVersion Include="DotNetCore.CAP" Version="$(DotNetCoreCAPPackageVersion)" />
-		<PackageVersion Include="DotNetCore.CAP.Dashboard" Version="$(DotNetCoreCAPPackageVersion)" />
-		<PackageVersion Include="DotNetCore.CAP.MySql" Version="$(DotNetCoreCAPPackageVersion)" />
-		<PackageVersion Include="DotNetCore.CAP.OpenTelemetry" Version="$(DotNetCoreCAPPackageVersion)" />
-		<PackageVersion Include="DotNetCore.CAP.RabbitMQ" Version="$(DotNetCoreCAPPackageVersion)" />
-	</ItemGroup>
 	<!-- Serilog -->
 	<ItemGroup>
 		<PackageVersion Include="Serilog" Version="4.0.2" />
@@ -539,10 +514,15 @@
 		<PackageVersion Include="CronExpressionDescriptor" Version="2.39.0" />
 		<PackageVersion Include="DartSassBuilder" Version="1.1.0" />
 	</ItemGroup>
+	<!-- Aspire -->
 	<ItemGroup>
 		<PackageVersion Include="Aspire.Hosting.AppHost" Version="9.0.0" />
-		<PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="9.0.0" />
+		<PackageVersion Include="Aspire.Hosting.NodeJs" Version="9.0.0" />
 		<PackageVersion Include="Aspire.Hosting.Redis" Version="9.0.0" />
 		<PackageVersion Include="Aspire.Hosting.SqlServer" Version="9.0.0" />
+		<PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="9.0.0" />
+		<PackageVersion Include="Aspire.Microsoft.Data.SqlClient" Version="9.0.0" />
+		<PackageVersion Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.0" />
+		<PackageVersion Include="Aspire.Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0" />
 	</ItemGroup>
 </Project>

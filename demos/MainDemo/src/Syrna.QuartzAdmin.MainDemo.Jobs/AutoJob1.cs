@@ -4,7 +4,7 @@ using Syrna.QuartzAdmin.Jobs.Abstractions;
 namespace Syrna.QuartzAdmin.MainDemo.Jobs
 {
     [DisallowConcurrentExecution]
-    [QuartzTrigger(5, 0, 0, Desciption = "Automatic job of welcome information")]
+    [QuartzTrigger(5, 0, 0, Description = "Automatic job of welcome information")]
     public class AutoJob1 : IJob
     {
         private Task ExecuteJob(IJobExecutionContext context)

@@ -31,7 +31,7 @@ public static class ServiceCollectionExtensions
             }
             else
             {
-                services.AddQuartzJob(t, so.Identity ?? t.Name, so.Desciption ?? t.FullName);
+                services.AddQuartzJob(t, so.Identity ?? t.Name, so.Description ?? t.FullName);
             }
         });
         services.AddQuartzAdmin(quartzAdminUIConfiguration);
