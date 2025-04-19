@@ -36,18 +36,17 @@ namespace Syrna.QuartzAdmin.MainDemo.Jobs
                     JsonSerializer.Deserialize<Dictionary<string, string>>(strHeaders.Trim());
 
                 var strAction = data.GetString(HttpJobKeys.PropertyRequestAction);
-                HttpAction action;
                 if (strAction == null)
                 {
                     logger.LogWarning("[{runInstanceId}]. Cannot run HttpJob. No http action specified.",
                         context.FireInstanceId);
                     throw new JobExecutionException("No http action specified");
                 }
-                action = Enum.Parse<HttpAction>(strAction);
+                var action = Enum.Parse<HttpAction>(strAction);
 
                 logger.LogDebug("[{runInstanceId}]. Creating HttpClient...", context.FireInstanceId);
                 HttpClient httpClient;
-                if (data.TryGetBoolean(HttpJobKeys.PropertyIgnoreVerifySsl, out var IgnoreVerifySsl) && IgnoreVerifySsl)
+                if (data.TryGetBoolean(HttpJobKeys.PropertyIgnoreVerifySsl, out var ignoreVerifySsl) && ignoreVerifySsl)
                 {
                     httpClient = httpClientFactory.CreateClient(Constants.HttpClientIgnoreVerifySsl);
                     logger.LogInformation("[{runInstanceId}]. Created ignore SSL validation HttpClient.",
@@ -63,14 +62,7 @@ namespace Syrna.QuartzAdmin.MainDemo.Jobs
                 // configure time out. Default 100 secs
                 if (timeoutInSec.HasValue)
                 {
-                    if (timeoutInSec > 0)
-                    {
-                        httpClient.Timeout = TimeSpan.FromSeconds(timeoutInSec.Value);
-                    }
-                    else
-                    {
-                        httpClient.Timeout = Timeout.InfiniteTimeSpan;
-                    }
+                    httpClient.Timeout = timeoutInSec > 0 ? TimeSpan.FromSeconds(timeoutInSec.Value) : Timeout.InfiniteTimeSpan;
                 }
 
                 if (headers != null)
@@ -90,24 +82,17 @@ namespace Syrna.QuartzAdmin.MainDemo.Jobs
                 var response = new HttpResponseMessage();
                 logger.LogInformation("[{runInstanceId}]. Sending '{action}' request to specified url '{url}'.",
                     context.FireInstanceId, action, url);
-                switch (action)
+                response = action switch
                 {
-                    case HttpAction.Get:
-                        response = await httpClient.GetAsync(url, context.CancellationToken);
-                        break;
-                    case HttpAction.Post:
-                        response = await httpClient.PostAsync(url, reqParam, context.CancellationToken);
-                        break;
-                    case HttpAction.Put:
-                        response = await httpClient.PutAsync(url, reqParam, context.CancellationToken);
-                        break;
-                    case HttpAction.Delete:
-                        response = await httpClient.DeleteAsync(url, context.CancellationToken);
-                        break;
-                }
+                    HttpAction.Get => await httpClient.GetAsync(url, context.CancellationToken),
+                    HttpAction.Post => await httpClient.PostAsync(url, reqParam, context.CancellationToken),
+                    HttpAction.Put => await httpClient.PutAsync(url, reqParam, context.CancellationToken),
+                    HttpAction.Delete => await httpClient.DeleteAsync(url, context.CancellationToken),
+                    _ => response
+                };
 
                 var result = await response.Content.ReadAsStringAsync(context.CancellationToken);
-                logger.LogInformation("[{runInstanceId}]. Response tatus code '{code}'.",
+                logger.LogInformation("[{runInstanceId}]. Response status code '{code}'.",
                     context.FireInstanceId, response.StatusCode);
                 context.Result = result;
                 context.SetIsSuccess(response.IsSuccessStatusCode);
@@ -133,7 +118,6 @@ namespace Syrna.QuartzAdmin.MainDemo.Jobs
             context.CancellationToken.Register(() =>
             {
                 // We received a cancellation message, cancel the TaskCompletionSource.Task
-                // ReSharper disable once InvertIf
                 taskCompletionSource.TrySetCanceled();
             });
             var completedTask = await Task.WhenAny(ExecuteJob(context), taskCompletionSource.Task);

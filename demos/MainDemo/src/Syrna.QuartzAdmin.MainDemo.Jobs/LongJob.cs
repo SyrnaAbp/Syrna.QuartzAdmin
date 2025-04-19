@@ -54,7 +54,6 @@ public class LongJob(
         context.CancellationToken.Register(() =>
         {
             // We received a cancellation message, cancel the TaskCompletionSource.Task
-            // ReSharper disable once InvertIf
             taskCompletionSource.TrySetCanceled();
         });
         var completedTask = await Task.WhenAny(ExecuteJob(context), taskCompletionSource.Task);
