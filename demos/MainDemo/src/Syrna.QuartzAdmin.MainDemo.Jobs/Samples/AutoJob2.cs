@@ -3,7 +3,7 @@ using Quartz;
 using Syrna.QuartzAdmin.Jobs.Abstractions;
 using System.Threading;
 
-namespace Syrna.QuartzAdmin.MainDemo.Jobs
+namespace Syrna.QuartzAdmin.MainDemo.Jobs.Samples
 {
     [QuartzTrigger(2,0, "this is an long job test", "_longjobauto")]
     public class AutoJob2(ILogger<HelloJob> logger) : IJob

@@ -12,7 +12,7 @@ namespace Syrna.QuartzAdmin.Blazor.Components
     public partial class HttpJobUI : IJobUI
     {
         [Inject] protected new IStringLocalizer<QuartzAdminResource> L { get; set; }
-        const string JOB_CLASS = "Syrna.QuartzAdmin.MainDemo.Jobs.HttpJob";
+        const string JOB_CLASS = "Syrna.QuartzAdmin.MainDemo.Jobs.Samples.HttpJob";
 
         public string JobClass => JOB_CLASS;
 

@@ -1,23 +1,35 @@
 ﻿using Quartz;
 using Syrna.QuartzAdmin.Jobs.Abstractions;
 
-namespace Syrna.QuartzAdmin.MainDemo.Jobs
+namespace Syrna.QuartzAdmin.MainDemo.Jobs.Samples
 {
-    [DisallowConcurrentExecution]
-    [QuartzTrigger(5, 0, 0, Description = "Automatic job of welcome information")]
-    public class AutoJob1 : IJob
+    [QuartzTrigger(1, 0, "this is an job test", "_jobauto")]
+    public class AutoJob : IJob
     {
-        private Task ExecuteJob(IJobExecutionContext context)
+        private static async Task CanFireIt()
+        {
+            Random random = new();
+            var randomNumber = random.Next(1, 100);
+            if (randomNumber % 2 == 0)
+            {
+                throw new Exception("Test exception");
+            }
+            await Task.CompletedTask;
+        }
+
+        private async Task ExecuteJob(IJobExecutionContext context)
         {
             context.CancellationToken.ThrowIfCancellationRequested();
-            Console.WriteLine($"Hello from Auto Job1 {DateTime.Now}");
+            Console.WriteLine($"Hello from AutoJob {DateTime.Now}");
+
+            await CanFireIt();
 
             context.SetIsSuccess(true);
             context.SetReturnCode(0);
             context.SetExecutionDetails("Executed successfully");
+            context.Result = $"Hello from AutoJob {DateTime.Now}";
 
-            context.Result = $"Hello from Auto Job1 {DateTime.Now}";
-            return Task.CompletedTask;
+            await Task.CompletedTask;
         }
 
         public async Task Execute(IJobExecutionContext context)

@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.Json;
 using static System.Net.Mime.MediaTypeNames;
 
-namespace Syrna.QuartzAdmin.MainDemo.Jobs
+namespace Syrna.QuartzAdmin.MainDemo.Jobs.Samples
 {
     public class HttpJob(IHttpClientFactory httpClientFactory,
 		ILogger<HttpJob> logger,

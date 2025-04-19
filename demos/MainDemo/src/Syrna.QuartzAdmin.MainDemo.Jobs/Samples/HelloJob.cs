@@ -2,7 +2,7 @@
 using Quartz;
 using Syrna.QuartzAdmin.Jobs.Abstractions;
 
-namespace Syrna.QuartzAdmin.MainDemo.Jobs;
+namespace Syrna.QuartzAdmin.MainDemo.Jobs.Samples;
 
 public class HelloJob(
     ILogger<HelloJob> logger,
